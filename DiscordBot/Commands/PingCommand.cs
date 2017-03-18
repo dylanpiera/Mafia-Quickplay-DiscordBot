@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordBot
+namespace DiscordBot.Commands
 {
-    class Program
+    class PingCommand
     {
-        static void Main(string[] args)
-        {
-        }
+
     }
 }
