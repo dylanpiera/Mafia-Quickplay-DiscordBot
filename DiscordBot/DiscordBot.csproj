@@ -90,6 +90,7 @@
     <Compile Include="Core\Program.cs" />
     <Compile Include="Game\GamePlayerList.cs" />
     <Compile Include="Commands\LeaveCommand.cs" />
+    <Compile Include="Game\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Sneaky.cs" />
   </ItemGroup>

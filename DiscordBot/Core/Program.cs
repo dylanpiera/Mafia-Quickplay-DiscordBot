@@ -20,7 +20,7 @@ namespace DiscordBot
         public void Start()
         {
             _client = new DiscordClient();
-            
+                        
             //Setup our bots to listen for commands that start with ! or @mention the bot
             _client.UsingCommands(x =>
             {
@@ -30,21 +30,26 @@ namespace DiscordBot
                 x.HelpMode = HelpMode.Public;
             });
 
+            
+
             //For each server create a new Game, this way multiple games can be ran at once
             _client.ServerAvailable += (s, e) =>
             {
                 foreach (var server in _client.Servers)
                 {
-                    Console.WriteLine("Server Found");
+                    Console.WriteLine("Server " + server.Name + " found.");
                     servers[server] = new GamePlayerList();
                 }
             };
 
             CommandInitializer.init(_client);
 
+            
+
             _client.ExecuteAndWait(async () => {
                 await _client.Connect(Sneaky.BotToken, TokenType.Bot);
 
+                _client.SetGame(new Discord.Game("Mafia!", GameType.Default, ""));
 
                 _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });

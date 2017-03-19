@@ -21,7 +21,7 @@ namespace DiscordBot.Commands
                     if (!Program.servers[e.Server].gameRunning)
                     {
                         //and if a parameter was passed along by an Admin using this command...
-                        if (e.GetArg("username") != "" && e.User.ServerPermissions.Administrator)
+                        if (e.Args.Length != 0 && e.User.ServerPermissions.Administrator)
                         {
                             //Then loop trough each mentioned user...
                             foreach (var player in e.Message.MentionedUsers)
@@ -35,22 +35,18 @@ namespace DiscordBot.Commands
                                         //add them to the game
                                         Program.servers[e.Server].Add(player);
                                         await e.Channel.SendMessage(e.User.Mention + " added: " + player.Mention + " to the queue!");
-                                        return;
                                     }
                                     else
                                     {
                                         await e.Channel.SendMessage(e.User.Mention + " attempted to add : " + player.Mention + " to the queue, but they already were in!");
-                                        return;
                                     }
                                 }
                                 else
                                 {
                                     await e.Channel.SendMessage("I'm sorry, But bots aren't allowed to join the game. They'd be too good.");
-                                    return;
                                 }
                             }
-                        }
-                        else
+                        } else
                         {
                             if (!Program.servers[e.Server].inGame(e.User))
                             {

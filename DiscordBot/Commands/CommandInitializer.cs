@@ -19,10 +19,16 @@ namespace DiscordBot.Commands
 
             _client.GetService<CommandService>().CreateCommand("argThrower").Parameter("",ParameterType.Multiple).Hide().Do(async e =>
             {
-                foreach (var arg in e.Args)
+                if (e.Args.Length <= 10)
                 {
-                    await e.Channel.SendMessage(arg);
+                    await e.Channel.SendIsTyping();
+                    foreach (var arg in e.Args)
+                    {
+                        await e.Channel.SendMessage(arg);
+                    }
+                    await e.Channel.SendMessage("Done throwing.");
                 }
+
             });
 
             //Bot Invite Link Storage

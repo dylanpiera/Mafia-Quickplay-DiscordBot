@@ -18,7 +18,7 @@ namespace DiscordBot.Commands
                 .Do(async e =>
                 {
                     //As long as there is an argument and the caller of this command has Administrator Permission
-                    if (e.GetArg("username") != "" && e.User.ServerPermissions.Administrator)
+                    if (e.Args.Length != 0 && e.User.ServerPermissions.Administrator)
                     {
                         //Loop trough all mentioned players
                         foreach (var player in e.Message.MentionedUsers)
@@ -38,7 +38,7 @@ namespace DiscordBot.Commands
                                         return;
                                     }
                                 }
-                                else await e.Channel.SendMessage(e.User.Mention + " attempted to remove: " + player.Name + " but they are not in the current game!");
+                                else if(!e.Args.Contains<string>("--silent")) await e.Channel.SendMessage(e.User.Mention + " attempted to remove: " + player.Name + " but they are not in the current game!");
                             }
                             else
                             {
@@ -48,7 +48,7 @@ namespace DiscordBot.Commands
                             }
                         } 
 
-                        if(!e.GetArg("KickedPerson").Contains("@"))
+                        if(!e.Args.Contains("@"))
                         await e.Channel.SendMessage("Please mention the user!");
                         return;
                     }

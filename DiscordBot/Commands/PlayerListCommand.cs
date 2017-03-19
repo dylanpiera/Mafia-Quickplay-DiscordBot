@@ -27,7 +27,7 @@ namespace DiscordBot.Commands
                             foreach (var item in Program.servers[e.Server].Objects)
                             {
                                 i++;
-                                playerList += i + ". " + item.Name + "\n";
+                                playerList += i + ". " + item.User.Name + "\n";
                             }
 
                             await e.Channel.SendMessage(e.User.Mention + "\n\n**Players in current game:**```" + playerList + "```");

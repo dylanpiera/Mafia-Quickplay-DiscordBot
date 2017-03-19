@@ -10,7 +10,7 @@ namespace DiscordBot.Game
 {
     class GamePlayerList
     {
-        public List<User> Objects
+        public List<Player> Objects
         {
             get
             {
@@ -18,41 +18,61 @@ namespace DiscordBot.Game
             }
         }
 
-        private List<User> players;
+        private List<Player> players;
 
         public bool gameRunning { get; set; }
 
         public GamePlayerList()
         {
-            players = new List<User>();
+            players = new List<Player>();
             gameRunning = false;
         }
 
         public void Add(User player)
         {
-            this.players.Add(player);
+            this.players.Add(new Player(player));
         }
 
-        public void Remove(User player)
+        public void Remove(Player player)
         {
             this.players.Remove(player);
         }
-
-        public User Find(string userName)
+        public void Remove(User player)
         {
-            foreach (User player in players)
+            foreach (Player item in players)
             {
-                if (player.Name == userName) return player;
+                if (item.User.Equals(player))
+                {
+                    players.Remove(item);
+                    break;
+                }
+            }
+        }
+
+        public Player Find(string userName)
+        {
+            foreach (Player player in players)
+            {
+                if (player.User.Name == userName) return player;
             }
 
             return null;
         }
 
-        public bool inGame(User player)
+        public bool inGame(Player player)
         {
-            foreach (User item in players)
+            foreach (Player item in players)
             {
                 if (item == player) return true;
+            }
+
+            return false;
+        }
+        public bool inGame(User player)
+        {
+            foreach (Player item in players)
+            {
+                if (item.User == player) return true;
             }
 
             return false;
