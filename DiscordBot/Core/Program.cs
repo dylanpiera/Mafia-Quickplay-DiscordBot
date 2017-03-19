@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DiscordBot.Commands;
+using DiscordBot.Game;
 using Discord;
 using Discord.Commands;
 
@@ -11,6 +13,7 @@ namespace DiscordBot
     class Program
     {
         static void Main(string[] args) => new Program().Start();
+        public static Dictionary<Server, GamePlayerList> servers = new Dictionary<Server, GamePlayerList>();
 
         private DiscordClient _client;
 
@@ -27,16 +30,25 @@ namespace DiscordBot
                 x.HelpMode = HelpMode.Public;
             });
 
-            _client.GetService<CommandService>().CreateCommand("ping")
-                .Description("Bot answers with Pong!")
-                .Do(async e =>
+            //For each server create a new Game, this way multiple games can be ran at once
+            _client.ServerAvailable += (s, e) =>
+            {
+                foreach (var server in _client.Servers)
                 {
-                    await e.Channel.SendMessage(e.User.Mention + " Pong!");
-                });
+                    Console.WriteLine("Server Found");
+                    servers[server] = new GamePlayerList();
+                }
+            };
+
+            CommandInitializer.init(_client);
 
             _client.ExecuteAndWait(async () => {
                 await _client.Connect(Sneaky.BotToken, TokenType.Bot);
+
+
+                _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });
+
         }
     }
 }

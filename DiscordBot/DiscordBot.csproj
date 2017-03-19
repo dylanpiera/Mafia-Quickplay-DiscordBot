@@ -83,8 +83,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandInitializer.cs" />
+    <Compile Include="Commands\JoinCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
+    <Compile Include="Commands\PlayerListCommand.cs" />
     <Compile Include="Core\Program.cs" />
+    <Compile Include="Game\GamePlayerList.cs" />
+    <Compile Include="Commands\LeaveCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Sneaky.cs" />
   </ItemGroup>
