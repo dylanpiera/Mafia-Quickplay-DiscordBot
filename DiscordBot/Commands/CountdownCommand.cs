@@ -10,6 +10,8 @@ namespace DiscordBot.Commands
 {
     class CountdownCommand
     {
+        public static bool countdownRunning = false;
+
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("countdown")
@@ -18,30 +20,37 @@ namespace DiscordBot.Commands
                 .Hide()
                 .Do(async e =>
                 {
-                    int timer, i = 1;
-                    string arg = e.Args.FirstOrDefault<string>();
-
-                    try
+                    if (!countdownRunning)
                     {
-                        timer = Convert.ToInt32(arg);
+                        countdownRunning = true;
+                        int timer, i = 1;
+                        string arg = e.Args.FirstOrDefault<string>();
 
-                    } catch(Exception)
-                    {
-                        return;
-                    }
+                        try
+                        {
+                            timer = Convert.ToInt32(arg);
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
 
-                    Message message = await e.Channel.SendMessage(e.User.Mention + " Countdown "+ timer + "!");
+                        Message message = await e.Channel.SendMessage(e.User.Mention + " Countdown " + timer + "!");
 
-                    do
-                    {
+                        do
+                        {
+                            await Task.Delay(1000);
+                            await message.Edit(e.User.Mention + " Countdown " + (timer - i) + "!");
+                            i++;
+
+                        } while (i < timer);
                         await Task.Delay(1000);
-                        await message.Edit(e.User.Mention + " Countdown " + (timer-i) + "!");
-                        i++;
-
-                    } while (i < timer);
-                    await Task.Delay(1000);
-                    await message.Edit(e.User.Mention + " Countdown Ended!");
-                    
+                        await message.Edit(e.User.Mention + " Countdown Ended!");
+                        countdownRunning = false;
+                    } else
+                    {
+                        await e.Message.Delete();
+                    }
                 });
         }
     }

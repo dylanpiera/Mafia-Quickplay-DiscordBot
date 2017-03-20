@@ -12,15 +12,40 @@ namespace DiscordBot.Game
     {
         private User user;
         private MafiaRole role;
+        private bool ready;
+
 
         public Player(User user)
         {
             this.user = user;
+            this.ready = false;
         }
 
         public void AssignRole(MafiaRole role)
         {
             this.role = role;
+        }
+
+        public bool Ready
+        {
+            get
+            {
+                return ready;
+            }
+            set
+            {
+                ready = value;
+            }
+        }
+
+        public bool readyUp(GamePlayerList list)
+        {   
+            ready = true;
+            foreach (var item in list.Objects)
+            {
+                if (!item.Ready) return false;
+            }
+            return true;  
         }
 
         public User User

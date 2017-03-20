@@ -35,7 +35,6 @@ namespace DiscordBot.Commands
                                     if (!e.Args.Contains<string>("--silent"))
                                     {
                                         await e.Channel.SendMessage(e.User.Mention + " Removed: " + player.Mention + " from the game!");
-                                        return;
                                     }
                                 }
                                 else if(!e.Args.Contains<string>("--silent")) await e.Channel.SendMessage(e.User.Mention + " attempted to remove: " + player.Name + " but they are not in the current game!");

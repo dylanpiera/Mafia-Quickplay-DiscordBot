@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using DiscordBot.Core;
 
 namespace DiscordBot.Commands
 {
@@ -17,21 +16,9 @@ namespace DiscordBot.Commands
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             PlayerListCommand.createCommand(_client);
-            CountdownCommand.createCommand(_client);
-
-            _client.GetService<CommandService>().CreateCommand("argThrower").Parameter("",ParameterType.Multiple).Hide().Do(async e =>
-            {
-                if (e.Args.Length <= 10)
-                {
-                    await e.Channel.SendIsTyping();
-                    foreach (var arg in e.Args)
-                    {
-                        await e.Channel.SendMessage(arg);
-                    }
-                    await e.Channel.SendMessage("Done throwing.");
-                }
-
-            });
+            //CountdownCommand.createCommand(_client);
+            DayPhaseSimulatorCommand.createCommand(_client);
+            StartGameCommand.createCommand(_client);
 
             //Bot Invite Link Storage
             _client.GetService<CommandService>().CreateCommand("inviteLink").Hide().Do(async e => { if(e.User.ServerPermissions.Administrator) await e.Channel.SendMessage(Sneaky.botInvite); } );

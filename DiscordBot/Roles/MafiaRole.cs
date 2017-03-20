@@ -14,6 +14,7 @@ namespace DiscordBot.Roles
         protected Wincon wincon;
         protected String title;
         protected String description; //Including explanation on how to use power
+        protected String rolePM = "";
 
         private bool canVote, canVoteNow;
 
@@ -30,6 +31,14 @@ namespace DiscordBot.Roles
             }
         }
 
+        public Allignment Allignment
+        {
+            get
+            {
+                return allignment;
+            }
+        }
+
         public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia)
         {
             this.allignment = allignment;
@@ -41,5 +50,10 @@ namespace DiscordBot.Roles
         }
 
         public virtual void Power() { }
+        public virtual async void sendRolePM(User user)
+        {
+            await user.CreatePMChannel();
+            await user.SendMessage(rolePM);
+        }
     }
 }

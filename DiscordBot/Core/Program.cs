@@ -7,7 +7,6 @@ using DiscordBot.Commands;
 using DiscordBot.Game;
 using Discord;
 using Discord.Commands;
-using DiscordBot.Core;
 using System.ComponentModel;
 using System.Timers;
 
@@ -23,7 +22,6 @@ namespace DiscordBot
         public void Start()
         {
             _client = new DiscordClient();
-            
 
             //Setup our bots to listen for commands that start with ! or @mention the bot
             _client.UsingCommands(x =>

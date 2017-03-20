@@ -20,6 +20,7 @@ namespace DiscordBot.Game
 
         private List<Player> players;
 
+        // <summary>Sets or gets if the game is running or not</summary>
         public bool gameRunning { get; set; }
 
         public GamePlayerList()
@@ -28,15 +29,21 @@ namespace DiscordBot.Game
             gameRunning = false;
         }
 
+        // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
+        // <param name ="Player">the user to add to the game as a Player</param>
         public void Add(User player)
         {
             this.players.Add(new Player(player));
         }
 
+        // <summary> removes a User from the game</summary>
+        // <param name ="Player">the instance of Player to remove from the list</param>
         public void Remove(Player player)
         {
             this.players.Remove(player);
         }
+        // <summary> removes a User from the game with an instance of User</summary>
+        // <param name ="Player">the instance of User to remove from the list</param>
         public void Remove(User player)
         {
             foreach (Player item in players)
@@ -49,6 +56,8 @@ namespace DiscordBot.Game
             }
         }
 
+        // <summary>Finds and returns a player by name</summary>
+        // <param name ="userName">the discord user name of a player</param>
         public Player Find(string userName)
         {
             foreach (Player player in players)
@@ -58,7 +67,21 @@ namespace DiscordBot.Game
 
             return null;
         }
+        // <summary>Finds and returns a player by user instance</summary>
+        // <param name ="user">the discord user</param>
+        public Player Find(User user)
+        {
+            foreach (Player player in players)
+            {
+                if (player.User == user) return player;
+            }
 
+            return null;
+        }
+
+
+        // <summary>Checks if a player is in the game</summary>
+        // <param name ="Player">the instance of Player to check</param>
         public bool inGame(Player player)
         {
             foreach (Player item in players)
@@ -68,6 +91,8 @@ namespace DiscordBot.Game
 
             return false;
         }
+        // <summary>Checks if a player is in the game</summary>
+        // <param name ="Player">the instance of User to check</param>
         public bool inGame(User player)
         {
             foreach (Player item in players)

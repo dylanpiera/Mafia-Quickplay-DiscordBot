@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\DiscordBot.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -85,10 +86,13 @@
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
     <Compile Include="Commands\CountdownCommand.cs" />
+    <Compile Include="Commands\DayPhaseSimulatorCommand.cs" />
     <Compile Include="Commands\JoinCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\PlayerListCommand.cs" />
+    <Compile Include="Commands\StartGameCommand.cs" />
     <Compile Include="Core\Program.cs" />
+    <Compile Include="Core\RunningGame.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Game\GamePlayerList.cs" />
     <Compile Include="Commands\LeaveCommand.cs" />
@@ -103,7 +107,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
