@@ -10,12 +10,10 @@ namespace DiscordBot.Core
 {
     static class GameManager
     {
-        public async static void runGame(GamePlayerList g)
+        public /*async*/ static void runGame(GamePlayerList g)
         {
-            await Task.Delay((1000 * 60 * 15));
-
-
-
+            throw new NotImplementedException();
+            //await Task.Delay((1000 * 60 * 15));
         }
     }
 }
