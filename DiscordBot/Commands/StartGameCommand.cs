@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using DiscordBot.Core;
 using DiscordBot.Game;
 using DiscordBot.Roles;
 using System;
@@ -58,7 +59,7 @@ namespace DiscordBot.Commands
             }
 
             g.setChats(channel, mafiaChat);
-
+            GameManager.runGame(g);
         }
 
         private static async void distributeRoles(Channel c,GamePlayerList g)

@@ -37,8 +37,22 @@ namespace DiscordBot.Commands
                     }
                     else
                     {
-                        //If the game has started... #ToBeImplemented#
-                        throw new NotImplementedException();
+                        string playerList = "";
+                        int i = 0;
+                        foreach (var item in Program.servers[e.Server].Objects)
+                        {
+                            i++;
+                            try
+                            {
+                                playerList += i + ". " + item.User.Name + " Votes: " + item.LynchTarget.User.Name + "\n";
+                            }
+                            catch (Exception)
+                            {
+                                playerList += i + ". " + item.User.Name + " Votes: -\n";
+                            }
+                        }
+                        await e.Channel.SendMessage(e.User.Mention + "\n\n**Players in current game:**```" + playerList + "```");
+                        return;
                     }
                 });
         }

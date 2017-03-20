@@ -21,10 +21,12 @@ namespace DiscordBot.Commands
                         Message m = await e.Channel.SendMessage(e.User.Mention + " Stopping the current game...");
                         await Task.Delay(1000);
                         Program.servers[e.Server].Reset();
-                        if(m.Channel != null)
-                        {
+                        try {
                             await e.Channel.SendMessage($":warning: {e.User.Mention} stopped the ongoing mafia game! :warning:");
-                        } else await e.Server.FindChannels("general").FirstOrDefault().SendMessage($":warning: {e.User.Mention} stopped the ongoing mafia game! :warning:");
+                        } catch (Exception)
+                        {
+                            await e.Server.FindChannels("general").FirstOrDefault().SendMessage($":warning: {e.User.Mention} stopped the ongoing mafia game! :warning:");
+                        }
                     }
                 });
         }

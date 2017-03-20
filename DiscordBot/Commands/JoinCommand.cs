@@ -27,7 +27,7 @@ namespace DiscordBot.Commands
                             foreach (var player in e.Message.MentionedUsers)
                             {
                                 //and check if they are not a bot (or if the command was forced)...
-                                if (!player.IsBot || e.Args.Contains<string>("--force"))
+                                if (!player.IsBot || (e.Args.Contains<string>("--force") && player.Id != _client.CurrentUser.Id))
                                 {
                                     //and see if they are not already in the game
                                     if (!Program.servers[e.Server].inGame(player))
@@ -43,6 +43,11 @@ namespace DiscordBot.Commands
                                 }
                                 else
                                 {
+                                    if(player.Id == _client.CurrentUser.Id)
+                                    {
+                                        await e.Channel.SendMessage("ME? Playing? I'm sorry, but I just preffer hosting and writing FT.");
+                                        return;
+                                    }
                                     await e.Channel.SendMessage("I'm sorry, But bots aren't allowed to join the game. They'd be too good.");
                                 }
                             }

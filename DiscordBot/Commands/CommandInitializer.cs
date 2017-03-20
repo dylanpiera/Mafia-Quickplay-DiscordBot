@@ -19,6 +19,8 @@ namespace DiscordBot.Commands
             //CountdownCommand.createCommand(_client);
             StopGameCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);
+            LynchVoteCommand.createCommand(_client);
+            VoteTallyCommand.createCommand(_client);
 
             //Bot Invite Link Storage
             _client.GetService<CommandService>().CreateCommand("inviteLink").Hide().Do(async e => { if(e.User.ServerPermissions.Administrator) await e.Channel.SendMessage(Sneaky.botInvite); } );

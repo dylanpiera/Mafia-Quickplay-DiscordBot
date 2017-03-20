@@ -47,7 +47,7 @@ namespace DiscordBot.Commands
                             }
                         } 
 
-                        if(!e.Args.Contains("@"))
+                        if(!e.Args.Contains("@") && !e.Args.Contains("--silent"))
                         await e.Channel.SendMessage("Please mention the user!");
                         return;
                     }

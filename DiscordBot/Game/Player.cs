@@ -11,6 +11,8 @@ namespace DiscordBot.Game
     class Player
     {
         private User user;
+        private Player lynchTarget;
+        private int votesOn;
         private MafiaRole role;
         private bool ready;
 
@@ -19,6 +21,7 @@ namespace DiscordBot.Game
         {
             this.user = user;
             this.ready = false;
+            this.lynchTarget = null;
         }
 
         public void AssignRole(MafiaRole role)
@@ -60,6 +63,31 @@ namespace DiscordBot.Game
             get
             {
                 return role;
+            }
+        }
+        public Player LynchTarget
+        {
+            get
+            {
+                return lynchTarget;
+            }
+
+            set
+            {
+                lynchTarget = value;
+            }
+        }
+
+        public int VotesOn
+        {
+            get
+            {
+                return votesOn;
+            }
+
+            set
+            {
+                votesOn = value;
             }
         }
     }
