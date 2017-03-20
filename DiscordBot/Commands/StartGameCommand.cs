@@ -14,9 +14,6 @@ namespace DiscordBot.Commands
     {
         private static async void StartGame(CommandEventArgs e, GamePlayerList g)
         {
-
-            
-
             Channel channel =  await e.Server.CreateChannel("Mafia-Game-Room", ChannelType.Text);
             await channel.AddPermissionsRule(e.Server.EveryoneRole, new ChannelPermissionOverrides(readMessages: PermValue.Deny));
 
@@ -53,12 +50,14 @@ namespace DiscordBot.Commands
             await m3.Edit("Creating Mafia Chat... :white_check_mark:");
             await Task.Delay(500);
 
-            await channel.SendMessage(":sunny: **It is now day 1.** Day 1 will end in 15 minutes. :sunny:");
+            await channel.SendMessage(":sunny: @everyone **It is now day 1.** Day 1 will end in 15 minutes. :sunny:");
             await Task.Delay(100);
             foreach (var item in g.Objects)
             {
                 await channel.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
             }
+
+            g.setChats(channel, mafiaChat);
 
         }
 

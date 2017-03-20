@@ -20,8 +20,24 @@ namespace DiscordBot.Game
 
         private List<Player> players;
 
+        private Channel gameChat, mafiaChat;
+
+        public void setChats(Channel gameChat, Channel mafiaChat)
+        {
+            GameChat = gameChat;
+            MafiaChat = mafiaChat;
+        }
+
         // <summary>Sets or gets if the game is running or not</summary>
         public bool gameRunning { get; set; }
+
+        internal void Reset()
+        {
+            this.gameRunning = false;
+            this.Objects.Clear();
+            this.GameChat.Delete();
+            this.MafiaChat.Delete();
+        }
 
         public GamePlayerList()
         {
@@ -102,6 +118,30 @@ namespace DiscordBot.Game
 
             return false;
         }
+        
+        public Channel GameChat
+        {
+            get
+            {
+                return gameChat;
+            }
 
+            set
+            {
+                gameChat = value;
+            }
+        }
+        public Channel MafiaChat
+        {
+            get
+            {
+                return mafiaChat;
+            }
+
+            set
+            {
+                mafiaChat = value;
+            }
+        }
     }
 }

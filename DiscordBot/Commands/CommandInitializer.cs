@@ -17,7 +17,7 @@ namespace DiscordBot.Commands
             LeaveCommand.createCommand(_client);
             PlayerListCommand.createCommand(_client);
             //CountdownCommand.createCommand(_client);
-            DayPhaseSimulatorCommand.createCommand(_client);
+            StopGameCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);
 
             //Bot Invite Link Storage

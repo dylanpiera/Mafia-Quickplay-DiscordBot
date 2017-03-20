@@ -86,11 +86,11 @@
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
     <Compile Include="Commands\CountdownCommand.cs" />
-    <Compile Include="Commands\DayPhaseSimulatorCommand.cs" />
     <Compile Include="Commands\JoinCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\PlayerListCommand.cs" />
     <Compile Include="Commands\StartGameCommand.cs" />
+    <Compile Include="Commands\StopGameCommand.cs" />
     <Compile Include="Core\Program.cs" />
     <Compile Include="Core\RunningGame.cs" />
     <Compile Include="Util\Sneaky.cs" />
