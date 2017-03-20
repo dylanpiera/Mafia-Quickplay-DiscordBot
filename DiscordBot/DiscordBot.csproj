@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
+    <Compile Include="Commands\CountdownCommand.cs" />
     <Compile Include="Commands\JoinCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\PlayerListCommand.cs" />

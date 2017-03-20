@@ -17,6 +17,7 @@ namespace DiscordBot.Commands
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             PlayerListCommand.createCommand(_client);
+            CountdownCommand.createCommand(_client);
 
             _client.GetService<CommandService>().CreateCommand("argThrower").Parameter("",ParameterType.Multiple).Hide().Do(async e =>
             {
