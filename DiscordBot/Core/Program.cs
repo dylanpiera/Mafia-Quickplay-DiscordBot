@@ -7,6 +7,9 @@ using DiscordBot.Commands;
 using DiscordBot.Game;
 using Discord;
 using Discord.Commands;
+using DiscordBot.Core;
+using System.ComponentModel;
+using System.Timers;
 
 namespace DiscordBot
 {
@@ -20,7 +23,8 @@ namespace DiscordBot
         public void Start()
         {
             _client = new DiscordClient();
-                        
+            
+
             //Setup our bots to listen for commands that start with ! or @mention the bot
             _client.UsingCommands(x =>
             {
@@ -29,8 +33,6 @@ namespace DiscordBot
                 x.AllowMentionPrefix = true;
                 x.HelpMode = HelpMode.Public;
             });
-
-            
 
             //For each server create a new Game, this way multiple games can be ran at once
             _client.ServerAvailable += (s, e) =>
@@ -44,8 +46,6 @@ namespace DiscordBot
 
             CommandInitializer.init(_client);
 
-            
-
             _client.ExecuteAndWait(async () => {
                 await _client.Connect(Sneaky.BotToken, TokenType.Bot);
 
@@ -54,6 +54,7 @@ namespace DiscordBot
                 _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });
 
+            
         }
     }
 }
