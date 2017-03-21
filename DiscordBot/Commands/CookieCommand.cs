@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Commands
 {
-    static class Cookie
+    static class CookieCommand
     {
         public static void createCommand(DiscordClient _client)
         {
