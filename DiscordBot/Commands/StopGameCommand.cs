@@ -19,7 +19,7 @@ namespace DiscordBot.Commands
                     if (e.User.ServerPermissions.Administrator && Program.servers[e.Server].gameRunning)
                     {
                         Message m = await e.Channel.SendMessage(e.User.Mention + " Stopping the current game...");
-                        await Task.Delay(1000);
+                        await Task.Delay(TimeConverter.SecToMS(1));
                         Program.servers[e.Server].Reset();
                         try {
                             await e.Channel.SendMessage($":warning: {e.User.Mention} stopped the ongoing mafia game! :warning:");

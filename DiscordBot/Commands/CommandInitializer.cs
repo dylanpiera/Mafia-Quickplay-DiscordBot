@@ -14,6 +14,7 @@ namespace DiscordBot.Commands
         public static void init(DiscordClient _client)
         {
             PingCommand.createCommand(_client);
+
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);

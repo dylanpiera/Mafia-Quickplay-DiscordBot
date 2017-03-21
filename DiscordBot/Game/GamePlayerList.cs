@@ -125,22 +125,12 @@ namespace DiscordBot.Game
             {
                 return gameChat;
             }
-
-            set
-            {
-                gameChat = value;
-            }
         }
         public Channel MafiaChat
         {
             get
             {
                 return mafiaChat;
-            }
-
-            set
-            {
-                mafiaChat = value;
             }
         }
     }

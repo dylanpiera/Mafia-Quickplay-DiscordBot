@@ -10,6 +10,7 @@ namespace DiscordBot.Commands
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("unvote")
+                .Parameter("", ParameterType.Unparsed)
                 .Description("Removes your current vote.")
                 .Do(e =>
                 {

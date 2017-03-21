@@ -25,7 +25,7 @@ namespace DiscordBot.Roles
             }
             if(allignment == Allignment.Mafia)
             {
-                this.title = "Mafioso";
+                this.title = "Goon";
                 this.description = "You have the power to vote in the Mafia Chat every night on whom to kill.";
                 this.allignment = Allignment.Mafia;
                 this.wincon = Wincon.OutnumberTown;
@@ -34,8 +34,5 @@ namespace DiscordBot.Roles
 
 
         }
-
-        
-
     }
 }

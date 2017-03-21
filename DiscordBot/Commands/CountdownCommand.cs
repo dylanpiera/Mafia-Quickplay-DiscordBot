@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using DiscordBot.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,12 +40,12 @@ namespace DiscordBot.Commands
 
                         do
                         {
-                            await Task.Delay(1000);
+                            await Task.Delay(TimeConverter.SecToMS(1));
                             await message.Edit(e.User.Mention + " Countdown " + (timer - i) + "!");
                             i++;
 
                         } while (i < timer);
-                        await Task.Delay(1000);
+                        await Task.Delay(TimeConverter.SecToMS(1));
                         await message.Edit(e.User.Mention + " Countdown Ended!");
                         countdownRunning = false;
                     } else

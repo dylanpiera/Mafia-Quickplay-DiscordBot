@@ -31,7 +31,7 @@ namespace DiscordBot.Core
             Message m1 = await channel.SendMessage("Distributing roles now...");
             await channel.SendIsTyping();
             distributeRoles(g);
-            await m1.Edit("Distributing roles now... :white_check_mark:");
+            await m1.Edit("Distributed roles! :white_check_mark:");
             await Task.Delay(500);
 
             //Send role PM's
@@ -40,7 +40,7 @@ namespace DiscordBot.Core
             {
                 item.Role.sendRolePM(item.User);
             }
-            await m2.Edit("Sending role pm's... :white_check_mark:");
+            await m2.Edit("Sent role pm's! :white_check_mark:");
             await Task.Delay(500);
 
             //Create a chatroom with just the mafia members in it.
@@ -54,7 +54,7 @@ namespace DiscordBot.Core
                     await mafiaChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
             }
             await mafiaChat.SendMessage($"Welcome scummy friends :smiling_imp:, You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target.");
-            await m3.Edit("Creating Mafia Chat... :white_check_mark:");
+            await m3.Edit("Created Mafia Chat! :white_check_mark:");
             await Task.Delay(500);
 
             //Start day 1, and allow everyone to speak.
@@ -113,7 +113,6 @@ namespace DiscordBot.Core
                     mafia++;
                 }
             }
-            //await c.SendMessage($":exclamation: Debug! :exclamation:\nAmount of town = {townPlayers}, amount of mafia = {mafiaPlayers}\nAmount of assigned town = {town}, Amount of assigned mafia = {mafia}");
         }
     }
 }

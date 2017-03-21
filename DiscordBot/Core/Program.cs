@@ -24,6 +24,7 @@ namespace DiscordBot
         {
             _client = new DiscordClient();
 
+
             //Setup our bots to listen for commands that start with ! or @mention the bot
             _client.UsingCommands(x =>
             {
@@ -50,10 +51,12 @@ namespace DiscordBot
 
                 _client.SetGame(new Discord.Game("Mafia!", GameType.Default, ""));
 
+
+                if (false) { await _client.Disconnect(); }
+
                 _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });
 
-            
         }
     }
 }

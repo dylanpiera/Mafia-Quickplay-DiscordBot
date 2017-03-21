@@ -17,8 +17,6 @@ namespace DiscordBot.Commands
                 .Do(async e =>
                 {
                     Message message = await e.Channel.SendMessage(e.User.Mention + " Pong!");
-
-                    _client.Log.Info(e.User + " used !ping command", null);
                 });
         }
     }

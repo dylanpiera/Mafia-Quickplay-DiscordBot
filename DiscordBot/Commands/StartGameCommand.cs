@@ -3,6 +3,7 @@ using Discord.Commands;
 using DiscordBot.Core;
 using DiscordBot.Game;
 using DiscordBot.Roles;
+using DiscordBot.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace DiscordBot.Commands
                         {
                             await e.Channel.SendMessage("@everyone The game has been started by a moderator! Preparing to launch...");
                             game.gameRunning = true;
-                            await Task.Delay(2000);
+                            await Task.Delay(TimeConverter.SecToMS(2));
                             StartGame.startGame(e, game);
                         }
                         else if (e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count <= 2)
@@ -51,7 +52,7 @@ namespace DiscordBot.Commands
                                     {
                                         await e.Channel.SendMessage("@everyone Everyone is ready! Starting game now...");
                                         game.gameRunning = true;
-                                        await Task.Delay(2000);
+                                        await Task.Delay(TimeConverter.SecToMS(2));
                                         StartGame.startGame(e, game);
                                     } else if(everyoneReady)
                                     {
