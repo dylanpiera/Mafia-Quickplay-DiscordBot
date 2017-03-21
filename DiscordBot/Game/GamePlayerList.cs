@@ -24,8 +24,8 @@ namespace DiscordBot.Game
 
         public void setChats(Channel gameChat, Channel mafiaChat)
         {
-            GameChat = gameChat;
-            MafiaChat = mafiaChat;
+            this.gameChat = gameChat;
+            this.mafiaChat = mafiaChat;
         }
 
         // <summary>Sets or gets if the game is running or not</summary>
