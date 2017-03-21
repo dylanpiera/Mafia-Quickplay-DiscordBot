@@ -10,7 +10,7 @@ namespace DiscordBot.Commands
         {
             _client.GetService<CommandService>().CreateCommand("vote")
                 .Parameter("lynchee", ParameterType.Multiple)
-                .Description("You vote a player and the player with the most votes at the end of the day phase dies.")
+                .Description("You give a vote to the selected player.")
                 .Do(async e =>
                 {
                 var game = Program.servers[e.Server];
