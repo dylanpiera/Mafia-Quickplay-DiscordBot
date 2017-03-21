@@ -14,6 +14,7 @@ namespace DiscordBot.Commands
         {
             _client.GetService<CommandService>().CreateCommand("votecount")
                 .Alias(new string[] { "tally" })
+                .Description("Shows the total votes on all players.")
                 .Do(async e =>
                 {
                     if (Program.servers[e.Server].gameRunning)
