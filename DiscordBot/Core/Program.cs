@@ -52,9 +52,6 @@ namespace DiscordBot
 
                 _client.SetGame(new Discord.Game("Mafia!", GameType.Default, ""));
 
-
-                if (false) { await _client.Disconnect(); }
-
                 _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });
 
