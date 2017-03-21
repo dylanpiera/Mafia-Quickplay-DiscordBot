@@ -33,7 +33,7 @@ namespace DiscordBot.Commands
                             await e.Channel.SendMessage(e.User.Mention + "\n\n**Players in current game:**```" + playerList + "```");
                             return;
                         }
-                        else await e.Channel.SendMessage(e.User.Mention + " There is nobody currently in the game!");
+                        else await e.Channel.SendMessage(e.User.Mention + " There is nobody currently in the game! :x:");
                     }
                     else
                     {

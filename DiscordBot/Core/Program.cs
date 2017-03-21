@@ -9,6 +9,7 @@ using Discord;
 using Discord.Commands;
 using System.ComponentModel;
 using System.Timers;
+using DiscordBot.Core;
 
 namespace DiscordBot
 {
@@ -29,7 +30,7 @@ namespace DiscordBot
                 x.PrefixChar = '!';
                 x.IsSelfBot = false;
                 x.AllowMentionPrefix = true;
-                x.HelpMode = HelpMode.Public;
+                x.HelpMode = HelpMode.Private;
             });
 
             //For each server create a new Game, this way multiple games can be ran at once

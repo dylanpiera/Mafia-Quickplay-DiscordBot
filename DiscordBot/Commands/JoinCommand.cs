@@ -34,21 +34,21 @@ namespace DiscordBot.Commands
                                     {
                                         //add them to the game
                                         Program.servers[e.Server].Add(player);
-                                        await e.Channel.SendMessage(e.User.Mention + " added: " + player.Mention + " to the queue!");
+                                        await e.Channel.SendMessage(e.User.Mention + " added: " + player.Mention + " to the queue! :white_check_mark: ");
                                     }
                                     else
                                     {
-                                        await e.Channel.SendMessage(e.User.Mention + " attempted to add : " + player.Mention + " to the queue, but they already were in!");
+                                        //await e.Channel.SendMessage(e.User.Mention + " attempted to add : " + player.Mention + " to the queue, but they already were in!");
                                     }
                                 }
                                 else
                                 {
                                     if(player.Id == _client.CurrentUser.Id)
                                     {
-                                        await e.Channel.SendMessage("ME? Playing? I'm sorry, but I just preffer hosting and writing FT.");
+                                        await e.Channel.SendMessage("ME? Playing? I'm sorry, but I just preffer hosting and writing FT. :no_entry_sign:");
                                         return;
                                     }
-                                    await e.Channel.SendMessage("I'm sorry, But bots aren't allowed to join the game. They'd be too good.");
+                                    await e.Channel.SendMessage("I'm sorry, But bots aren't allowed to join the game. They'd be too good. :no_entry_sign:");
                                 }
                             }
                         } else
@@ -56,20 +56,20 @@ namespace DiscordBot.Commands
                             if (!Program.servers[e.Server].inGame(e.User))
                             {
                                 Program.servers[e.Server].Add(e.User);
-                                await e.Channel.SendMessage(e.User.Mention + " has joined the game!");
+                                await e.Channel.SendMessage(e.User.Mention + " has joined the game! :white_check_mark: ");
                                 return;
                             }
 
-                            await e.Channel.SendMessage(e.User.Mention + " you're already in the game!");
+                            await e.Channel.SendMessage(e.User.Mention + " you're already in the game! :x:");
                         }
                     } else if (e.Args.Contains<string>("--force"))
                     {
                         await e.User.CreatePMChannel();
-                        await e.User.PrivateChannel.SendMessage("The `--force` parameter hasn't been implemented yet to add people to already started games. The current functionality only lets you add bots to the queue.");
+                        await e.User.PrivateChannel.SendMessage(":warning: The `--force` parameter hasn't been implemented yet to add people to already started games. The current functionality only lets you add bots to the queue. :warning:");
                         return;
 
                     } else
-                        await e.Channel.SendMessage(e.User.Mention + " I'm sorry, but the game has already started!");
+                        await e.Channel.SendMessage(e.User.Mention + " I'm sorry, but the game has already started! :no_entry_sign:");
                 });
         }
     }

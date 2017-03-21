@@ -85,6 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
+    <Compile Include="Commands\UnVoteCommand.cs" />
+    <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
     <Compile Include="Commands\LynchVoteCommand.cs" />
     <Compile Include="Commands\CommandTemplate.cs" />
