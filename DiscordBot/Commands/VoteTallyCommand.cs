@@ -47,7 +47,6 @@ namespace DiscordBot.Commands
                         }
 
                         await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count::**\n```" + playerList + "```");
-                        await Task.Delay(0);
                     }
                 });
         }

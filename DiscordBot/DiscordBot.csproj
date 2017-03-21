@@ -108,6 +108,7 @@
     <Compile Include="Roles\RoleUtil\Allignment.cs" />
     <Compile Include="Roles\RoleUtil\Wincon.cs" />
     <Compile Include="Roles\Vanilla.cs" />
+    <Compile Include="Util\TimeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
