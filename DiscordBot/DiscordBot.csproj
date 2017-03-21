@@ -99,6 +99,7 @@
     <Compile Include="Commands\StopGameCommand.cs" />
     <Compile Include="Core\Program.cs" />
     <Compile Include="Core\GameManager.cs" />
+    <Compile Include="Util\Phases.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Game\GamePlayerList.cs" />
     <Compile Include="Commands\LeaveCommand.cs" />

@@ -8,22 +8,22 @@ namespace DiscordBot.Util
 {
     static class TimeConverter
     {
-        public static int MinToMS(int min)
+        public static int MinToMS(double min)
         {
-            return (min * 1000 * 60);
+            return (int)(min * 1000 * 60);
         }
-        public static int MSToMin(int ms)
+        public static int MSToMin(double ms)
         {
-            return ((ms / 1000) / 60);
+            return (int)((ms / 1000) / 60);
         }
 
-        public static int SecToMS(int sec)
+        public static int SecToMS(double sec)
         {
-            return (sec * 1000);
+            return (int)(sec * 1000);
         }
-        public static int MSToSec(int ms)
+        public static int MSToSec(double ms)
         {
-            return (ms / 1000);
+            return (int)(ms / 1000);
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using DiscordBot.Util;
+using System.Threading;
 
 namespace DiscordBot.Game
 {
@@ -15,6 +17,32 @@ namespace DiscordBot.Game
             get
             {
                 return players;
+            }
+        }
+
+        private CancellationTokenSource token;
+        private Phases phase;
+
+        public Phases Phase
+        {
+            get
+            {
+                return phase;
+            }
+            set
+            {
+                phase = value;
+            }
+        }
+        public CancellationTokenSource Token
+        {
+            get
+            {
+                return token;
+            }
+            set
+            {
+                token = value;
             }
         }
 

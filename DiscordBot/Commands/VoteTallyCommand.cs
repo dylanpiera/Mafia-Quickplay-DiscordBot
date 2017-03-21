@@ -17,23 +17,9 @@ namespace DiscordBot.Commands
                 .Description("Shows the total votes on all players.")
                 .Do(async e =>
                 {
-                    if (Program.servers[e.Server].gameRunning)
+                    if (Program.servers[e.Server].Phase == Util.Phases.Day)
                     {
-                        foreach (var item in Program.servers[e.Server].Objects)
-                        {
-                            item.VotesOn = 0;
-                        }
-                        foreach (var item in Program.servers[e.Server].Objects)
-                        {
-                            try
-                            {
-                                item.LynchTarget.VotesOn++;
-                            }
-                            catch (Exception)
-                            {
-
-                            }
-                        }
+                        countVotes(Program.servers[e.Server]);
                         int i = 0;
                         string playerList = "";
                         List<Player> SortedList = Program.servers[e.Server].Objects.OrderByDescending(o => o.VotesOn).ToList();
@@ -50,6 +36,24 @@ namespace DiscordBot.Commands
                         await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count::**\n```" + playerList + "```");
                     }
                 });
+        }
+
+        public static void countVotes(GamePlayerList game) {
+            foreach (var item in game.Objects)
+            {
+                item.VotesOn = 0;
+            }
+            foreach (var item in game.Objects)
+            {
+                try
+                {
+                    item.LynchTarget.VotesOn++;
+                }
+                catch (Exception)
+                {
+
+                }
+            }
         }
 
         public static string votedFor(List<Player> list,Player lynchee)

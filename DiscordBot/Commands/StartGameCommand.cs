@@ -19,7 +19,7 @@ namespace DiscordBot.Commands
             _client.GetService<CommandService>().CreateCommand("ready")
                 .Alias("startGame")
                 .Parameter("...", ParameterType.Multiple)
-                .Description("Declare that you're ready for the game, once everyone is ready the game will start.\n**Admin Parameters:**\n `--force` = starts the game even if not everyone is ready.")
+                .Description("Declare that you're ready for the game, once everyone is ready the game will start.\n\n**Admin Parameters:**\n `--force` = starts the game even if not everyone is ready.")
                 .Do(async e =>
                 {
                     var game = Program.servers[e.Server];
