@@ -15,6 +15,7 @@ namespace DiscordBot.Game
         private int votesOn;
         private MafiaRole role;
         private bool ready;
+        private bool alive;
 
 
         public Player(User user)
@@ -88,6 +89,19 @@ namespace DiscordBot.Game
             set
             {
                 votesOn = value;
+            }
+        }
+
+        public bool Alive
+        {
+            get
+            {
+                return alive;
+            }
+
+            set
+            {
+                alive = value;
             }
         }
     }

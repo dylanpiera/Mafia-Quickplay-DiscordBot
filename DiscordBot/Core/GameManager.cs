@@ -26,6 +26,7 @@ namespace DiscordBot.Core
                     {
                         if (await runDayPhase(g))
                         {
+                            runDayRecap(g);
                             await g.GameChat.SendMessage("Debugging: Day ended normally.");
                         }
                     } catch(Exception)
@@ -67,6 +68,30 @@ namespace DiscordBot.Core
 
             await Task.Delay(TimeConverter.MinToMS(7.5), g.Token.Token);
             return true;
+        }
+
+        public static async void runDayRecap(GamePlayerList g)
+        {
+            await g.GameChat.SendMessage(":city_sunset: @everyone day phase has ended! Recapping now... :city_sunset: ");
+            //TODO: !vote & !unvote won't work anymore
+            foreach (var item in g.Objects)
+            {
+                await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+            }
+
+            VoteTallyCommand.countVotes(g);
+
+            Player[] list = g.Objects.ToArray();
+            List<Player> deathrow = new List<Player>();
+            foreach (var item in list.Where(x => x.VotesOn == list[0].VotesOn))
+            {
+                deathrow.Add(item);
+                item.Alive = false;
+
+            }
+
+
+
         }
     }
 }
