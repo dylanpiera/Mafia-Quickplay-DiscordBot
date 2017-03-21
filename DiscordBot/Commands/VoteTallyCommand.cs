@@ -16,34 +16,39 @@ namespace DiscordBot.Commands
                 .Alias(new string[] { "tally" })
                 .Do(async e =>
                 {
-                    foreach (var item in Program.servers[e.Server].Objects)
+                    if (Program.servers[e.Server].gameRunning)
                     {
-                        item.VotesOn = 0;
-                    }
-                    foreach (var item in Program.servers[e.Server].Objects)
-                    {
-                        try
+                        foreach (var item in Program.servers[e.Server].Objects)
                         {
-                            item.LynchTarget.VotesOn++;
+                            item.VotesOn = 0;
                         }
-                        catch (Exception)
+                        foreach (var item in Program.servers[e.Server].Objects)
                         {
+                            try
+                            {
+                                item.LynchTarget.VotesOn++;
+                            }
+                            catch (Exception)
+                            {
 
+                            }
                         }
-                    }
-
-                    string playerList = "";
-                    List<Player> SortedList = Program.servers[e.Server].Objects.OrderByDescending(o => o.VotesOn).ToList();
-                    foreach (var item in SortedList)
-                    {
-                        try
+                        int i = 0;
+                        string playerList = "";
+                        List<Player> SortedList = Program.servers[e.Server].Objects.OrderByDescending(o => o.VotesOn).ToList();
+                        foreach (var item in SortedList)
                         {
-                            playerList += $"{item.User.Name} " + item.VotesOn + ": " + votedFor(SortedList, item) + "\n";
-                        } catch(Exception) { }
-                    }
+                            i++;
+                            try
+                            {
+                                playerList += $"{i}. {item.User.Name} " + item.VotesOn + ": " + votedFor(SortedList, item) + "\n";
+                            }
+                            catch (Exception) { }
+                        }
 
-                    await e.Channel.SendMessage(e.User.Mention + "\n\n**Players in current game:**\n```" + playerList + "```");
-                    await Task.Delay(0);
+                        await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count::**\n```" + playerList + "```");
+                        await Task.Delay(0);
+                    }
                 });
         }
 

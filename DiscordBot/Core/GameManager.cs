@@ -12,7 +12,6 @@ namespace DiscordBot.Core
     {
         public /*async*/ static void runGame(GamePlayerList g)
         {
-            throw new NotImplementedException();
             //await Task.Delay((1000 * 60 * 15));
         }
     }

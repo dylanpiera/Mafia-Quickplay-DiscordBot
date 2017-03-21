@@ -16,6 +16,8 @@ namespace DiscordBot.Core
         {
             //Create a chatroom in the server with all players in it.
             Channel channel = await e.Server.CreateChannel("Mafia-Game-Room", ChannelType.Text);
+
+            await channel.AddPermissionsRule(e.Server.CurrentUser, new ChannelPermissionOverrides(readMessages: PermValue.Allow));
             await channel.AddPermissionsRule(e.Server.EveryoneRole, new ChannelPermissionOverrides(readMessages: PermValue.Deny));
 
             foreach (var item in g.Objects)
@@ -44,6 +46,7 @@ namespace DiscordBot.Core
             //Create a chatroom with just the mafia members in it.
             Message m3 = await channel.SendMessage("Creating Mafia Chat...");
             Channel mafiaChat = await e.Server.CreateChannel("Mafia-Night-Chat", ChannelType.Text);
+            await mafiaChat.AddPermissionsRule(e.Server.CurrentUser, new ChannelPermissionOverrides(readMessages: PermValue.Allow));
             await mafiaChat.AddPermissionsRule(e.Server.EveryoneRole, new ChannelPermissionOverrides(readMessages: PermValue.Deny));
             foreach (var item in g.Objects)
             {

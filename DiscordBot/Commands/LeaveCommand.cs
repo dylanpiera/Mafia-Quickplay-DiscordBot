@@ -34,33 +34,44 @@ namespace DiscordBot.Commands
 
                                     if (!e.Args.Contains<string>("--silent"))
                                     {
-                                        await e.Channel.SendMessage(e.User.Mention + " Removed: " + player.Mention + " from the game!");
+                                        await e.Channel.SendMessage($":warning: {e.User.Mention} Removed: {player.Mention} from the game! :warning:");
                                     }
                                 }
-                                else if(!e.Args.Contains<string>("--silent")) await e.Channel.SendMessage(e.User.Mention + " attempted to remove: " + player.Name + " but they are not in the current game!");
+                                //else if(!e.Args.Contains<string>("--silent")) await e.Channel.SendMessage(e.User.Mention + " attempted to remove: " + player.Name + " but they are not in the current game!");
                             }
                             else
                             {
                                 await e.User.CreatePMChannel();
-                                await e.User.PrivateChannel.SendMessage("I'm sorry but you can not remove users from an ongoing game or bots without the `--force` parameter! Use with care!");
+                                await e.User.PrivateChannel.SendMessage(":warning: You can not remove users from an ongoing game or bots without the `--force` parameter! :warning:");
                                 return;
                             }
-                        } 
+                        }
 
-                        if(!e.Args.Contains("@") && !e.Args.Contains("--silent"))
-                        await e.Channel.SendMessage("Please mention the user!");
+                        if (!e.Args.Contains("@") && !e.Args.Contains("--silent"))
+                        {
+                            await e.User.CreatePMChannel();
+                            await e.User.SendMessage(":warning: Please mention the user! :warning:");
+                        }
                         return;
                     }
                     else
                     {
-                        if (Program.servers[e.Server].inGame(e.User))
+                        if (!Program.servers[e.Server].gameRunning)
                         {
-                            Program.servers[e.Server].Remove(e.User);
-                            await e.Channel.SendMessage(e.User.Mention + " has left the game!");
-                            return;
-                        }
+                            if (Program.servers[e.Server].inGame(e.User))
+                            {
+                                Program.servers[e.Server].Remove(e.User);
+                                await e.Channel.SendMessage(e.User.Mention + " has left the game! :heavy_check_mark:");
+                                return;
+                            }
 
-                        await e.Channel.SendMessage(e.User.Mention + " you ain't in the game!");
+                            await e.Channel.SendMessage(e.User.Mention + " you ain't in the game! :x:");
+                        }
+                        else
+                        {
+                            await e.User.CreatePMChannel();
+                            await e.User.PrivateChannel.SendMessage(":no_entry_sign: You can not leave a game in progress. :no_entry_sign:");
+                        }
                     }
                 });
         }

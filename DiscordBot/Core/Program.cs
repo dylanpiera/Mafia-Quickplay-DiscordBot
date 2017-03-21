@@ -9,6 +9,7 @@ using Discord;
 using Discord.Commands;
 using System.ComponentModel;
 using System.Timers;
+using DiscordBot.Core;
 
 namespace DiscordBot
 {
