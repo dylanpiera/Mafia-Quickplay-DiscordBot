@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using DiscordBot.Core;
+using DiscordBot.Util;
 
 namespace DiscordBot.Commands
 {
@@ -14,7 +15,7 @@ namespace DiscordBot.Commands
         public static void init(DiscordClient _client)
         {
             PingCommand.createCommand(_client);
-
+            CookieCommand.createCommand(_client);
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);

@@ -10,6 +10,7 @@ using Discord.Commands;
 using System.ComponentModel;
 using System.Timers;
 using DiscordBot.Core;
+using DiscordBot.Util;
 
 namespace DiscordBot
 {
@@ -28,7 +29,7 @@ namespace DiscordBot
             //Setup our bots to listen for commands that start with ! or @mention the bot
             _client.UsingCommands(x =>
             {
-                x.PrefixChar = '!';
+                x.PrefixChar = '*';
                 x.IsSelfBot = false;
                 x.AllowMentionPrefix = true;
                 x.HelpMode = HelpMode.Private;
