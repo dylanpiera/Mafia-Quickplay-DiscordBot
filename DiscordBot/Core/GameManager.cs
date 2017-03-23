@@ -32,6 +32,7 @@ namespace DiscordBot.Core
                     } catch(Exception)
                     {
                         await g.GameChat.SendMessage("Debugging: Day ended forcefully.");
+                        runDayRecap(g);
                     }
 
                     
@@ -51,7 +52,7 @@ namespace DiscordBot.Core
 
         public static async Task<bool> runDayPhase(GamePlayerList g)
         {
-            await Task.Delay(TimeConverter.MinToMS(7.5), g.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS(0.5), g.Token.Token);
             VoteTallyCommand.countVotes(g);
             int i = 0; string playerList = "";
             List<Player> SortedList = g.Objects.OrderByDescending(o => o.VotesOn).ToList();
@@ -64,9 +65,9 @@ namespace DiscordBot.Core
                 }
                 catch (Exception) { }
             }
-            await g.GameChat.SendMessage($":warning: There are only 7:30 minutes left in the day phase. :warning:\n\nMid day vote count:\n```{playerList}```");
+            await g.GameChat.SendMessage($":warning: There are only 0:30 minutes left in the day phase. :warning:\n\nMid day vote count:\n```{playerList}```");
 
-            await Task.Delay(TimeConverter.MinToMS(7.5), g.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS(0.5), g.Token.Token);
             return true;
         }
 
@@ -82,15 +83,25 @@ namespace DiscordBot.Core
             VoteTallyCommand.countVotes(g);
 
             Player[] list = g.Objects.ToArray();
-            List<Player> deathrow = new List<Player>();
-            foreach (var item in list.Where(x => x.VotesOn == list[0].VotesOn))
+            /*List<Player> deathrow = new List<Player>();
+            foreach (var item in list.Where(x => x.VotesOn == list[list.Length-1].VotesOn))
             {
-                deathrow.Add(item);
                 item.Alive = false;
-
+                deathrow.Add(item);
             }
 
+            await g.GameChat.SendMessage("The following players should die: ");
+            deathrow.ForEach(async x => await g.GameChat.SendMessage(x.User.Name));*/
 
+            if (list.Where(x => x.VotesOn == list[list.Length - 1].VotesOn).Count() > 1)
+            {
+                await g.GameChat.SendMessage("It seems like nobody died.");
+            }
+            else
+            {
+                await g.GameChat.SendMessage($"It seems like all of you have decided on your lynch target, **{list[list.Length - 1]}**, so let's see what they are!");
+                await g.GameChat.SendMessage(list[list.Length-1].Role.RolePM);
+            }
 
         }
     }

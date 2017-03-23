@@ -39,6 +39,14 @@ namespace DiscordBot.Roles
             }
         }
 
+        public string RolePM
+        {
+            get
+            {
+                return rolePM;
+            }
+        }
+
         public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia)
         {
             this.allignment = allignment;

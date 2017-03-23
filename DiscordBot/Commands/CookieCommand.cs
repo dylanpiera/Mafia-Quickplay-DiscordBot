@@ -16,7 +16,7 @@ namespace DiscordBot.Commands
                 .Description("Bot answers with :cookie:")
                 .Do(async e =>
                 {
-                    Message message = await e.Channel.SendMessage(e.User.Mention + " :cookie:");
+                    Message message = await e.Channel.SendMessage(e.User.Mention + " :cookie::cookie:");
                 });
         }
     }
