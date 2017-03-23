@@ -45,6 +45,22 @@ namespace DiscordBot
                 }
             };
 
+            _client.MessageDeleted += async (s, e) =>
+            {
+                if(Program.servers[e.Server].gameRunning && !e.User.IsBot && e.Channel == Program.servers[e.Server].GameChat)
+                {
+                    await Program.servers[e.Server].GameChat.SendMessage($"{e.User.Mention} deleted the following message:\n``` {e.Message.RawText} ```");
+                }
+            };
+            _client.MessageUpdated += async (s, e) =>
+            {
+                if (Program.servers[e.Server].gameRunning && !e.User.IsBot && e.Channel == Program.servers[e.Server].GameChat)
+                {
+                    await Program.servers[e.Server].GameChat.SendMessage($"{e.User.Mention} edited the following message:\n``` {e.Before.RawText} ```\nto:\n``` {e.After.RawText} ```");
+                }
+            };
+
+
             CommandInitializer.init(_client);
 
             _client.ExecuteAndWait(async () => {
