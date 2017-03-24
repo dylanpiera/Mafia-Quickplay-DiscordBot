@@ -20,6 +20,14 @@ namespace DiscordBot.Commands
                     //As long as there is an argument and the caller of this command has Administrator Permission
                     if (e.Args.Length != 0 && e.User.ServerPermissions.Administrator)
                     {
+
+                        if (e.Message.MentionedUsers.Count() == 0 && !e.Args.Contains("--silent"))
+                        {
+                            await e.User.CreatePMChannel();
+                            await e.User.SendMessage(":warning: Please mention the user! :warning:");
+                            return;
+                        }
+
                         //Loop trough all mentioned players
                         foreach (var player in e.Message.MentionedUsers)
                         {
@@ -46,13 +54,6 @@ namespace DiscordBot.Commands
                                 return;
                             }
                         }
-
-                        if (!e.Args.Contains("@") && !e.Args.Contains("--silent"))
-                        {
-                            await e.User.CreatePMChannel();
-                            await e.User.SendMessage(":warning: Please mention the user! :warning:");
-                        }
-                        return;
                     }
                     else
                     {
