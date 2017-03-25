@@ -97,7 +97,7 @@ namespace DiscordBot.Game
         {
             players = new List<Player>();
             gameRunning = false;
-            PhaseLengthInMin = 1;
+            PhaseLengthInMin = 2;
         }
 
         // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>

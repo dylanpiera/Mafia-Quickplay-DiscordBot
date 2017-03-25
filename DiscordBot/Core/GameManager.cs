@@ -52,7 +52,7 @@ namespace DiscordBot.Core
 
         public static async Task<bool> runDayPhase(GamePlayerList g)
         {
-            await Task.Delay(TimeConverter.MinToMS((double)(g.PhaseLengthInMin/2)), g.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin/2)), g.Token.Token);
             VoteTallyCommand.countVotes(g);
             int i = 0; string playerList = "";
             List<Player> SortedList = g.Objects.OrderByDescending(o => o.VotesOn).ToList();
@@ -65,9 +65,9 @@ namespace DiscordBot.Core
                 }
                 catch (Exception) { }
             }
-            await g.GameChat.SendMessage($":warning: There are only {(double)g.PhaseLengthInMin/2} minutes left in the day phase. :warning:\n\nMid day vote count:\n```{playerList}```");
+            await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin/2} minutes left in the day phase. :warning:\n\nMid day vote count:\n```{playerList}```");
 
-            await Task.Delay(TimeConverter.MinToMS((double)(g.PhaseLengthInMin / 2)), g.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
             return true;
         }
 

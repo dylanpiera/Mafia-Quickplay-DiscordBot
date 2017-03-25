@@ -66,7 +66,7 @@ namespace DiscordBot
             _client.ExecuteAndWait(async () => {
                 await _client.Connect(Sneaky.BotToken, TokenType.Bot);
 
-                _client.SetGame(new Discord.Game("Mafia Version 0.8.3.1", GameType.Default, ""));
+                _client.SetGame(new Discord.Game("Mafia Version 0.8.3.2", GameType.Default, ""));
 
                 _client.Log.Message += (s, e) => Console.WriteLine(e.Severity + " " + e.Source + " " + e.Message);
             });
