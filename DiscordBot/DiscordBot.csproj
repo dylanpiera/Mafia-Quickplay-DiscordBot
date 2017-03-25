@@ -113,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
+    <Compile Include="Commands\MafiaKillCommand.cs" />
     <Compile Include="Commands\CookieCommand.cs" />
     <Compile Include="Commands\UnVoteCommand.cs" />
     <Compile Include="Core\StartGame.cs" />

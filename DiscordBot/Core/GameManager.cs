@@ -40,14 +40,46 @@ namespace DiscordBot.Core
                 }
                 else if (g.Phase == Phases.Night)
                 {
+                    g.Token = new CancellationTokenSource();
 
+                    try
+                    {
+                        if (await runNightPhase(g))
+                        {
+                            await runNightRecap(g);
+                            await g.GameChat.SendMessage("Debugging: Night ended normally.");
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        await g.GameChat.SendMessage("Debugging: Night ended forcefully.");
+                        await runNightRecap(g);
+                    }
                 }
                 else
                 {
-
+                    g.gameRunning = false;
                 }
             } while (g.gameRunning);
 
+        }
+
+        public static async Task<bool> runNightPhase(GamePlayerList g)
+        {
+            await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target with `!kill`\n\n`!help kill` _for more info about the kill command._\n\nThe last target selected with `!kill` will be killed.");
+
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
+            await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin / 2} minutes left in the night phase. :warning:");
+
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
+            return true;
+        }
+
+        public static async Task<bool> runNightRecap(GamePlayerList g)
+        {
+            g.Phase = Phases.Day; g.PhaseCounter++;
+            await g.GameChat.SendMessage("`runNightRecap(GamePlayerList g)` has yet to be implemented.");
+            return true;
         }
 
         public static async Task<bool> runDayPhase(GamePlayerList g)
@@ -99,9 +131,10 @@ namespace DiscordBot.Core
             }
 
             await g.GameChat.SendMessage($":full_moon: It is now Night {g.PhaseCounter}. The phase will end in {g.PhaseLengthInMin} minutes. :full_moon:");
-            foreach (var item in g.Objects.Where(x => x.Alive == true))
+            foreach (var item in g.Objects)
             {
-                await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                if(item.Alive == true) await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                item.LynchTarget = null;
             }
             return true;
         }

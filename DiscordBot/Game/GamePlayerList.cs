@@ -47,6 +47,7 @@ namespace DiscordBot.Game
         }
 
         private CancellationTokenSource token;
+        private Player mafiaKillTarget;
         private Phases phase;
 
         public Phases Phase
@@ -186,6 +187,19 @@ namespace DiscordBot.Game
             get
             {
                 return mafiaChat;
+            }
+        }
+
+        public Player MafiaKillTarget
+        {
+            get
+            {
+                return mafiaKillTarget;
+            }
+
+            set
+            {
+                mafiaKillTarget = value;
             }
         }
     }

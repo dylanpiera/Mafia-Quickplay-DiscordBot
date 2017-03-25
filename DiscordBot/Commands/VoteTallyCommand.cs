@@ -22,7 +22,7 @@ namespace DiscordBot.Commands
                         countVotes(Program.servers[e.Server]);
                         int i = 0;
                         string playerList = "";
-                        List<Player> SortedList = Program.servers[e.Server].Objects.OrderByDescending(o => o.VotesOn).ToList();
+                        List<Player> SortedList = Program.servers[e.Server].Objects.Where(x => x.Alive == true).OrderByDescending(o => o.VotesOn).ToList();
                         foreach (var item in SortedList)
                         {
                             i++;
