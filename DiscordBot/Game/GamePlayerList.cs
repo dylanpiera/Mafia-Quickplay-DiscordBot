@@ -12,6 +12,32 @@ namespace DiscordBot.Game
 {
     class GamePlayerList
     {
+        private int PhaseLength, phaseCounter;
+
+        public int PhaseCounter
+        {
+            get
+            {
+                return phaseCounter;
+            }
+            set
+            {
+                phaseCounter = value;
+            }
+        }
+
+        public int PhaseLengthInMin
+        {
+            get
+            {
+                return PhaseLength;
+            }
+            set
+            {
+                PhaseLength = value;
+            }
+        }
+
         public List<Player> Objects
         {
             get
@@ -71,6 +97,7 @@ namespace DiscordBot.Game
         {
             players = new List<Player>();
             gameRunning = false;
+            PhaseLengthInMin = 1;
         }
 
         // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>

@@ -68,6 +68,7 @@ namespace DiscordBot.Core
             //sets the channel in the game for refference from different objects
             g.setChats(channel, mafiaChat);
             g.Phase = Util.Phases.Day;
+            g.PhaseCounter = 1;
             //run the GameManager for continuation of the game.
             GameManager.runGame(g);
         }

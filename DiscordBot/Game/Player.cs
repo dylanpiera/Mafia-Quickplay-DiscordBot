@@ -23,6 +23,7 @@ namespace DiscordBot.Game
             this.user = user;
             this.ready = false;
             this.lynchTarget = null;
+            this.Alive = true;
         }
 
         public void AssignRole(MafiaRole role)
