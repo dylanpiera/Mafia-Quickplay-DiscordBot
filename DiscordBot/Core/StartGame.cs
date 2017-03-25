@@ -78,41 +78,43 @@ namespace DiscordBot.Core
         {
             //75% of the players are town, 25% are mafia (rounded up and down respectively)
             int playerCount = g.Objects.Count;
-            int townPlayers = ((int)Math.Ceiling(playerCount * 0.75)), mafiaPlayers = ((int)Math.Floor(playerCount * 0.25));
+            g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
+            g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
             //In the case of a 3 player game (where there'd be no mafia) remove 1 town add 1 mafia.
-            if (mafiaPlayers == 0)
+            if (g.MafiaPlayers == 0)
             {
-                townPlayers--;
-                mafiaPlayers++;
+                g.TownPlayers--;
+                g.MafiaPlayers++;
             }
-            int town = 0, mafia = 0;
+            g.TownAlive = 0;
+            g.MafiaAlive = 0;
             Random random = new Random();
 
             foreach (var item in g.Objects)
             {
-                if (town < townPlayers && mafia < mafiaPlayers)
+                if (g.TownAlive < g.TownPlayers && g.MafiaAlive < g.MafiaPlayers)
                 {
                     switch (random.Next(1, 3))
                     {
                         case 1:
                             item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
-                            town++;
+                            g.TownAlive++;
                             break;
                         case 2:
                             item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, item.User.Name));
-                            mafia++;
+                            g.MafiaAlive++;
                             break;
                     }
                 }
-                else if (town < townPlayers)
+                else if (g.TownAlive < g.TownPlayers)
                 {
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
-                    town++;
+                    g.TownAlive++;
                 }
                 else
                 {
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, item.User.Name));
-                    mafia++;
+                    g.MafiaAlive++;
                 }
             }
         }
