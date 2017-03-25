@@ -10,5 +10,6 @@ namespace DiscordBot.Util
     {
         Day = 0,
         Night = 1,
+        EndPhase = 2
     }
 }

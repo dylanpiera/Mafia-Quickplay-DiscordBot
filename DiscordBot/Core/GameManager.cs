@@ -26,15 +26,12 @@ namespace DiscordBot.Core
                     {
                         if (await runDayPhase(g))
                         {
-                            await g.GameChat.SendMessage("Debugging: Day ended normally.");
+                            await runDayRecap(g);
                         }
                     } catch(Exception)
                     {
-                        await g.GameChat.SendMessage("Debugging: Day ended forcefully.");
+                        await runDayRecap(g);
                     }
-
-                    
-
                 }
                 else if (g.Phase == Phases.Night)
                 {
@@ -54,25 +51,26 @@ namespace DiscordBot.Core
                 }
                 else
                 {
-                    g.gameRunning = false;
+                    await g.GameChat.SendMessage("Stopping game in 2 minutes...");
+                    await Task.Delay(TimeConverter.MinToMS(2));
+                    g.Reset();
                 }
             } while (g.gameRunning);
 
-            await Task.Delay(TimeConverter.MinToMS(5));
-            g.Reset();
+            
         }
 
         public static async Task<bool> checkWinConditions(GamePlayerList g)
         {
             if(g.MafiaAlive <= 0)
             {
-                g.gameRunning = false;
+                g.Phase = Phases.EndPhase;
                 await g.GameChat.SendMessage($"**__Congratulations Town! All Mafia Players are dead. You win the game!__**");
                 return true;
             }
             if(g.MafiaAlive >= g.TownAlive)
             {
-                g.gameRunning = false;
+                g.Phase = Phases.EndPhase;
                 await g.GameChat.SendMessage($"**__Congratulations Mafia! You have outnumbered the town. You win the game!__**");
                 return true;
             }
@@ -104,7 +102,7 @@ namespace DiscordBot.Core
             if(g.MafiaKillTarget != null)
             {
                 await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
-                await g.GameChat.SendMessage($"**Role PM:**\n{g.MafiaKillTarget.Role.RolePM}");
+                await g.GameChat.SendMessage($"**Role PM:**\n```{g.MafiaKillTarget.Role.RolePM}```\n");
                 g.MafiaKillTarget.Alive = false;
                 if (g.MafiaKillTarget.Role.Allignment == Roles.RoleUtil.Allignment.Mafia) g.MafiaAlive--;
                 else if(g.MafiaKillTarget.Role.Allignment == Roles.RoleUtil.Allignment.Town) g.TownAlive--;
@@ -176,7 +174,7 @@ namespace DiscordBot.Core
                 else if (list[0].Role.Allignment == Roles.RoleUtil.Allignment.Town) g.TownAlive--;
 
                 await g.GameChat.SendMessage($"It seems like all of you have decided on your lynch target, **{list[0].User.Name}**, so let's see what they are!");
-                await g.GameChat.SendMessage($"**Role PM:**\n{list[0].Role.RolePM}\n");
+                await g.GameChat.SendMessage($"**Role PM:**\n```{list[0].Role.RolePM}```\n");
             }
 
             if (await checkWinConditions(g)) return true;
