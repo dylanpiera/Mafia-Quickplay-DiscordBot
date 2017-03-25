@@ -14,7 +14,7 @@ namespace DiscordBot.Commands
                 .Do(async e =>
                 {
                 var game = Program.servers[e.Server];
-                    if (game.inGame(e.User))
+                    if (game.inGame(e.User) && game.Phase == Util.Phases.Day && e.Channel == game.GameChat)
                     {
                         foreach (var item in e.Message.MentionedUsers)
                         {

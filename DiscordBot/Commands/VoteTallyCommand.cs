@@ -33,7 +33,7 @@ namespace DiscordBot.Commands
                             catch (Exception) { }
                         }
 
-                        await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count::**\n```" + playerList + "```");
+                        await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count:**\n```" + playerList + "```");
                     }
                 });
         }

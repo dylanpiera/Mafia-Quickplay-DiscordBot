@@ -78,8 +78,35 @@ namespace DiscordBot.Core
         public static async Task<bool> runNightRecap(GamePlayerList g)
         {
             g.Phase = Phases.Day; g.PhaseCounter++;
-            await g.GameChat.SendMessage("`runNightRecap(GamePlayerList g)` has yet to be implemented.");
+
+            await g.GameChat.SendMessage(":night_with_stars: @everyone the Night phase has ended! Recapping now... :night_with_stars:");
+            foreach (var item in g.Objects.Where(x => x.Alive == true))
+            {
+                await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+            }
+
+            if(g.MafiaKillTarget != null)
+            {
+                await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
+                await g.GameChat.SendMessage($"**Role PM:**\n{g.MafiaKillTarget.Role.RolePM}");
+                g.MafiaKillTarget.Alive = false;
+                g.MafiaKillTarget = null;
+            } else
+            {
+                await g.GameChat.SendMessage($"Tonight has been a quiet night... Nothing happened...");
+            }
+
+            await g.GameChat.SendMessage($":sunny: It is now Day {g.PhaseCounter}. The phase will end in {g.PhaseLengthInMin} minutes. :sunny:");
+            foreach (var item in g.Objects)
+            {
+                if (item.Alive == true) await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                else
+                {
+                    if (item.Role.Allignment == Roles.RoleUtil.Allignment.Mafia) await g.MafiaChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                }
+            }
             return true;
+
         }
 
         public static async Task<bool> runDayPhase(GamePlayerList g)
@@ -87,7 +114,7 @@ namespace DiscordBot.Core
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin/2)), g.Token.Token);
             VoteTallyCommand.countVotes(g);
             int i = 0; string playerList = "";
-            List<Player> SortedList = g.Objects.OrderByDescending(o => o.VotesOn).ToList();
+            List<Player> SortedList = g.Objects.Where(x => x.Alive == true).OrderByDescending(o => o.VotesOn).ToList();
             foreach (var item in SortedList)
             {
                 i++;
@@ -107,8 +134,8 @@ namespace DiscordBot.Core
         {
             g.Phase = Phases.Night;
 
-            await g.GameChat.SendMessage(":city_sunset: @everyone day phase has ended! Recapping now... :city_sunset: ");
-            //TODO: !vote & !unvote won't work anymore
+            await g.GameChat.SendMessage(":city_sunset: @everyone the Day phase has ended! Recapping now... :city_sunset: ");
+           
             foreach (var item in g.Objects.Where(x => x.Alive == true))
             {
                 await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
@@ -133,7 +160,13 @@ namespace DiscordBot.Core
             await g.GameChat.SendMessage($":full_moon: It is now Night {g.PhaseCounter}. The phase will end in {g.PhaseLengthInMin} minutes. :full_moon:");
             foreach (var item in g.Objects)
             {
-                if(item.Alive == true) await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                if(item.Alive == true) {
+                    await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                } else
+                {
+                    if(item.Role.Allignment == Roles.RoleUtil.Allignment.Mafia) await g.MafiaChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                }
+
                 item.LynchTarget = null;
             }
             return true;
