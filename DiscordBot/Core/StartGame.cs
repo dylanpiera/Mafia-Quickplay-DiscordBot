@@ -58,7 +58,7 @@ namespace DiscordBot.Core
             await Task.Delay(500);
 
             //Start day 1, and allow everyone to speak.
-            await channel.SendMessage(":sunny: @everyone **It is now day 1.** Day 1 will end in 15 minutes. :sunny:");
+            await channel.SendMessage($":sunny: @everyone **It is now day 1.** Day 1 will end in {g.PhaseLengthInMin} minutes. :sunny:");
             await Task.Delay(100);
             foreach (var item in g.Objects)
             {
