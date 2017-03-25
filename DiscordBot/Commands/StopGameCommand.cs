@@ -17,7 +17,7 @@ namespace DiscordBot.Commands
                 .Description("Stops the Current game [Admin Only]")
                 .Do(async e =>
                 {
-                    if (e.User.ServerPermissions.Administrator && Program.servers[e.Server].gameRunning)
+                    if (e.User.ServerPermissions.Administrator && Program.servers[e.Server].gameRunning && Program.servers[e.Server].Phase != Phases.EndPhase)
                     {
                         Message m = await e.Channel.SendMessage(e.User.Mention + " Stopping the current game...");
                         await Task.Delay(TimeConverter.SecToMS(1));
