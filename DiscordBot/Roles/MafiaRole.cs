@@ -6,10 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordBot.Roles
-{
-    class MafiaRole
-    {
+namespace DiscordBot.Roles {
+    class MafiaRole {
         protected Allignment allignment;
         protected Wincon wincon;
         protected String title;
@@ -18,48 +16,41 @@ namespace DiscordBot.Roles
 
         private bool canVote, canVoteNow;
 
-        public bool CanVote
-        {
-            get
-            {
+        public bool CanVote {
+            get {
                 return canVoteNow;
             }
 
-            set
-            {
-                if (canVote) canVoteNow = value;
+            set {
+                if(canVote)
+                    canVoteNow = value;
             }
         }
 
-        public Allignment Allignment
-        {
-            get
-            {
+        public Allignment Allignment {
+            get {
                 return allignment;
             }
         }
 
-        public string RolePM
-        {
-            get
-            {
+        public string RolePM {
+            get {
                 return rolePM;
             }
         }
 
-        public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia)
-        {
+        public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia) {
             this.allignment = allignment;
             this.wincon = wincon;
             this.title = title;
             this.description = description;
 
-            canVote = true; canVoteNow = false;
+            canVote = true;
+            canVoteNow = false;
         }
 
         public virtual void Power() { }
-        public virtual async void sendRolePM(User user)
-        {
+        public virtual async void sendRolePM(User user) {
             await user.CreatePMChannel();
             await user.SendMessage(rolePM);
         }

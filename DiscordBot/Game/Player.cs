@@ -6,10 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordBot.Game
-{
-    class Player
-    {
+namespace DiscordBot.Game {
+    class Player {
         private User user;
         private Player lynchTarget;
         private int votesOn;
@@ -18,90 +16,71 @@ namespace DiscordBot.Game
         private bool alive;
 
 
-        public Player(User user)
-        {
+        public Player(User user) {
             this.user = user;
             this.ready = false;
             this.lynchTarget = null;
             this.Alive = true;
         }
 
-        public void AssignRole(MafiaRole role)
-        {
+        public void AssignRole(MafiaRole role) {
             this.role = role;
         }
 
-        public bool Ready
-        {
-            get
-            {
+        public bool Ready {
+            get {
                 return ready;
             }
-            set
-            {
+            set {
                 ready = value;
             }
         }
 
-        public bool readyUp(GamePlayerList list)
-        {   
+        public bool readyUp(GamePlayerList list) {
             ready = true;
-            foreach (var item in list.Objects)
-            {
-                if (!item.Ready) return false;
+            foreach(var item in list.Objects) {
+                if(!item.Ready)
+                    return false;
             }
-            return true;  
+            return true;
         }
 
-        public User User
-        {
-            get
-            {
+        public User User {
+            get {
                 return user;
             }
         }
-        public MafiaRole Role
-        {
-            get
-            {
+        public MafiaRole Role {
+            get {
                 return role;
             }
         }
-        public Player LynchTarget
-        {
-            get
-            {
+        public Player LynchTarget {
+            get {
                 return lynchTarget;
             }
 
-            set
-            {
+            set {
                 lynchTarget = value;
             }
         }
 
-        public int VotesOn
-        {
-            get
-            {
+        public int VotesOn {
+            get {
                 return votesOn;
             }
 
-            set
-            {
+            set {
                 votesOn = value;
             }
         }
 
-        public bool Alive
-        {
-            get
-            {
+        public bool Alive {
+            get {
                 return alive;
             }
 
-            set
-            {
+            set {
                 alive = value;
             }
         }
