@@ -81,11 +81,11 @@ namespace DiscordBot.Core
             int playerCount = g.Objects.Count;
             g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
             g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
-            //In the case of a 3 player game (where there'd be no mafia) remove 1 town add 1 mafia.
-            if (g.MafiaPlayers == 0)
+            //In the case of a 5 player game (where there'd be no mafia) remove 1 town add 1 mafia.
+            if (playerCount == 5 && g.MafiaPlayers == 2)
             {
-                g.TownPlayers--;
-                g.MafiaPlayers++;
+                g.TownPlayers++;
+                g.MafiaPlayers--;
             }
             int i = g.TownPlayers;
             while(i >= 4)
@@ -97,7 +97,6 @@ namespace DiscordBot.Core
 
             g.TownAlive = 0;
             g.MafiaAlive = 0;
-            Random random = new Random();
 
             Player[] players = ListHelper.ShuffleList<Player>(g.Objects).ToArray();
             i = 0;
@@ -120,6 +119,8 @@ namespace DiscordBot.Core
                 g.TownAlive++;
                 i++;
             }
+
+            g.Objects = players.ToList();
 
             //Old randomize method, above method should however be smoother and easier to edit. But needs testing
             /*foreach (var item in g.Objects)

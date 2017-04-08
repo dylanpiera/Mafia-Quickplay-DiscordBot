@@ -16,7 +16,6 @@ namespace DiscordBot.Commands
                 .Parameter("Target", ParameterType.Multiple)
                 .Do(async e =>
                 {
-                    if (!e.Channel.IsPrivate) return;
                     GamePlayerList g = new GamePlayerList();
                     
                     if (Program.servers.Any(x => 
@@ -40,12 +39,25 @@ namespace DiscordBot.Commands
             string target = e.Args.Aggregate((i, j) => i + " " + j);
             Player t = g.Find(target);
             Player user = g.Find(e.User);
-            if(g.inGame(t))
+            if (g.inGame(t))
             {
-                user.Role.Target = t;
+                try
+                {
+                    user.Role.Target = t;
+                    Console.WriteLine(user.User.Name + " targeted: " + t.User.Name);
+                    await e.Channel.SendMessage($":white_check_mark: your current target is: {user.Role.Target.User.Name}");
+                    return true;
+                } catch(Exception)
+                {
+                    await e.Channel.SendMessage("Something went wrong.");
+                    return true;
+                }
+            } else
+            {
+                await e.Channel.SendMessage("Please provide the full name (Not the mention!) of the target.");
+                return false;
             }
-            await e.Channel.SendMessage($"{e.User.Mention} your current target is: {g.Find(e.User).Role.Target.User.Name} #Debug");
-            return true;
+            
         }
     }
 }

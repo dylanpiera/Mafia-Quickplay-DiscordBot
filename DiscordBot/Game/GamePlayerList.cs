@@ -44,6 +44,10 @@ namespace DiscordBot.Game
             {
                 return players;
             }
+            set
+            {
+                this.players = value;
+            }
         }
 
         private CancellationTokenSource token;
@@ -134,7 +138,7 @@ namespace DiscordBot.Game
         {
             foreach (Player player in players)
             {
-                if (player.User.Name.ToLower() == userName.ToLower() || player.User.Nickname.ToLower() == userName.ToLower()) return player;
+                if (player.User.Name == userName || player.User.Nickname == userName) return player;
             }
 
             return null;
