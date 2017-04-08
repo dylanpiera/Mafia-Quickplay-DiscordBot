@@ -84,8 +84,8 @@ namespace DiscordBot.Roles
 
             canVote = true; canVoteNow = false;
         }
-
-        public virtual void Power() { }
+        
+        public async virtual Task<bool> Power(Channel chat) { await Task.Delay(0); return true; }
         public virtual async void sendRolePM(User user)
         {
             await user.CreatePMChannel();

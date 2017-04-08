@@ -99,6 +99,8 @@ namespace DiscordBot.Core
                 await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
 
+            checkPowerRoles(g);
+
             if(g.MafiaKillTarget != null)
             {
                 await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
@@ -125,6 +127,11 @@ namespace DiscordBot.Core
             }
             return true;
 
+        }
+
+        private static void checkPowerRoles(GamePlayerList g)
+        {
+            g.Objects.ForEach(async x => await x.Role.Power(x.User.PrivateChannel));
         }
 
         public static async Task<bool> runDayPhase(GamePlayerList g)
