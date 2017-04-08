@@ -36,7 +36,7 @@ namespace DiscordBot.Commands
 
         public static async Task<bool> Cop(CommandEventArgs e, GamePlayerList g)
         {
-            string target = e.Args.FirstOrDefault();
+            string target = e.Args.Aggregate((i, j) => i + " " + j);
             Player t = g.Find(target);
             Player user = g.Find(e.User);
             if(g.inGame(t))
