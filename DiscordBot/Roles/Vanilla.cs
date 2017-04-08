@@ -17,19 +17,19 @@ namespace DiscordBot.Roles
         {
             if(allignment == Allignment.Town)
             {
-                this.title = "Vanilla";
+                this.Title = "Vanilla";
                 this.description = "You do not have any night actions.";
                 this.allignment = Allignment.Town;
                 this.wincon = Wincon.DefeatMafia;
-                this.rolePM = $"Dear **{username}**,\n\nYou are the most basic of roles in excistence,\nYou are the **{title}**.\n\n{description}\n\nYou win with the **Town** whose goal is to defeat all members of the Mafia.";
+                this.rolePM = $"Dear **{username}**,\n\nYou are the most basic of roles in excistence,\nYou are the **{Title}**.\n\n{description}\n\nYou win with the **Town** whose goal is to defeat all members of the Mafia.";
             }
             if(allignment == Allignment.Mafia)
             {
-                this.title = "Goon";
+                this.Title = "Goon";
                 this.description = "You have the power to vote in the Mafia Chat every night on whom to kill.";
                 this.allignment = Allignment.Mafia;
                 this.wincon = Wincon.OutnumberTown;
-                this.rolePM = $"Dear **{username}**,\n\nYou are the most basic of the mafia-aligned roles in excistence,\nYou are the **{title}**.\n\n{description}\n\nYou win with the **Mafia** whose goal is to outnumber all members of the Town";
+                this.rolePM = $"Dear **{username}**,\n\nYou are the most basic of the mafia-aligned roles in excistence,\nYou are the **{Title}**.\n\n{description}\n\nYou win with the **Mafia** whose goal is to outnumber all members of the Town";
             }
 
 

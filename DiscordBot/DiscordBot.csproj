@@ -116,6 +116,7 @@
     <Compile Include="Commands\MafiaKillCommand.cs" />
     <Compile Include="Commands\CookieCommand.cs" />
     <Compile Include="Commands\UnVoteCommand.cs" />
+    <Compile Include="Commands\UsePowerCommand.cs" />
     <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
     <Compile Include="Commands\LynchVoteCommand.cs" />

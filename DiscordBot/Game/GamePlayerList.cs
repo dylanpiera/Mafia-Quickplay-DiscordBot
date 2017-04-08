@@ -105,7 +105,7 @@ namespace DiscordBot.Game
         // <param name ="Player">the user to add to the game as a Player</param>
         public void Add(User player)
         {
-            this.players.Add(new Player(player));
+            this.players.Add(new Player(player,this));
         }
 
         // <summary> removes a User from the game</summary>
@@ -159,6 +159,16 @@ namespace DiscordBot.Game
             foreach (Player item in players)
             {
                 if (item == player) return true;
+            }
+
+            return false;
+        }
+
+        public bool inGame(ulong id)
+        {
+            foreach (Player item in players)
+            {
+                if (item.User.Id == id) return true;
             }
 
             return false;

@@ -12,14 +12,16 @@ namespace DiscordBot.Game
     {
         private User user;
         private Player lynchTarget;
+        private GamePlayerList game;
         private int votesOn;
         private MafiaRole role;
         private bool ready;
         private bool alive;
 
 
-        public Player(User user)
+        public Player(User user, GamePlayerList game)
         {
+            this.game = game;
             this.user = user;
             this.ready = false;
             this.lynchTarget = null;
@@ -103,6 +105,14 @@ namespace DiscordBot.Game
             set
             {
                 alive = value;
+            }
+        }
+
+        public GamePlayerList Game
+        {
+            get
+            {
+                return game;
             }
         }
     }

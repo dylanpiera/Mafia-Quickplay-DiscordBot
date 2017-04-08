@@ -25,6 +25,7 @@ namespace DiscordBot.Commands
             VoteTallyCommand.createCommand(_client);
             PlayerListCommand.createCommand(_client);
             StopGameCommand.createCommand(_client);
+            UsePowerCommand.createCommand(_client);
 
             _client.GetService<CommandService>().CreateCommand("endPhase").Hide().Do(e => {
                 try
