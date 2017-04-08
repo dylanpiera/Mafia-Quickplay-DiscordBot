@@ -12,7 +12,7 @@ namespace DiscordBot.Game
 {
     class GamePlayerList
     {
-        private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive;
+        private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
 
         public int PhaseCounter
         {
@@ -262,6 +262,19 @@ namespace DiscordBot.Game
             set
             {
                 mafiaAlive = value;
+            }
+        }
+
+        public int Cops
+        {
+            get
+            {
+                return cops;
+            }
+
+            set
+            {
+                cops = value;
             }
         }
     }

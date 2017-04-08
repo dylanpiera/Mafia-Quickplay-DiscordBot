@@ -16,9 +16,10 @@ namespace DiscordBot.Commands
                 .Parameter("Target", ParameterType.Multiple)
                 .Do(async e =>
                 {
+                    if (!e.Channel.IsPrivate) return;
                     GamePlayerList g = new GamePlayerList();
                     
-                if (Program.servers.Any(x => 
+                    if (Program.servers.Any(x => 
                     {
                         if (x.Value.inGame(e.User.Id))
                         {
