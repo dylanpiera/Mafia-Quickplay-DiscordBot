@@ -20,29 +20,42 @@ namespace DiscordBot.Commands {
                 .Do(async e => {
                     var game = Program.servers[e.Server];
 
-                    if(!game.gameRunning) {
-                        if(e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count > 2) {
+
+                    if (!game.gameRunning)
+                    {
+                        if (e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count > 4)
+                        {
                             await e.Channel.SendMessage("@everyone The game has been started by a moderator! Preparing to launch...");
                             game.gameRunning = true;
                             await Task.Delay(TimeConverter.SecToMS(2));
                             StartGame.startGame(e, game);
-                        } else if(e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count <= 2) {
+
+                        }
+                        else if (e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count <= 4)
+                        {
                             await e.User.CreatePMChannel();
-                            await e.User.SendMessage(":no_entry_sign: **The game has less than 3 users. Game cannot be force-started** :no_entry_sign:");
-                        } else {
-                            if(game.inGame(e.User)) {
+                            await e.User.SendMessage(":no_entry_sign: **The game has less than 5 users. Game cannot be force-started** :no_entry_sign:");
+                        }
+                        else
+                        {
+                            if (game.inGame(e.User))
+                            {
                                 var player = game.Find(e.User);
                                 if(!player.Ready) {
                                     bool everyoneReady = player.readyUp(game);
                                     await e.Channel.SendMessage(e.User.Mention + " is ready! :white_check_mark:");
 
-                                    if(everyoneReady && game.Objects.Count > 2) {
+                                    if (everyoneReady && game.Objects.Count > 4)
+                                    {
+
                                         await e.Channel.SendMessage("@everyone Everyone is ready! Starting game now...");
                                         game.gameRunning = true;
                                         await Task.Delay(TimeConverter.SecToMS(2));
                                         StartGame.startGame(e, game);
-                                    } else if(everyoneReady) {
-                                        await e.Channel.SendMessage(":warning: Atleast 3 people are required to start the game! :warning:");
+
+                                    } else if(everyoneReady)
+                                    {
+                                        await e.Channel.SendMessage(":warning: Atleast 5 people are required to start the game! :warning:");
                                     }
                                 } else {
                                     player.Ready = false;

@@ -78,7 +78,11 @@ namespace DiscordBot.Core {
                 await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
 
-            if(g.MafiaKillTarget != null) {
+
+            checkPowerRoles(g);
+
+            if(g.MafiaKillTarget != null)
+            {
                 await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
                 await g.GameChat.SendMessage($"**Role PM:**\n```{g.MafiaKillTarget.Role.RolePM}```\n");
                 g.MafiaKillTarget.Alive = false;
@@ -107,8 +111,16 @@ namespace DiscordBot.Core {
 
         }
 
-        public static async Task<bool> runDayPhase(GamePlayerList g) {
-            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
+
+        private static void checkPowerRoles(GamePlayerList g)
+        {
+            g.Objects.ForEach(async x => await x.Role.Power(x.User.PrivateChannel));
+        }
+
+        public static async Task<bool> runDayPhase(GamePlayerList g)
+        {
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin/2)), g.Token.Token);
+
             VoteTallyCommand.countVotes(g);
             int i = 0;
             string playerList = "";

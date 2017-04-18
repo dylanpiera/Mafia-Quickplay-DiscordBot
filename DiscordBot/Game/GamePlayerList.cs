@@ -8,9 +8,13 @@ using Discord;
 using DiscordBot.Util;
 using System.Threading;
 
-namespace DiscordBot.Game {
-    class GamePlayerList {
-        private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive;
+
+namespace DiscordBot.Game
+{
+    class GamePlayerList
+    {
+        private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
+
 
         public int PhaseCounter {
             get {
@@ -33,6 +37,10 @@ namespace DiscordBot.Game {
         public List<Player> Objects {
             get {
                 return players;
+            }
+            set
+            {
+                this.players = value;
             }
         }
 
@@ -85,8 +93,10 @@ namespace DiscordBot.Game {
 
         // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
         // <param name ="Player">the user to add to the game as a Player</param>
-        public void Add(User player) {
-            this.players.Add(new Player(player));
+        public void Add(User player)
+        {
+            this.players.Add(new Player(player,this));
+
         }
 
         public void AddSpectate(User spectator) {
@@ -111,10 +121,12 @@ namespace DiscordBot.Game {
 
         // <summary>Finds and returns a player by name</summary>
         // <param name ="userName">the discord user name of a player</param>
-        public Player Find(string userName) {
-            foreach(Player player in players) {
-                if(player.User.Name == userName)
-                    return player;
+        public Player Find(string userName)
+        {
+            foreach (Player player in players)
+            {
+                if (player.User.Name == userName || player.User.Nickname == userName) return player;
+
             }
 
             return null;
@@ -137,6 +149,16 @@ namespace DiscordBot.Game {
             foreach(Player item in players) {
                 if(item == player)
                     return true;
+            }
+
+            return false;
+        }
+
+        public bool inGame(ulong id)
+        {
+            foreach (Player item in players)
+            {
+                if (item.User.Id == id) return true;
             }
 
             return false;
@@ -219,6 +241,19 @@ namespace DiscordBot.Game {
 
             set {
                 mafiaAlive = value;
+            }
+        }
+
+        public int Cops
+        {
+            get
+            {
+                return cops;
+            }
+
+            set
+            {
+                cops = value;
             }
         }
     }

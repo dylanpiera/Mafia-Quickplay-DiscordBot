@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiscordBot.Game;
 using DiscordBot.Roles.RoleUtil;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,10 @@ namespace DiscordBot.Roles {
     class MafiaRole {
         protected Allignment allignment;
         protected Wincon wincon;
-        protected String title;
+        private String title;
         protected String description; //Including explanation on how to use power
         protected String rolePM = "";
+        private Player target;
 
         private bool canVote, canVoteNow;
 
@@ -39,18 +41,47 @@ namespace DiscordBot.Roles {
             }
         }
 
-        public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia) {
+        public string Title
+        {
+            get
+            {
+                return title;
+            }
+
+            protected set
+            {
+                title = value;
+            }
+        }
+
+        public Player Target
+        {
+            get
+            {
+                return target;
+            }
+
+            set
+            {
+                target = value;
+            }
+        }
+
+        public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia)
+        {
             this.allignment = allignment;
             this.wincon = wincon;
-            this.title = title;
+            this.Title = title;
             this.description = description;
 
             canVote = true;
             canVoteNow = false;
         }
+        
+        public async virtual Task<bool> Power(Channel chat) { await Task.Delay(0); return true; }
+        public virtual async void sendRolePM(User user)
+        {
 
-        public virtual void Power() { }
-        public virtual async void sendRolePM(User user) {
             await user.CreatePMChannel();
             await user.SendMessage(rolePM);
         }

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using DiscordBot.Game;
+using DiscordBot.Resources;
 using DiscordBot.Roles;
 using System;
 using System.Collections.Generic;
@@ -70,20 +71,58 @@ namespace DiscordBot.Core {
         private static void distributeRoles(GamePlayerList g) {
             //75% of the players are town, 25% are mafia (rounded up and down respectively)
             int playerCount = g.Objects.Count;
-            g.TownPlayers = ((int) Math.Floor(playerCount * 0.75));
-            g.MafiaPlayers = ((int) Math.Ceiling(playerCount * 0.25));
-            //In the case of a 3 player game (where there'd be no mafia) remove 1 town add 1 mafia.
-            if(g.MafiaPlayers == 0) {
-                g.TownPlayers--;
-                g.MafiaPlayers++;
+
+            g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
+            g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
+            //In the case of a 5 player game (where there'd be no mafia) remove 1 town add 1 mafia.
+            if (playerCount == 5 && g.MafiaPlayers == 2)
+            {
+                g.TownPlayers++;
+                g.MafiaPlayers--;
             }
+            int i = g.TownPlayers;
+            while(i >= 4)
+            {
+                g.TownPlayers--;
+                g.Cops++;
+                i -= 4;
+            }
+
             g.TownAlive = 0;
             g.MafiaAlive = 0;
-            Random random = new Random();
 
-            foreach(var item in g.Objects) {
-                if(g.TownAlive < g.TownPlayers && g.MafiaAlive < g.MafiaPlayers) {
-                    switch(random.Next(1, 3)) {
+            Player[] players = ListHelper.ShuffleList<Player>(g.Objects).ToArray();
+            i = 0;
+            do
+            {
+                players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, players[i].User.Name));
+                g.TownAlive++;
+                i++;
+            } while (g.TownAlive < g.TownPlayers);
+            do
+            {
+                players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, players[i].User.Name));
+                g.MafiaAlive++;
+                i++;
+            } while (g.MafiaAlive < g.MafiaPlayers);
+            while (g.Cops > 0)
+            {
+                players[i].AssignRole(new Cop(players[i].User.Name));
+                g.Cops--;
+                g.TownAlive++;
+                i++;
+            }
+
+            g.Objects = players.ToList();
+
+            //Old randomize method, above method should however be smoother and easier to edit. But needs testing
+            /*foreach (var item in g.Objects)
+            {
+                if (g.TownAlive < g.TownPlayers && g.MafiaAlive < g.MafiaPlayers && g.Cops > 0)
+                {
+                    switch (random.Next(1, 4))
+                    {
+
                         case 1:
                             item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
                             g.TownAlive++;
@@ -92,15 +131,28 @@ namespace DiscordBot.Core {
                             item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, item.User.Name));
                             g.MafiaAlive++;
                             break;
+                        case 3:
+                            item.AssignRole(new Cop(item.User.Name));
+                            g.TownAlive++;
+                            g.Cops--;
+                            break;
                     }
-                } else if(g.TownAlive < g.TownPlayers) {
+                } else if (g.Cops > 0)
+                {
+                    item.AssignRole(new Cop(item.User.Name));
+                    g.TownAlive++;
+                    g.Cops--;
+                }
+                else if (g.TownAlive < g.TownPlayers)
+                {
+
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
                     g.TownAlive++;
                 } else {
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, item.User.Name));
                     g.MafiaAlive++;
                 }
-            }
+            }*/
         }
     }
 }

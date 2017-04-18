@@ -117,6 +117,7 @@
     <Compile Include="Commands\CookieCommand.cs" />
     <Compile Include="Commands\SpectatorCommand.cs" />
     <Compile Include="Commands\UnVoteCommand.cs" />
+    <Compile Include="Commands\UsePowerCommand.cs" />
     <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
     <Compile Include="Commands\LynchVoteCommand.cs" />
@@ -129,7 +130,8 @@
     <Compile Include="Commands\StopGameCommand.cs" />
     <Compile Include="Core\Program.cs" />
     <Compile Include="Core\GameManager.cs" />
-    <Compile Include="Game\Spectator.cs" />
+    <Compile Include="Resources\ListHelper.cs" />
+    <Compile Include="Roles\Cop.cs" />
     <Compile Include="Util\Phases.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Game\GamePlayerList.cs" />
@@ -150,9 +152,7 @@
     <None Include="Properties\PublishProfiles\DiscordMafiaBot - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
       <Visible>False</Visible>
