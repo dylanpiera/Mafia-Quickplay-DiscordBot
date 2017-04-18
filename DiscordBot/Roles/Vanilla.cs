@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 using Discord;
 using DiscordBot.Roles.RoleUtil;
 
-namespace DiscordBot.Roles {
-    class Vanilla : MafiaRole {
-        public Vanilla(string username) : this(Allignment.Town, username) {
+namespace DiscordBot.Roles
+{
+    class Vanilla : MafiaRole
+    {
+        public Vanilla(string username) :this(Allignment.Town, username)
+        {
         }
         public Vanilla(Allignment allignment, string username)
         {
             if(allignment == Allignment.Town)
             {
                 this.Title = "Vanilla";
-
                 this.description = "You do not have any night actions.";
                 this.allignment = Allignment.Town;
                 this.wincon = Wincon.DefeatMafia;

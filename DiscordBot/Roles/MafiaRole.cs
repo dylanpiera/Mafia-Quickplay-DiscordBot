@@ -7,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordBot.Roles {
-    class MafiaRole {
+namespace DiscordBot.Roles
+{
+    class MafiaRole
+    {
         protected Allignment allignment;
         protected Wincon wincon;
         private String title;
@@ -18,25 +20,31 @@ namespace DiscordBot.Roles {
 
         private bool canVote, canVoteNow;
 
-        public bool CanVote {
-            get {
+        public bool CanVote
+        {
+            get
+            {
                 return canVoteNow;
             }
 
-            set {
-                if(canVote)
-                    canVoteNow = value;
+            set
+            {
+                if (canVote) canVoteNow = value;
             }
         }
 
-        public Allignment Allignment {
-            get {
+        public Allignment Allignment
+        {
+            get
+            {
                 return allignment;
             }
         }
 
-        public string RolePM {
-            get {
+        public string RolePM
+        {
+            get
+            {
                 return rolePM;
             }
         }
@@ -74,14 +82,12 @@ namespace DiscordBot.Roles {
             this.Title = title;
             this.description = description;
 
-            canVote = true;
-            canVoteNow = false;
+            canVote = true; canVoteNow = false;
         }
         
         public async virtual Task<bool> Power(Channel chat) { await Task.Delay(0); return true; }
         public virtual async void sendRolePM(User user)
         {
-
             await user.CreatePMChannel();
             await user.SendMessage(rolePM);
         }
