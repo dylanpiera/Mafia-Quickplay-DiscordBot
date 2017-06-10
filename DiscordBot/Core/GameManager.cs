@@ -13,7 +13,7 @@ namespace DiscordBot.Core
 {
     static class GameManager
     {
-        public async static void runGame(GamePlayerList g)
+        public async static void runGame(GamePlayerList g, DiscordClient _client)
         {
             do
             {
@@ -23,7 +23,7 @@ namespace DiscordBot.Core
 
                     try
                     {
-                        if (await runDayPhase(g))
+                        if (await runDayPhase(g, _client))
                         {
                             //await runDayRecap(g);
                         }
@@ -42,7 +42,7 @@ namespace DiscordBot.Core
 
                     try
                     {
-                        if (await runNightPhase(g))
+                        if (await runNightPhase(g, _client))
                         {
                             //await runNightRecap(g);
                         }
@@ -53,7 +53,7 @@ namespace DiscordBot.Core
                     }
                     finally
                     {
-                        await runNightRecap(g);
+                        await runNightRecap(g, _client);
                     }
                 }
                 else
@@ -85,8 +85,10 @@ namespace DiscordBot.Core
             return false;
         }
 
-        public static async Task<bool> runNightPhase(GamePlayerList g)
+        public static async Task<bool> runNightPhase(GamePlayerList g, DiscordClient _client)
         {
+            handlePowerRoles(g, _client);
+
             await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target with `!kill`\n\n`!help kill` _for more info about the kill command._\n\nThe last target selected with `!kill` will be killed.");
 
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
@@ -96,7 +98,7 @@ namespace DiscordBot.Core
             return true;
         }
 
-        public static async Task<bool> runNightRecap(GamePlayerList g)
+        public static async Task<bool> runNightRecap(GamePlayerList g, DiscordClient _client)
         {
             g.Phase = Phases.Day; g.PhaseCounter++;
 
@@ -106,7 +108,11 @@ namespace DiscordBot.Core
                 await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
 
-            checkPowerRoles(g);
+            g.Objects.ForEach(async x =>
+            {
+                _client.MessageReceived -= x.Role.PowerHandler(g);
+                await x.Role.powerResult(x.User, x.Role.Target);
+            });
 
             if(g.MafiaKillTarget != null)
             {
@@ -136,13 +142,37 @@ namespace DiscordBot.Core
 
         }
 
-        private static void checkPowerRoles(GamePlayerList g)
+        private static void handlePowerRoles(GamePlayerList g, DiscordClient _client)
         {
-            g.Objects.ForEach(async x => await x.Role.Power(x.User.PrivateChannel));
+            g.Objects.ForEach(async x =>
+            {
+                if (x.Role.PowerRole)
+                {
+                    await x.User.SendMessage(x.Role.Power);
+                    _client.MessageReceived += x.Role.PowerHandler(g);
+                }
+            });
         }
 
-        public static async Task<bool> runDayPhase(GamePlayerList g)
+        static async void VoteHandler(object s, MessageEventArgs e, GamePlayerList g, DiscordClient _client)
         {
+            if(e.Channel.Id == g.GameChat.Id && e.Message.RawText.StartsWith("VOTE: ") && e.Message.MentionedUsers.Count() != 0)
+            {
+                if(g.inGame(e.Message.MentionedUsers.FirstOrDefault()))
+                {
+                    g.Find(e.User).LynchTarget = g.Find(e.Message.MentionedUsers.FirstOrDefault());
+                    await e.User.SendMessage("You're currently now voting for: " + e.Message.MentionedUsers.FirstOrDefault());
+                }
+            }
+        }
+
+        public static async Task<bool> runDayPhase(GamePlayerList g, DiscordClient _client)
+        {
+
+            EventHandler<MessageEventArgs> voteHandler = null;
+            voteHandler = new EventHandler<MessageEventArgs>((s, e) => VoteHandler(s, e, g, _client));
+            _client.MessageReceived += voteHandler;
+
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin/2)), g.Token.Token);
             VoteTallyCommand.countVotes(g);
             int i = 0; string playerList = "";
@@ -159,6 +189,7 @@ namespace DiscordBot.Core
             await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin/2} minutes left in the day phase. :warning:\n\nMid day vote count:\n```{playerList}```");
 
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
+            _client.MessageReceived -= voteHandler;
             return true;
         }
 
@@ -179,7 +210,7 @@ namespace DiscordBot.Core
 
             if(list.Where(x => x.VotesOn == list[0].VotesOn).Count() > 1)
             {
-                await g.GameChat.SendMessage("It seems like everyone was very indecisive tonight,\nand because of there being no majority, nobody got lynched.");
+                await g.GameChat.SendMessage("It seems like everyone was very indecisive today,\nand because of there being no majority, nobody got lynched.");
             }
             else
             {

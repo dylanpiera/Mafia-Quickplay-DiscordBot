@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DiscordBot.Game;
 
 namespace DiscordBot.Roles
 {
@@ -12,17 +13,32 @@ namespace DiscordBot.Roles
         public Cop(string username) :base("Cop","Every night you can target someone, you will learn their alignment.\n\nTo target someone use the command `!target [Target]` in your PM at night!")
         {
             this.rolePM = $"Dear **{username}**,\nYou are the **{Title}**.\n\n{description}\n\nYou win with the **Town** whose goal is to defeat all members of the Mafia.";
+            power = "You can now select your cop target. Please do so in the following format: `SCAN: [playername]`";
+            PowerRole = true;
         }
 
-        public async override Task<bool> Power(Channel chat)
+        protected override async void powerHandler(object s, MessageEventArgs e, GamePlayerList g)
         {
-            if(this.Target != null)
+            if (e.Message.RawText.StartsWith("SCAN: ") && e.Channel.Id == e.User.PrivateChannel.Id)
             {
-                await chat.SendMessage("Cop check result: " + this.Target.Role.Allignment.ToString());
+                string targeting = e.Message.RawText.Replace("SCAN: ", "");
+                if(g.inGame(g.Find(targeting)))
+                {
+                    Target = g.Find(targeting);
+                    await e.User.SendMessage($"You will be scanning: {Target.User.Nickname} tonight. Use `SCAN: [playername]` to change your target.");
+                } else
+                {
+                    await e.User.SendMessage($"Your input was invalid. You inputted: {targeting}");
+                }
             }
-
-            this.Target = null;
-            return true;
         }
+
+        public override async Task<bool> powerResult(User user, Player target)
+        {
+            await user.SendMessage($"You checked {target.User.Name}, they are: {target.Role.Allignment}");
+
+            return await base.powerResult(user, target);
+        }
+
     }
 }

@@ -19,7 +19,8 @@ namespace DiscordBot.Commands
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);
-            LynchVoteCommand.createCommand(_client);
+            
+            //LynchVoteCommand.createCommand(_client); //Deprecated.
             MafiaKillCommand.createCommand(_client);
             UnVoteCommand.createCommand(_client);
             VoteTallyCommand.createCommand(_client);

@@ -13,7 +13,7 @@ namespace DiscordBot.Core
 {
     static class StartGame
     {
-        public static async void startGame(CommandEventArgs e, GamePlayerList g)
+        public static async void startGame(CommandEventArgs e, GamePlayerList g, DiscordClient _client)
         {
             //Create a chatroom in the server with all players in it.
             Channel channel = await e.Server.CreateChannel("Mafia-Game-Room", ChannelType.Text);
@@ -71,7 +71,7 @@ namespace DiscordBot.Core
             g.Phase = Util.Phases.Day;
             g.PhaseCounter = 1;
             //run the GameManager for continuation of the game.
-            GameManager.runGame(g);
+            GameManager.runGame(g, _client);
         }
 
         //Randomly distribute the roles.
