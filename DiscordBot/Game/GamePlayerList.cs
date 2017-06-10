@@ -13,6 +13,7 @@ namespace DiscordBot.Game
     class GamePlayerList
     {
         private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
+        EventHandler<MessageEventArgs> nightkillHandler;
 
         public int PhaseCounter
         {
@@ -102,7 +103,7 @@ namespace DiscordBot.Game
         {
             players = new List<Player>();
             gameRunning = false;
-            PhaseLengthInMin = 2;
+            PhaseLengthInMin = 4;
         }
 
         // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
@@ -279,6 +280,19 @@ namespace DiscordBot.Game
             set
             {
                 cops = value;
+            }
+        }
+
+        public EventHandler<MessageEventArgs> NightkillHandler
+        {
+            get
+            {
+                return nightkillHandler;
+            }
+
+            set
+            {
+                nightkillHandler = value;
             }
         }
     }

@@ -10,7 +10,7 @@ namespace DiscordBot.Roles
 {
     class Cop : MafiaRole
     {
-        public Cop(string username) :base("Cop","Every night you can target someone, you will learn their alignment.\n\nTo target someone use the command `!target [Target]` in your PM at night!")
+        public Cop(string username) :base("Cop","Every night you can target someone, you will learn their alignment.\n\nEach night you can target someone by saying: `SCAN: [playername]` in your PM!")
         {
             this.rolePM = $"Dear **{username}**,\nYou are the **{Title}**.\n\n{description}\n\nYou win with the **Town** whose goal is to defeat all members of the Mafia.";
             power = "You can now select your cop target. Please do so in the following format: `SCAN: [playername]`";
@@ -25,7 +25,10 @@ namespace DiscordBot.Roles
                 if(g.inGame(g.Find(targeting)))
                 {
                     Target = g.Find(targeting);
-                    await e.User.SendMessage($"You will be scanning: {Target.User.Nickname} tonight. Use `SCAN: [playername]` to change your target.");
+                    if(Target.User.Nickname != null)
+                        await e.User.SendMessage($"You will be scanning: {Target.User.Nickname} tonight. Use `SCAN: [playername]` to change your target.");
+                    else
+                        await e.User.SendMessage($"You will be scanning: {Target.User.Name} tonight. Use `SCAN: [playername]` to change your target.");
                 } else
                 {
                     await e.User.SendMessage($"Your input was invalid. You inputted: {targeting}");

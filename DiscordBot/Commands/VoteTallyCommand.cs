@@ -39,11 +39,11 @@ namespace DiscordBot.Commands
         }
 
         public static void countVotes(GamePlayerList game) {
-            foreach (var item in game.Objects)
+            foreach (Player item in game.Objects)
             {
                 item.VotesOn = 0;
             }
-            foreach (var item in game.Objects)
+            foreach (Player item in game.Objects)
             {
                 try
                 {

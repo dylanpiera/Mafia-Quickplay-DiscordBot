@@ -89,13 +89,39 @@ namespace DiscordBot.Core
         {
             handlePowerRoles(g, _client);
 
-            await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target with `!kill`\n\n`!help kill` _for more info about the kill command._\n\nThe last target selected with `!kill` will be killed.");
+            g.NightkillHandler = null;
+            g.NightkillHandler = new EventHandler<MessageEventArgs>((s, e) => NightkillHandler(s, e, g, _client));
+            _client.MessageReceived += g.NightkillHandler;
+
+            await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target by typing `KILL: [playername]`. ");
+            
+
 
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
             await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin / 2} minutes left in the night phase. :warning:");
 
             await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
             return true;
+        }
+
+        private static async void NightkillHandler(object s, MessageEventArgs e, GamePlayerList g, DiscordClient _client)
+        {
+            if(e.Channel.Id == g.MafiaChat.Id && e.Message.RawText.StartsWith("KILL: "))
+            {
+                string target = e.Message.RawText.Replace("KILL: ", "");
+                if (g.inGame(g.Find(target)))
+                {
+                    g.MafiaKillTarget = g.Find(target);
+                    if (g.MafiaKillTarget.User.Nickname != null)
+                        await g.MafiaChat.SendMessage($"The current kill target is: {g.MafiaKillTarget.User.Nickname}. Use `KILL: [playername]` to change your target.");
+                    else
+                        await g.MafiaChat.SendMessage($"The current kill target is: {g.MafiaKillTarget.User.Name}. Use `KILL: [playername]` to change your target.");
+                }
+                else
+                {
+                    await g.MafiaChat.SendMessage($"Your input was invalid. You inputted: {target}");
+                }
+            }
         }
 
         public static async Task<bool> runNightRecap(GamePlayerList g, DiscordClient _client)
@@ -108,11 +134,14 @@ namespace DiscordBot.Core
                 await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
 
+            _client.MessageReceived -= g.NightkillHandler;
             g.Objects.ForEach(async x =>
             {
                 _client.MessageReceived -= x.Role.PowerHandler(g);
                 await x.Role.powerResult(x.User, x.Role.Target);
             });
+
+
 
             if(g.MafiaKillTarget != null)
             {
@@ -156,12 +185,21 @@ namespace DiscordBot.Core
 
         static async void VoteHandler(object s, MessageEventArgs e, GamePlayerList g, DiscordClient _client)
         {
-            if(e.Channel.Id == g.GameChat.Id && e.Message.RawText.StartsWith("VOTE: ") && e.Message.MentionedUsers.Count() != 0)
+            if(e.Channel.Id == g.GameChat.Id)
             {
-                if(g.inGame(e.Message.MentionedUsers.FirstOrDefault()))
+                if (e.Message.RawText.StartsWith("VOTE: ") && e.Message.MentionedUsers.Count() != 0)
                 {
-                    g.Find(e.User).LynchTarget = g.Find(e.Message.MentionedUsers.FirstOrDefault());
-                    await e.User.SendMessage("You're currently now voting for: " + e.Message.MentionedUsers.FirstOrDefault());
+                    if (g.inGame(e.Message.MentionedUsers.FirstOrDefault()))
+                    {
+                        g.Find(e.User).LynchTarget = g.Find(e.Message.MentionedUsers.FirstOrDefault());
+                        await e.User.SendMessage("You're currently voting for: " + e.Message.MentionedUsers.FirstOrDefault());
+                    }
+                } else if (e.Message.RawText.StartsWith("UNVOTE"))
+                {
+                    try
+                    {
+                        g.Find(e.User).LynchTarget = null;
+                    } catch (Exception) { }
                 }
             }
         }
