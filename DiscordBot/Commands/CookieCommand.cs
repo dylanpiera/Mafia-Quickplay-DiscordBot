@@ -19,5 +19,14 @@ namespace DiscordBot.Commands
                     Message message = await e.Channel.SendMessage(e.User.Mention + " :cookie::cookie:");
                 });
         }
+        public static void createCommand(CommandGroupBuilder builder)
+        {
+            builder.CreateCommand("cookie")
+                .Description("Bot answers with :cookie:")
+                .Do(async e =>
+                {
+                    Message message = await e.Channel.SendMessage(e.User.Mention + " :cookie::cookie:");
+                });
+        }
     }
 }

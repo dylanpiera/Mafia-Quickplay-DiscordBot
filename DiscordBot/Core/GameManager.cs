@@ -15,7 +15,6 @@ namespace DiscordBot.Core
     {
         public async static void runGame(GamePlayerList g)
         {
-            await Task.Delay(0);
             do
             {
                 if (g.Phase == Phases.Day)
@@ -26,9 +25,13 @@ namespace DiscordBot.Core
                     {
                         if (await runDayPhase(g))
                         {
-                            await runDayRecap(g);
+                            //await runDayRecap(g);
                         }
                     } catch(Exception)
+                    {
+                        //await runDayRecap(g);
+                    }
+                    finally
                     {
                         await runDayRecap(g);
                     }
@@ -41,10 +44,14 @@ namespace DiscordBot.Core
                     {
                         if (await runNightPhase(g))
                         {
-                            await runNightRecap(g);
+                            //await runNightRecap(g);
                         }
                     }
                     catch (Exception)
+                    {
+                        //await runNightRecap(g);
+                    }
+                    finally
                     {
                         await runNightRecap(g);
                     }

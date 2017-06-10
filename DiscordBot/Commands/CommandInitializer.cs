@@ -14,8 +14,8 @@ namespace DiscordBot.Commands
     {
         public static void init(DiscordClient _client)
         {
-            PingCommand.createCommand(_client);
-            CookieCommand.createCommand(_client);
+            //PingCommand.createCommand(_client);
+            //CookieCommand.createCommand(_client);
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);
@@ -26,6 +26,13 @@ namespace DiscordBot.Commands
             PlayerListCommand.createCommand(_client);
             StopGameCommand.createCommand(_client);
             UsePowerCommand.createCommand(_client);
+            TestCommand.createCommand(_client);
+
+            _client.GetService<CommandService>().CreateGroup("debug", debug =>
+            {
+                CookieCommand.createCommand(debug);
+                PingCommand.createCommand(debug);
+            });
 
             _client.GetService<CommandService>().CreateCommand("endPhase").Hide().Do(e => {
                 try
