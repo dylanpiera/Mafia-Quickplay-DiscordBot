@@ -88,11 +88,17 @@ namespace DiscordBot.Core
                 g.MafiaPlayers--;
             }
             int i = g.TownPlayers;
-            while(i >= 4)
+            while(i >= 3)
             {
+                if(i >= 4 && g.Doctors == 0)
+                {
+                    g.TownPlayers--;
+                    g.Doctors++;
+                    i--;
+                }
                 g.TownPlayers--;
                 g.Cops++;
-                i -= 4;
+                i -= 3;
             }
 
             g.TownAlive = 0;
@@ -116,6 +122,13 @@ namespace DiscordBot.Core
             {
                 players[i].AssignRole(new Cop(players[i].User.Name));
                 g.Cops--;
+                g.TownAlive++;
+                i++;
+            }
+            while (g.Doctors > 0)
+            {
+                players[i].AssignRole(new Doctor(players[i].User.Name));
+                g.Doctors--;
                 g.TownAlive++;
                 i++;
             }

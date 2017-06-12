@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
+using DiscordBot.Resources;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DiscordBot.Commands
@@ -14,6 +16,8 @@ namespace DiscordBot.Commands
                 {
                     Message message = await c.Channel.SendMessage("**Moderator Menu:**\n```1. force game to start\n2. force game to end\n3. force member to join. Parameter: [mention]```respond with `[number] [parameter]`");
 
+                    List<Object> test = new List<Object>();
+                    test.Shuffle<Object>();
 
                     EventHandler<MessageEventArgs> handler = null;
                     handler = new EventHandler<MessageEventArgs>((f, s) => eventHandler(f, s, c,message, _client, handler));

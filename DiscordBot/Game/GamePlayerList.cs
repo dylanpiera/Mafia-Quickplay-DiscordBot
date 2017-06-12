@@ -295,5 +295,7 @@ namespace DiscordBot.Game
                 nightkillHandler = value;
             }
         }
+
+        public int Doctors { get; internal set; }
     }
 }

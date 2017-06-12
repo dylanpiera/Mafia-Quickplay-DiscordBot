@@ -14,19 +14,12 @@ namespace DiscordBot.Commands
     {
         public static void init(DiscordClient _client)
         {
-            //PingCommand.createCommand(_client);
-            //CookieCommand.createCommand(_client);
             JoinCommand.createCommand(_client);
             LeaveCommand.createCommand(_client);
             StartGameCommand.createCommand(_client);
-            
-            //LynchVoteCommand.createCommand(_client); //Deprecated.
-            MafiaKillCommand.createCommand(_client);
-            UnVoteCommand.createCommand(_client);
             VoteTallyCommand.createCommand(_client);
             PlayerListCommand.createCommand(_client);
             StopGameCommand.createCommand(_client);
-            UsePowerCommand.createCommand(_client);
             TestCommand.createCommand(_client);
 
             _client.GetService<CommandService>().CreateGroup("debug", debug =>

@@ -25,11 +25,9 @@ namespace DiscordBot.Core
                     {
                         if (await runDayPhase(g, _client))
                         {
-                            //await runDayRecap(g);
                         }
                     } catch(Exception)
                     {
-                        //await runDayRecap(g);
                     }
                     finally
                     {
@@ -44,12 +42,10 @@ namespace DiscordBot.Core
                     {
                         if (await runNightPhase(g, _client))
                         {
-                            //await runNightRecap(g);
                         }
                     }
                     catch (Exception)
                     {
-                        //await runNightRecap(g);
                     }
                     finally
                     {
@@ -58,8 +54,8 @@ namespace DiscordBot.Core
                 }
                 else
                 {
-                    await g.GameChat.SendMessage("Stopping game in 2 minutes...");
-                    await Task.Delay(TimeConverter.MinToMS(2));
+                    await g.GameChat.SendMessage("Stopping game in 1 minute...");
+                    await Task.Delay(TimeConverter.MinToMS(1));
                     g.Reset();
                 }
             } while (g.gameRunning);
@@ -143,7 +139,7 @@ namespace DiscordBot.Core
 
 
 
-            if(g.MafiaKillTarget != null)
+            if(g.MafiaKillTarget != null && g.MafiaKillTarget != g.Objects.Where(x => x.Role.Title=="Doctor").FirstOrDefault().Role.Target)
             {
                 await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
                 await g.GameChat.SendMessage($"**Role PM:**\n```{g.MafiaKillTarget.Role.RolePM}```\n");
@@ -153,6 +149,8 @@ namespace DiscordBot.Core
                 g.MafiaKillTarget = null;
             } else
             {
+                if (g.MafiaKillTarget != null)
+                    await g.MafiaChat.SendMessage($"__Your kill on {g.MafiaKillTarget.User.Mention} was unsuccesful.__");
                 await g.GameChat.SendMessage($"Tonight has been a quiet night... Nothing happened...");
             }
 

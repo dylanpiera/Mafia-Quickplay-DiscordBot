@@ -21,17 +21,17 @@ namespace DiscordBot.Roles
         {
             if (e.Message.RawText.StartsWith("SCAN: ") && e.Channel.Id == e.User.PrivateChannel.Id)
             {
-                string targeting = e.Message.RawText.Replace("SCAN: ", "");
-                if(g.inGame(g.Find(targeting)))
+                string target = e.Message.RawText.Replace("SCAN: ", "");
+                if(g.inGame(g.Find(target)))
                 {
-                    Target = g.Find(targeting);
+                    Target = g.Find(target);
                     if(Target.User.Nickname != null)
                         await e.User.SendMessage($"You will be scanning: {Target.User.Nickname} tonight. Use `SCAN: [playername]` to change your target.");
                     else
                         await e.User.SendMessage($"You will be scanning: {Target.User.Name} tonight. Use `SCAN: [playername]` to change your target.");
                 } else
                 {
-                    await e.User.SendMessage($"Your input was invalid. You inputted: {targeting}");
+                    await e.User.SendMessage($"Your input was invalid. You inputted: {target}");
                 }
             }
         }
