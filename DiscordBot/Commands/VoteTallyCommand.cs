@@ -6,31 +6,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DiscordBot.Commands
-{
-    static class VoteTallyCommand
-    {
-        public static void createCommand(DiscordClient _client)
-        {
+namespace DiscordBot.Commands {
+    static class VoteTallyCommand {
+        public static void createCommand(DiscordClient _client) {
             _client.GetService<CommandService>().CreateCommand("votecount")
                 .Alias(new string[] { "tally" })
                 .Description("Shows the total votes on all players.")
-                .Do(async e =>
-                {
-                    if (Program.servers[e.Server].Phase == Util.Phases.Day)
-                    {
+                .Do(async e => {
+                    if(Program.servers[e.Server].Phase == Util.Phases.Day) {
                         countVotes(Program.servers[e.Server]);
                         int i = 0;
                         string playerList = "";
                         List<Player> SortedList = Program.servers[e.Server].Objects.Where(x => x.Alive == true).OrderByDescending(o => o.VotesOn).ToList();
-                        foreach (var item in SortedList)
-                        {
+                        foreach(var item in SortedList) {
                             i++;
-                            try
-                            {
+                            try {
                                 playerList += $"{i}. {item.User.Name} " + item.VotesOn + ": " + votedFor(SortedList, item) + "\n";
-                            }
-                            catch (Exception) { }
+                            } catch(Exception) { }
                         }
 
                         await e.Channel.SendMessage(e.User.Mention + "\n\n**Current Vote Count:**\n```" + playerList + "```");
@@ -39,31 +31,23 @@ namespace DiscordBot.Commands
         }
 
         public static void countVotes(GamePlayerList game) {
-            foreach (Player item in game.Objects)
-            {
+            foreach(var item in game.Objects) {
                 item.VotesOn = 0;
             }
-            foreach (Player item in game.Objects)
-            {
-                try
-                {
+            foreach(var item in game.Objects) {
+                try {
                     item.LynchTarget.VotesOn++;
-                }
-                catch (Exception)
-                {
+                } catch(Exception) {
 
                 }
             }
         }
 
-        public static string votedFor(List<Player> list,Player lynchee)
-        {
+        public static string votedFor(List<Player> list, Player lynchee) {
             string s = "";
 
-            foreach (var item in list)
-            {
-                if(item.LynchTarget == lynchee)
-                {
+            foreach(var item in list) {
+                if(item.LynchTarget == lynchee) {
                     s += item.User.Name + " ";
                 }
             }
