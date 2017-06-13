@@ -8,34 +8,41 @@ using Discord;
 using DiscordBot.Util;
 using System.Threading;
 
-
 namespace DiscordBot.Game
 {
     class GamePlayerList
     {
         private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
+        EventHandler<MessageEventArgs> nightkillHandler;
 
-
-        public int PhaseCounter {
-            get {
+        public int PhaseCounter
+        {
+            get
+            {
                 return phaseCounter;
             }
-            set {
+            set
+            {
                 phaseCounter = value;
             }
         }
 
-        public int PhaseLengthInMin {
-            get {
+        public int PhaseLengthInMin
+        {
+            get
+            {
                 return PhaseLength;
             }
-            set {
+            set
+            {
                 PhaseLength = value;
             }
         }
 
-        public List<Player> Objects {
-            get {
+        public List<Player> Objects
+        {
+            get
+            {
                 return players;
             }
             set
@@ -48,29 +55,35 @@ namespace DiscordBot.Game
         private Player mafiaKillTarget;
         private Phases phase;
 
-        public Phases Phase {
-            get {
+        public Phases Phase
+        {
+            get
+            {
                 return phase;
             }
-            set {
+            set
+            {
                 phase = value;
             }
         }
-        public CancellationTokenSource Token {
-            get {
+        public CancellationTokenSource Token
+        {
+            get
+            {
                 return token;
             }
-            set {
+            set
+            {
                 token = value;
             }
         }
 
         private List<Player> players;
-        private List<Spectator> spectators;
 
         private Channel gameChat, mafiaChat;
 
-        public void setChats(Channel gameChat, Channel mafiaChat) {
+        public void setChats(Channel gameChat, Channel mafiaChat)
+        {
             this.gameChat = gameChat;
             this.mafiaChat = mafiaChat;
         }
@@ -78,17 +91,19 @@ namespace DiscordBot.Game
         // <summary>Sets or gets if the game is running or not</summary>
         public bool gameRunning { get; set; }
 
-        internal void Reset() {
+        internal void Reset()
+        {
             this.gameRunning = false;
             this.Objects.Clear();
             this.GameChat.Delete();
             this.MafiaChat.Delete();
         }
 
-        public GamePlayerList() {
+        public GamePlayerList()
+        {
             players = new List<Player>();
             gameRunning = false;
-            PhaseLengthInMin = 2;
+            PhaseLengthInMin = 4;
         }
 
         // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
@@ -96,23 +111,22 @@ namespace DiscordBot.Game
         public void Add(User player)
         {
             this.players.Add(new Player(player,this));
-
-        }
-
-        public void AddSpectate(User spectator) {
-            this.spectators.Add(new Spectator(spectator));
         }
 
         // <summary> removes a User from the game</summary>
         // <param name ="Player">the instance of Player to remove from the list</param>
-        public void Remove(Player player) {
+        public void Remove(Player player)
+        {
             this.players.Remove(player);
         }
         // <summary> removes a User from the game with an instance of User</summary>
         // <param name ="Player">the instance of User to remove from the list</param>
-        public void Remove(User player) {
-            foreach(Player item in players) {
-                if(item.User.Equals(player)) {
+        public void Remove(User player)
+        {
+            foreach (Player item in players)
+            {
+                if (item.User.Equals(player))
+                {
                     players.Remove(item);
                     break;
                 }
@@ -126,17 +140,17 @@ namespace DiscordBot.Game
             foreach (Player player in players)
             {
                 if (player.User.Name == userName || player.User.Nickname == userName) return player;
-
             }
 
             return null;
         }
         // <summary>Finds and returns a player by user instance</summary>
         // <param name ="user">the discord user</param>
-        public Player Find(User user) {
-            foreach(Player player in players) {
-                if(player.User == user)
-                    return player;
+        public Player Find(User user)
+        {
+            foreach (Player player in players)
+            {
+                if (player.User == user) return player;
             }
 
             return null;
@@ -145,10 +159,11 @@ namespace DiscordBot.Game
 
         // <summary>Checks if a player is in the game</summary>
         // <param name ="Player">the instance of Player to check</param>
-        public bool inGame(Player player) {
-            foreach(Player item in players) {
-                if(item == player)
-                    return true;
+        public bool inGame(Player player)
+        {
+            foreach (Player item in players)
+            {
+                if (item == player) return true;
             }
 
             return false;
@@ -165,81 +180,92 @@ namespace DiscordBot.Game
         }
         // <summary>Checks if a player is in the game</summary>
         // <param name ="Player">the instance of User to check</param>
-        public bool inGame(User player) {
-            foreach(Player item in players) {
-                if(item.User == player)
-                    return true;
+        public bool inGame(User player)
+        {
+            foreach (Player item in players)
+            {
+                if (item.User == player) return true;
             }
 
             return false;
         }
-
-        public bool isSpectating(User spectator) {
-            foreach(Spectator item in spectators) {
-                if(item.User == spectator)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public Channel GameChat {
-            get {
+        
+        public Channel GameChat
+        {
+            get
+            {
                 return gameChat;
             }
         }
-        public Channel MafiaChat {
-            get {
+        public Channel MafiaChat
+        {
+            get
+            {
                 return mafiaChat;
             }
         }
 
-        public Player MafiaKillTarget {
-            get {
+        public Player MafiaKillTarget
+        {
+            get
+            {
                 return mafiaKillTarget;
             }
 
-            set {
+            set
+            {
                 mafiaKillTarget = value;
             }
         }
 
-        public int TownPlayers {
-            get {
+        public int TownPlayers
+        {
+            get
+            {
                 return townPlayers;
             }
 
-            set {
+            set
+            {
                 townPlayers = value;
             }
         }
 
-        public int MafiaPlayers {
-            get {
+        public int MafiaPlayers
+        {
+            get
+            {
                 return mafiaPlayers;
             }
 
-            set {
+            set
+            {
                 mafiaPlayers = value;
             }
         }
 
-        public int TownAlive {
-            get {
+        public int TownAlive
+        {
+            get
+            {
                 return townAlive;
             }
 
-            set {
+            set
+            {
                 townAlive = value;
             }
         }
 
-        public int MafiaAlive {
-            get {
+        public int MafiaAlive
+        {
+            get
+            {
                 return mafiaAlive;
             }
 
-            set {
+            set
+            {
                 mafiaAlive = value;
             }
         }
@@ -256,5 +282,20 @@ namespace DiscordBot.Game
                 cops = value;
             }
         }
+
+        public EventHandler<MessageEventArgs> NightkillHandler
+        {
+            get
+            {
+                return nightkillHandler;
+            }
+
+            set
+            {
+                nightkillHandler = value;
+            }
+        }
+
+        public int Doctors { get; internal set; }
     }
 }

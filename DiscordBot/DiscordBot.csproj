@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>D:\Dev\</PublishUrl>
+    <PublishUrl>F:\dev\Nieuwe map\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -23,7 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -113,14 +114,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
-    <Compile Include="Commands\MafiaKillCommand.cs" />
+    <Compile Include="Commands\TestCommand.cs" />
     <Compile Include="Commands\CookieCommand.cs" />
-    <Compile Include="Commands\SpectatorCommand.cs" />
-    <Compile Include="Commands\UnVoteCommand.cs" />
-    <Compile Include="Commands\UsePowerCommand.cs" />
+    <Compile Include="Roles\Doctor.cs" />
     <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
-    <Compile Include="Commands\LynchVoteCommand.cs" />
     <Compile Include="Commands\CommandTemplate.cs" />
     <Compile Include="Commands\CountdownCommand.cs" />
     <Compile Include="Commands\JoinCommand.cs" />
@@ -147,7 +145,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="DiscordBot_TemporaryKey.pfx" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\DiscordMafiaBot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\DiscordMafiaBot - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
