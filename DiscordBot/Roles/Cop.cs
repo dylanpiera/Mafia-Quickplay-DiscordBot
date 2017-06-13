@@ -38,7 +38,10 @@ namespace DiscordBot.Roles
 
         public override async Task<bool> powerResult(User user, Player target)
         {
-            await user.SendMessage($"You checked {target.User.Name}, they are: {target.Role.Allignment}");
+            if (target.Role.Title == "Godfather")
+                await user.SendMessage($"You checked {target.User.Name}, they are: {RoleUtil.Allignment.Town.ToString()}");
+            else
+                await user.SendMessage($"You checked {target.User.Name}, they are: {target.Role.Allignment}");
 
             return await base.powerResult(user, target);
         }

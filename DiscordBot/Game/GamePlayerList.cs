@@ -297,5 +297,6 @@ namespace DiscordBot.Game
         }
 
         public int Doctors { get; internal set; }
+        public int Godfathers { get; internal set; }
     }
 }
