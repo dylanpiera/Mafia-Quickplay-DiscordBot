@@ -9,20 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordBot.Core
-{
-    static class StartGame
-    {
-        public static async void startGame(CommandEventArgs e, GamePlayerList g, DiscordClient _client)
-        {
+namespace DiscordBot.Core {
+    static class StartGame {
+        public static async void startGame(CommandEventArgs e, GamePlayerList g) {
             //Create a chatroom in the server with all players in it.
             Channel channel = await e.Server.CreateChannel("Mafia-Game-Room", ChannelType.Text);
 
             await channel.AddPermissionsRule(e.Server.CurrentUser, new ChannelPermissionOverrides(readMessages: PermValue.Allow));
             await channel.AddPermissionsRule(e.Server.EveryoneRole, new ChannelPermissionOverrides(readMessages: PermValue.Deny));
 
-            foreach (var item in g.Objects)
-            {
+            foreach(var item in g.Objects) {
                 await channel.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
             await channel.SendMessage("@everyone the game is starting up...");
@@ -37,8 +33,7 @@ namespace DiscordBot.Core
 
             //Send role PM's
             Message m2 = await channel.SendMessage("Sending role pm's...");
-            foreach (var item in g.Objects)
-            {
+            foreach(var item in g.Objects) {
                 item.Role.sendRolePM(item.User);
             }
             await m2.Edit("Sent role pm's! :white_check_mark:");
@@ -49,9 +44,8 @@ namespace DiscordBot.Core
             Channel mafiaChat = await e.Server.CreateChannel("Mafia-Night-Chat", ChannelType.Text);
             await mafiaChat.AddPermissionsRule(e.Server.CurrentUser, new ChannelPermissionOverrides(readMessages: PermValue.Allow));
             await mafiaChat.AddPermissionsRule(e.Server.EveryoneRole, new ChannelPermissionOverrides(readMessages: PermValue.Deny));
-            foreach (var item in g.Objects)
-            {
-                if (item.Role.Allignment == Roles.RoleUtil.Allignment.Mafia)
+            foreach(var item in g.Objects) {
+                if(item.Role.Allignment == Roles.RoleUtil.Allignment.Mafia)
                     await mafiaChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
             }
             await mafiaChat.SendMessage($"Welcome scummy friends :smiling_imp:, You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target.");
@@ -59,10 +53,9 @@ namespace DiscordBot.Core
             await Task.Delay(500);
 
             //Start day 1, and allow everyone to speak.
-            await channel.SendMessage($":sunny: @everyone **It is now day 1.** Day 1 will end in {g.PhaseLengthInMin} minutes. :sunny:\nTo vote use `VOTE: @[username]`");
+            await channel.SendMessage($":sunny: @everyone **It is now day 1.** Day 1 will end in {g.PhaseLengthInMin} minutes. :sunny:");
             await Task.Delay(100);
-            foreach (var item in g.Objects)
-            {
+            foreach(var item in g.Objects) {
                 await channel.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
             }
 
@@ -71,34 +64,28 @@ namespace DiscordBot.Core
             g.Phase = Util.Phases.Day;
             g.PhaseCounter = 1;
             //run the GameManager for continuation of the game.
-            GameManager.runGame(g, _client);
+            GameManager.runGame(g);
         }
 
         //Randomly distribute the roles.
-        private static void distributeRoles(GamePlayerList g)
-        {
+        private static void distributeRoles(GamePlayerList g) {
             //75% of the players are town, 25% are mafia (rounded up and down respectively)
             int playerCount = g.Objects.Count;
+
             g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
             g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
-            //In the case of a 5 player game (where there'd be no mafia) remove 1 town add 1 mafia.
-            if (playerCount == 5 && g.MafiaPlayers == 2)
+            //In the case of a 5 player game (where there'd be 2 mafia) add 1 town and remove 1 mafia.
+            if(playerCount == 5 && g.MafiaPlayers == 2)
             {
                 g.TownPlayers++;
                 g.MafiaPlayers--;
             }
             int i = g.TownPlayers;
-            while(i >= 3)
+            while(i >= 4)
             {
-                if(i >= 4 && g.Doctors == 0)
-                {
-                    g.TownPlayers--;
-                    g.Doctors++;
-                    i--;
-                }
                 g.TownPlayers--;
                 g.Cops++;
-                i -= 3;
+                i -= 4;
             }
 
             g.TownAlive = 0;
@@ -114,21 +101,21 @@ namespace DiscordBot.Core
             } while (g.TownAlive < g.TownPlayers);
             do
             {
-                players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, players[i].User.Name));
-                g.MafiaAlive++;
-                i++;
+                if(g.MafiaPlayers > 1 && g.Godfathers == 0) {
+                    players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, players[i].User.Name));
+                    g.MafiaAlive++;
+                    g.Godfathers++;
+                    i++;
+                } else {
+                    players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, players[i].User.Name));
+                    g.MafiaAlive++;
+                    i++;
+                }
             } while (g.MafiaAlive < g.MafiaPlayers);
             while (g.Cops > 0)
             {
                 players[i].AssignRole(new Cop(players[i].User.Name));
                 g.Cops--;
-                g.TownAlive++;
-                i++;
-            }
-            while (g.Doctors > 0)
-            {
-                players[i].AssignRole(new Doctor(players[i].User.Name));
-                g.Doctors--;
                 g.TownAlive++;
                 i++;
             }
@@ -142,6 +129,7 @@ namespace DiscordBot.Core
                 {
                     switch (random.Next(1, 4))
                     {
+
                         case 1:
                             item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
                             g.TownAlive++;
@@ -164,11 +152,10 @@ namespace DiscordBot.Core
                 }
                 else if (g.TownAlive < g.TownPlayers)
                 {
+
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Town, item.User.Name));
                     g.TownAlive++;
-                }
-                else
-                {
+                } else {
                     item.AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, item.User.Name));
                     g.MafiaAlive++;
                 }
