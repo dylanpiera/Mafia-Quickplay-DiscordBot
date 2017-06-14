@@ -89,7 +89,7 @@ namespace DiscordBot.Core
             g.NightkillHandler = new EventHandler<MessageEventArgs>((s, e) => NightkillHandler(s, e, g, _client));
             _client.MessageReceived += g.NightkillHandler;
 
-            await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target by typing `KILL: [playername]`. ");
+            await g.MafiaChat.SendMessage($"Dear Scum, It is now Night {g.PhaseCounter}. Please select your Night Kill target by typing `KILL: playername`. ");
             
 
 
@@ -177,7 +177,7 @@ namespace DiscordBot.Core
         {
             g.Objects.ForEach(async x =>
             {
-                if (x.Role.PowerRole)
+                if (x.Role.PowerRole && x.Alive)
                 {
                     await x.User.SendMessage(x.Role.Power);
                     _client.MessageReceived += x.Role.PowerHandler(g);

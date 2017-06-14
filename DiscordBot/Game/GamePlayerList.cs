@@ -97,6 +97,11 @@ namespace DiscordBot.Game
             this.Objects.Clear();
             this.GameChat.Delete();
             this.MafiaChat.Delete();
+            this.Cops = 0;
+            this.Godfathers = 0;
+            this.Doctors = 0;
+            this.MafiaPlayers = 0;
+            this.TownPlayers = 0;
         }
 
         public GamePlayerList()
