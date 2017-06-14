@@ -93,10 +93,10 @@ namespace DiscordBot.Core
             
 
 
-            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
-            await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin / 2} minutes left in the night phase. :warning:");
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 4)), g.Token.Token);
+            await g.GameChat.SendMessage($":warning: There are only {g.PhaseLengthInMin / 4} minutes left in the night phase. :warning:");
 
-            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 2)), g.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS((g.PhaseLengthInMin / 4)), g.Token.Token);
             return true;
         }
 
@@ -125,9 +125,15 @@ namespace DiscordBot.Core
             g.Phase = Phases.Day; g.PhaseCounter++;
 
             await g.GameChat.SendMessage(":night_with_stars: @everyone the Night phase has ended! Recapping now... :night_with_stars:");
-            foreach (var item in g.Objects.Where(x => x.Alive == true))
+            try
             {
-                await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                foreach (var item in g.Objects.Where(x => x.Alive == true))
+                {
+                    await g.GameChat.AddPermissionsRule(item.User, new ChannelPermissionOverrides(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                }
+            } catch (Exception)
+            {
+
             }
 
             _client.MessageReceived -= g.NightkillHandler;
@@ -136,8 +142,6 @@ namespace DiscordBot.Core
                 _client.MessageReceived -= x.Role.PowerHandler(g);
                 await x.Role.powerResult(x.User, x.Role.Target);
             });
-
-
 
             if(g.MafiaKillTarget != null && g.MafiaKillTarget != g.Objects.Where(x => x.Role.Title=="Doctor").FirstOrDefault().Role.Target)
             {
@@ -260,7 +264,7 @@ namespace DiscordBot.Core
 
             if (await checkWinConditions(g)) return true;
 
-            await g.GameChat.SendMessage($":full_moon: It is now Night {g.PhaseCounter}. The phase will end in {g.PhaseLengthInMin} minutes. :full_moon:");
+            await g.GameChat.SendMessage($":full_moon: It is now Night {g.PhaseCounter}. The phase will end in {g.PhaseLengthInMin/2} minutes. :full_moon:");
             foreach (var item in g.Objects)
             {
                 if(item.Alive == true) {

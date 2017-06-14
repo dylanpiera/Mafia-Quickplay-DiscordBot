@@ -106,7 +106,6 @@ namespace DiscordBot.Roles
         public EventHandler<MessageEventArgs> PowerHandler(GamePlayerList g)
         {
             return new EventHandler<MessageEventArgs>((s, e) => powerHandler(s, e, g));
-            
         }
 
         public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia, string rolePM = "")

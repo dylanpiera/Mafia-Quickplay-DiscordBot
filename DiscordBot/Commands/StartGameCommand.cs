@@ -28,7 +28,7 @@ namespace DiscordBot.Commands
                     {
                         if (e.Args.Contains<string>("--force") && e.User.ServerPermissions.Administrator && game.Objects.Count > 4)
                         {
-                            await e.Channel.SendMessage("everyone The game has been started by a moderator! Preparing to launch...");
+                            await e.Channel.SendMessage("Everyone, The game has been started by a moderator! Preparing to launch...");
                             game.gameRunning = true;
                             await Task.Delay(TimeConverter.SecToMS(2));
                             StartGame.startGame(e, game, _client);
@@ -50,7 +50,7 @@ namespace DiscordBot.Commands
 
                                     if (everyoneReady && game.Objects.Count > 4)
                                     {
-                                        await e.Channel.SendMessage("@everyone Everyone is ready! Starting game now...");
+                                        await e.Channel.SendMessage("Everyone is ready! Starting game now...");
                                         game.gameRunning = true;
                                         await Task.Delay(TimeConverter.SecToMS(2));
                                         StartGame.startGame(e, game, _client);

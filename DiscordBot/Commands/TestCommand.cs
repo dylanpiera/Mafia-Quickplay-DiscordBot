@@ -12,6 +12,7 @@ namespace DiscordBot.Commands
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("mod")
+                .Hide()
                 .Do(async c =>
                 {
                     Message message = await c.Channel.SendMessage("**Moderator Menu:**\n```1. force game to start\n2. force game to end\n3. force member to join. Parameter: [mention]```respond with `[number] [parameter]`");
