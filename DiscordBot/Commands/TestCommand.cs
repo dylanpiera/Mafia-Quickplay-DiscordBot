@@ -4,11 +4,42 @@ using DiscordBot.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace DiscordBot.Commands
 {
     static class TestCommand
     {
+        public static void createCommand2(DiscordClient _client)
+        {
+            _client.GetService<CommandService>().CreateCommand("test")
+               .Hide()
+               .Do(async c =>
+               {
+                   MySqlConnection conn = new MySqlConnection();
+                   Console.WriteLine("Running !test");
+                   conn.ConnectionString = Sneaky.connectionString;
+                   Console.WriteLine("Attempting to connect...");
+                   try
+                   {
+                       await conn.OpenAsync();
+                       await c.Channel.SendMessage("Succesfully Connected!");
+                       conn.Close();
+                       conn.Dispose();
+                   }
+                   catch (Exception e)
+                   {
+                       await c.Channel.SendMessage("Failed to Connect.");
+                       Console.WriteLine(e.ToString());
+                   }
+                   finally
+                   {
+                       Console.WriteLine("End of !test");
+                   }
+               });
+        }
+
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("mod")
@@ -21,13 +52,13 @@ namespace DiscordBot.Commands
                     test.Shuffle<Object>();
 
                     EventHandler<MessageEventArgs> handler = null;
-                    handler = new EventHandler<MessageEventArgs>((f, s) => eventHandler(f, s, c,message, _client, handler));
+                    handler = new EventHandler<MessageEventArgs>((f, s) => eventHandler(f, s, c, message, _client, handler));
 
                     _client.MessageReceived += handler;
 
                 });
         }
-        static async void eventHandler(object f, MessageEventArgs s, CommandEventArgs c,Message message, DiscordClient _client, EventHandler<MessageEventArgs> handler)
+        static async void eventHandler(object f, MessageEventArgs s, CommandEventArgs c, Message message, DiscordClient _client, EventHandler<MessageEventArgs> handler)
         {
             if (s.User.Id == c.User.Id)
             {
@@ -49,7 +80,7 @@ namespace DiscordBot.Commands
                     await c.Channel.SendMessage("You added " + s.Message.MentionedUsers.FirstOrDefault() + " to the game");
                     _client.MessageReceived -= handler;
                 }
-                else if(s.Message.RawText.StartsWith("exit"))
+                else if (s.Message.RawText.StartsWith("exit"))
                 {
                     await message.Delete();
                     _client.MessageReceived -= handler;

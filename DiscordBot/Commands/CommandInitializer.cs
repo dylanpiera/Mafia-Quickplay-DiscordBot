@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using DiscordBot.Core;
 using DiscordBot.Util;
+using MySql.Data.MySqlClient;
 
 namespace DiscordBot.Commands
 {
@@ -21,11 +22,31 @@ namespace DiscordBot.Commands
             PlayerListCommand.createCommand(_client);
             StopGameCommand.createCommand(_client);
             TestCommand.createCommand(_client);
+            SetupCommand.createCommand(_client);
 
             _client.GetService<CommandService>().CreateGroup("debug", debug =>
             {
                 CookieCommand.createCommand(debug);
                 PingCommand.createCommand(debug);
+
+                debug.CreateCommand("connection").Do(async e => 
+                {
+                    MySqlConnection conn = new MySqlConnection(Sneaky.connectionString);
+                    using (conn)
+                    {
+                        Message loadingMessage = await e.Channel.SendMessage("Establishing Connection to the Database... :clock2:");
+                        try
+                        {
+                            await conn.OpenAsync();
+                            await loadingMessage.Edit("Connection Established. :white_check_mark:");
+                        }
+                        catch (Exception exc)
+                        {
+                            await loadingMessage.Edit("Error connecting to the database. See log for more details. :x:");
+                            Console.WriteLine(exc);
+                        }
+                    }
+                });
             });
 
             _client.GetService<CommandService>().CreateCommand("howtoplay").Do(async e => 
@@ -54,13 +75,6 @@ namespace DiscordBot.Commands
                     catch (Exception) { }
                 }
             });
-
-            /*_client.GetService<CommandService>().CreateCommand("endPhase").Hide().Do(e => {
-                try
-                {
-                    Program.servers[e.Server].Token.Cancel();
-                } catch(Exception) { }
-            });*/
 
             //Bot Invite Link Storage
             _client.GetService<CommandService>().CreateCommand("inviteLink").Hide().Do(async e => { if(e.User.Id == 135735651059499008 || e.User.Id == 221620985684557826 || e.User.Id ==117878923370430464) await e.Channel.SendMessage(Sneaky.botInvite); } );
