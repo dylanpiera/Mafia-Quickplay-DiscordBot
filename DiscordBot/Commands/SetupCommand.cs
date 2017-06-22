@@ -3,6 +3,7 @@ using Discord.Commands;
 using DiscordBot.Resources;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,14 +11,14 @@ namespace DiscordBot.Commands
 {
     static class SetupCommand
     {
-        static List<ulong> usersInSetup = new List<ulong>();
-        
+        public static List<ulong> usersInSetup = new List<ulong>();
+
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("setup")
                 .Do(async e =>
                 {
-                    if(e.Channel.IsPrivate)
+                    if (e.Channel.IsPrivate)
                     {
                         await e.Channel.SendMessage("This command can not be started from a PM. Please try to access it through a server. :x:");
                         return;
@@ -36,7 +37,7 @@ namespace DiscordBot.Commands
                         MessageEventArgs sender = s;
                         try
                         {
-                            if (sender.User.Id == e.User.Id && e.Channel.Id == sender.Channel.Id)
+                            if (sender.User.Id == e.User.Id && e.Channel.Id == sender.Channel.Id && !sender.User.IsBot)
                             {
                                 if (sender.Message.RawText.StartsWith("1"))
                                 {
@@ -49,8 +50,11 @@ namespace DiscordBot.Commands
                                 }
                                 else if (sender.Message.RawText.StartsWith("2"))
                                 {
-                                    if(SetupCommand.usersInSetup.Contains(x => x == sender.User.Id) return;
-
+                                    if (SetupCommand.usersInSetup.Contains(sender.User.Id))
+                                    {
+                                        await sender.Channel.SendMessage("You're already creating a setup. " + sender.User.Mention);
+                                        return;
+                                    }
                                     await sender.Message.Delete();
                                     if (m2 != null) await m2.Delete();
                                     //run create setup handler
@@ -77,8 +81,9 @@ namespace DiscordBot.Commands
                     setupCreator = new EventHandler<MessageEventArgs>(async (f, sender) =>
                     {
                         MessageEventArgs s = sender;
-                        
-                        if (e.User.Id == s.User.Id && e.User.PrivateChannel.Id == s.Channel.Id)
+
+                        if (e.User.Id == s.User.Id && e.User.PrivateChannel.Id == s.Channel.Id && !sender.User.IsBot)
+                        {
                             if (s.Message.RawText.ToLower().StartsWith("exit")) { _client.MessageReceived -= setupCreator; await s.User.SendMessage(":x: Setup Aborted :x:"); SetupCommand.usersInSetup.Remove(s.User.Id); return; }
                             switch (state)
                             {
@@ -166,6 +171,7 @@ namespace DiscordBot.Commands
                                     await Task.Delay(0);
                                     break;
                             }
+                        }
 
                     });
 
