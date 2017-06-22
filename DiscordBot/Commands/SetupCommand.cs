@@ -10,6 +10,8 @@ namespace DiscordBot.Commands
 {
     static class SetupCommand
     {
+        static List<ulong> usersInSetup = new List<ulong>();
+        
         public static void createCommand(DiscordClient _client)
         {
             _client.GetService<CommandService>().CreateCommand("setup")
@@ -47,6 +49,7 @@ namespace DiscordBot.Commands
                                 }
                                 else if (sender.Message.RawText.StartsWith("2"))
                                 {
+                                    if(SetupCommand.usersInSetup.Contains(x => x == sender.User.Id) return;
 
                                     await sender.Message.Delete();
                                     if (m2 != null) await m2.Delete();
@@ -55,6 +58,7 @@ namespace DiscordBot.Commands
                                     await e.User.SendMessage("**Welcome to the setup creator.** You can exit at any point by typing `exit`\nPlease provide us with a name for the setup.");
                                     setup.Creator = s.User;
                                     state = setupState.name;
+                                    SetupCommand.usersInSetup.Add(sender.User.Id);
                                     //add setup creation handler
                                     _client.MessageReceived += setupCreator;
                                     _client.MessageReceived -= menuHandler;
@@ -73,9 +77,9 @@ namespace DiscordBot.Commands
                     setupCreator = new EventHandler<MessageEventArgs>(async (f, sender) =>
                     {
                         MessageEventArgs s = sender;
-                        if (s.Message.RawText.ToLower().StartsWith("exit")) { _client.MessageReceived -= setupCreator; await s.User.SendMessage(":x: Setup Aborted :x:"); return; }
-
+                        
                         if (e.User.Id == s.User.Id && e.User.PrivateChannel.Id == s.Channel.Id)
+                            if (s.Message.RawText.ToLower().StartsWith("exit")) { _client.MessageReceived -= setupCreator; await s.User.SendMessage(":x: Setup Aborted :x:"); SetupCommand.usersInSetup.Remove(s.User.Id); return; }
                             switch (state)
                             {
                                 case setupState.name:
@@ -144,6 +148,7 @@ namespace DiscordBot.Commands
                                         await s.Channel.SendMessage($"The setup you created is:\n```Setup Name: {setup.SetupName} | Created by: {setup.CreatorName} | Day/Night time: {setup.DayLength} min / {setup.NightLength} min ```\n:white_check_mark: Step 1 has been completed. The next step is to assign roles.");
                                         await s.Channel.SendMessage("Roles aren't supported in this version of the setup creator. :x:\n\n:x: Setup couldn't be completed. Aborting setup... :x:");
                                         _client.MessageReceived -= setupCreator;
+                                        SetupCommand.usersInSetup.Remove(s.User.Id);
                                     }
                                     else if (s.Message.RawText.ToLower().Equals("n") || s.Message.RawText.ToLower().StartsWith("no"))
                                     {
