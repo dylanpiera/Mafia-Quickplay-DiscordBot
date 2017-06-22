@@ -137,9 +137,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandInitializer.cs" />
+    <Compile Include="Resources\Setup.cs" />
     <Compile Include="Commands\SetupCommand.cs" />
     <Compile Include="Commands\TestCommand.cs" />
     <Compile Include="Commands\CookieCommand.cs" />
+    <Compile Include="Resources\setupCreatorState.cs" />
     <Compile Include="Roles\Doctor.cs" />
     <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
