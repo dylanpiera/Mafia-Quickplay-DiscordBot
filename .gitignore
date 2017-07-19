@@ -241,3 +241,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 DiscordBot/Util/Sneaky.cs
+DiscordBot/Commands/DylanBombCheatCommand.cs

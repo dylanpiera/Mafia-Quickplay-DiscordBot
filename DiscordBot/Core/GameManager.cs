@@ -143,7 +143,7 @@ namespace DiscordBot.Core
                 await x.Role.powerResult(x.User, x.Role.Target);
             });
 
-            if(g.MafiaKillTarget != null && g.MafiaKillTarget != g.Objects.Where(x => x.Role.Title=="Doctor").FirstOrDefault().Role.Target)
+            if(g.MafiaKillTarget != null && g.MafiaKillTarget != g.Objects.Where(x => x.Role.Title=="Doctor" && x.Role.Alive).FirstOrDefault().Role.Target)
             {
                 await g.GameChat.SendMessage($"When everyone woke up in the morning, they found out someone was missing: {g.MafiaKillTarget.User.Name}\nOnce they arived at their home, they were found death on the ground.\n\n**{g.MafiaKillTarget.User.Name} was killed by the Mafia. They were:**");
                 await g.GameChat.SendMessage($"**Role PM:**\n```{g.MafiaKillTarget.Role.RolePM}```\n");
