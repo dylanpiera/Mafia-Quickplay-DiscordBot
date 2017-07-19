@@ -9,11 +9,13 @@ namespace DiscordBot.Resources
 {
     static class ListHelper
     {
+        public static Random r;
+
         public static List<E> ShuffleList<E>(this IList<E> inputList)
         {
             List<E> randomList = new List<E>();
 
-            Random r = new Random();
+            r = new Random();
             int randomIndex = 0;
             while (inputList.Count > 0)
             {

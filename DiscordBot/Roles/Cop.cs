@@ -42,6 +42,8 @@ namespace DiscordBot.Roles
             {
                 if (target.Role.Title == "Godfather")
                     await user.SendMessage($"You checked {target.User.Name}, they are: {RoleUtil.Allignment.Town.ToString()}");
+                else if (target.Role.Title == "Miller")
+                    await user.SendMessage($"You checked {target.User.Name}, they are: {RoleUtil.Allignment.Mafia.ToString()}");
                 else
                     await user.SendMessage($"You checked {target.User.Name}, they are: {target.Role.Allignment}");
             } catch(NullReferenceException)

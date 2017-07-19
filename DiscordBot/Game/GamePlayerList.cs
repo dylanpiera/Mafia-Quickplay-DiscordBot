@@ -170,7 +170,7 @@ namespace DiscordBot.Game
             {
                 if (item == player) return true;
             }
-
+            
             return false;
         }
 

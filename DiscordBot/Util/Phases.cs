@@ -8,8 +8,8 @@ namespace DiscordBot.Util
 {
     enum Phases
     {
-        Day = 0,
-        Night = 1,
-        EndPhase = 2
+        Day,
+        Night,
+        EndPhase
     }
 }

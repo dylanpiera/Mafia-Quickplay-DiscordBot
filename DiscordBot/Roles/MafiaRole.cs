@@ -19,6 +19,7 @@ namespace DiscordBot.Roles
         protected String power = "";
         private bool powerRole = false;
         private Player target;
+        private EventHandler<MessageEventArgs> eventHandler;
 
         private bool canVote, canVoteNow;
 
@@ -105,7 +106,9 @@ namespace DiscordBot.Roles
 
         public EventHandler<MessageEventArgs> PowerHandler(GamePlayerList g)
         {
-            return new EventHandler<MessageEventArgs>((s, e) => powerHandler(s, e, g));
+            if (this.eventHandler == null)
+                this.eventHandler = new EventHandler<MessageEventArgs>((s, e) => powerHandler(s, e, g));
+            return this.eventHandler;
         }
 
         public MafiaRole(String title = "vanilla", String description = "The vanilla towny with no actual powers.", Allignment allignment = Allignment.Town, Wincon wincon = Wincon.DefeatMafia, string rolePM = "")
@@ -119,14 +122,11 @@ namespace DiscordBot.Roles
             canVote = true; canVoteNow = false;
         }
 
-
-        //public async virtual Task<bool> Power(Channel chat) { await Task.Delay(0); return true; }
+        
         #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async void powerHandler(object s, MessageEventArgs e, GamePlayerList g) { }
         public virtual async Task<bool> powerResult(User user, Player target) { return true; }
         #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
-
 
         public virtual async void sendRolePM(User user)
         {

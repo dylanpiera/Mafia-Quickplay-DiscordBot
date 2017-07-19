@@ -3,6 +3,7 @@ using Discord.Commands;
 using DiscordBot.Game;
 using DiscordBot.Resources;
 using DiscordBot.Roles;
+using DiscordBot.Roles.RoleUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,18 @@ namespace DiscordBot.Core
             //Distribute Roles
             Message m1 = await channel.SendMessage("Distributing roles now...");
             await channel.SendIsTyping();
-            distributeRoles(g);
+            //distributeRoles(g);
+
+            try
+            {
+                List<MafiaRole> setup = handleSetup(g);
+                redoneRoles(g, setup);
+            }
+            catch 
+            {
+                await e.Channel.SendMessage("An error occured. Game setup has stalled. Please contact a moderator.");
+            }
+
             await m1.Edit("Distributed roles! :white_check_mark:");
             await Task.Delay(500);
 
@@ -72,6 +84,94 @@ namespace DiscordBot.Core
             g.PhaseCounter = 1;
             //run the GameManager for continuation of the game.
             GameManager.runGame(g, _client);
+        }
+
+        private static List<MafiaRole> handleSetup(GamePlayerList g)
+        {
+            List<MafiaRole> setup = new List<MafiaRole>();
+
+
+            Console.WriteLine("Starting to handle setup");
+            if (true) //change this later for default setup
+            {
+                int playerCount = g.Objects.Count;
+
+                //int funFactor = ListHelper.r.Next(100);
+
+                g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
+                g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
+
+                if (playerCount == 5 && g.MafiaPlayers == 2)
+                {
+                    g.TownPlayers++;
+                    g.MafiaPlayers--;
+                }
+                int i = g.TownPlayers;
+                while (i >= 3)
+                {
+                    if (i >= 4 && g.Doctors == 0)
+                    {
+                        g.TownPlayers--;
+                        g.Doctors++;
+                        i--;
+                    }
+                    g.TownPlayers--;
+                    g.Cops++;
+                    i -= 3;
+                }
+                Console.WriteLine("Numbers Input.");
+            }
+            for (int i = 0; i < g.Doctors; i++)
+            {
+                setup.Add(new Doctor("Player"));
+                g.TownAlive++;
+            }
+            for (int i = 0; i < g.Cops; i++)
+            {
+                setup.Add(new Cop("Player"));
+                g.TownAlive++;
+            }
+            for (int i = 0; i < g.TownPlayers; i++)
+            {
+                setup.Add(new Vanilla(Allignment.Town, "Player"));
+                g.TownAlive++;
+            }
+            for (int i = 0; i < g.Godfathers; i++)
+            {
+                setup.Add(new Vanilla("Godfather", "You are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.", $"Dear **{players[i].User.Name}**,\n\nYou are the most basic of roles in existence,\nYou are the **Godfather**.\n\nYou are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.\n\nYou win with the **Mafia** whose goal is to outnumber all members of the Town"));
+            }
+            for (int i = 0; i < g.MafiaPlayers; i++)
+            {
+                setup.Add(new Vanilla(Allignment.Mafia, "Player"));
+                g.MafiaAlive++;
+            }
+            Console.WriteLine("Created Roles");
+
+
+            return setup;
+        }
+
+        private static void redoneRoles(GamePlayerList g, List<MafiaRole> setup)
+        {
+            List<Player> players = ListHelper.ShuffleList<Player>(g.Objects);
+            List<MafiaRole> roles = ListHelper.ShuffleList<MafiaRole>(setup);
+            MafiaRole role;
+            Console.WriteLine("Starting to assign roles.");
+            if (players.Count == roles.Count)
+            {
+                Console.WriteLine("Started to assign roles. Player count:" + players.Count);
+                foreach (Player player in players)
+                {
+                    player.AssignRole(role = roles.FirstOrDefault());
+                    Console.WriteLine($"{player.User.Name} received {role.Title}");
+                    roles.Remove(role);
+                }
+                g.Objects = players;
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         //Randomly distribute the roles.
@@ -121,7 +221,7 @@ namespace DiscordBot.Core
                     g.Godfathers++;
                     i++;
                 }
-                players[i].AssignRole(new Vanilla(Roles.RoleUtil.Allignment.Mafia, players[i].User.Name));
+                players[i].AssignRole(new Vanilla(Allignment.Mafia, players[i].User.Name));
                 g.MafiaAlive++;
                 i++;
             } while (g.MafiaAlive < g.MafiaPlayers);

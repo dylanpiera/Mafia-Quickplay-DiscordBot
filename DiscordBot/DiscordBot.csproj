@@ -146,7 +146,6 @@
     <Compile Include="Core\StartGame.cs" />
     <Compile Include="Commands\VoteTallyCommand.cs" />
     <Compile Include="Commands\CommandTemplate.cs" />
-    <Compile Include="Commands\CountdownCommand.cs" />
     <Compile Include="Commands\JoinCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\PlayerListCommand.cs" />
