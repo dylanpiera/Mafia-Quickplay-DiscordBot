@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord_Mafia_Bot
+namespace DiscordBot.Roles.RoleUtil
 {
-    class Program
+    enum Allignment
     {
-        static void Main(string[] args)
-        {
-        }
+        Town = 0,
+        Mafia = 1,
+        Indep = 2
     }
 }
