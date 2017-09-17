@@ -210,6 +210,7 @@
     <Compile Include="Util\HiddenAttribute.cs" />
     <Compile Include="Util\ListHelper.cs" />
     <Compile Include="Util\Phases.cs" />
+    <Compile Include="Util\ScheduleMessage1.0.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Util\TimeConverter.cs" />
   </ItemGroup>

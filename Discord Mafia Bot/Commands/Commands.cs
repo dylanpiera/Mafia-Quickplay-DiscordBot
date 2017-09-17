@@ -263,24 +263,31 @@ namespace Discord_Mafia_Bot.Commands
                 {
                     countVotes(game);
                     int i = 0;
-                    EmbedBuilder builder = new EmbedBuilder() {Color = Color.LightGrey,Title = $"{game.Phase.ToString()}{game.PhaseCounter} vote tally:" };
+                    EmbedBuilder builder = new EmbedBuilder() {Color = Color.LightGrey,Title = $"{game.Phase.ToString()} {game.PhaseCounter} vote tally:" };
 
-                    List<Player> SortedList = game.Objects.Where(x => x.Alive).OrderByDescending(o => o.VotesOn).ToList();
-                    foreach (Player player in SortedList)
+                    List<Player> SortedList = game.Objects.Where(x => x.Alive && x.VotesOn > 0).OrderByDescending(o => o.VotesOn).ToList();
+                    if (SortedList.Count != 0)
                     {
-                        i++;
-                        try
+                        foreach (Player player in SortedList)
                         {
-                            builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {votedFor(SortedList, player)}";
+                            i++;
+                            try
+                            {
+                                builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}";
+                            }
+                            catch (Exception) { }
                         }
-                        catch (Exception) { }
+                    }
+                    else
+                    {
+                        builder.Description += "There are no votes.";
                     }
 
                     await ReplyAsync("", false, builder.Build());
                 }
             }
 
-            private object votedFor(List<Player> sortedList, Player lynchee)
+            public static string votedFor(List<Player> sortedList, Player lynchee)
             {
                 string s = "";
 
@@ -293,7 +300,7 @@ namespace Discord_Mafia_Bot.Commands
                 return s;
             }
 
-            private void countVotes(GamePlayerList game)
+            public static void countVotes(GamePlayerList game)
             {
                 foreach (Player player in game.Objects)
                 {
@@ -314,7 +321,7 @@ namespace Discord_Mafia_Bot.Commands
         #region ReadyCommand
         public class ReadyCommand : ModuleBase
         {
-            [Command("ready"), Summary("Ready up for the game to start!")]
+            [Command("ready",RunMode = RunMode.Async), Summary("Ready up for the game to start!") ]
             public async Task Ready()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
@@ -334,7 +341,7 @@ namespace Discord_Mafia_Bot.Commands
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..."});
                                 //game.gameRunning = true; //Should be moved to startGame()
                                 await Task.Delay(TimeConverter.SecToMS(2));
-                                StartGame.startGame(Context, game);
+                                GameManager.startGame(Context, game);
                             }
                             else if (everyoneReady)
                             {
@@ -364,7 +371,7 @@ namespace Discord_Mafia_Bot.Commands
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
                     //game.gameRunning = true; //Should be moved to startGame()
                     await Task.Delay(TimeConverter.SecToMS(2));
-                    StartGame.startGame(Context, game);
+                    GameManager.startGame(Context, game);
                 }
                 else if (!game.gameRunning && game.Objects.Count <= 4)
                 {

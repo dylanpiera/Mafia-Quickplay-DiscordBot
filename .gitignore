@@ -242,3 +242,5 @@ ModelManifest.xml
 .fake/
 
 Discord Mafia Bot/Util/Sneaky\.cs
+
+Discord Mafia Bot/Util/ScheduleMessage1\.0\.cs
