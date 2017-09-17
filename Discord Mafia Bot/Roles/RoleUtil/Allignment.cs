@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Roles.RoleUtil
 {
-    enum Allignment
+    public enum Allignment
     {
         Town = 0,
         Mafia = 1,

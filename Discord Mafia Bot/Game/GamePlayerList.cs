@@ -11,7 +11,7 @@ using Discord.WebSocket;
 
 namespace DiscordBot.Game
 {
-    class GamePlayerList
+    public class GamePlayerList
     {
         private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
         EventHandler<SocketMessage> nightkillHandler;
@@ -89,7 +89,9 @@ namespace DiscordBot.Game
             this.mafiaChat = mafiaChat;
         }
 
-        // <summary>Sets or gets if the game is running or not</summary>
+        /// <summary>
+        /// Sets or gets if the game is running or not
+        /// </summary>
         public bool gameRunning { get; set; }
 
         internal void Reset()
@@ -112,21 +114,21 @@ namespace DiscordBot.Game
             PhaseLengthInMin = 4;
         }
 
-        // <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
-        // <param name ="Player">the user to add to the game as a Player</param>
+        /// <summary> Add's a User to the game, and assigns them to an instance of Player</summary>
+        /// <param name ="Player">the user to add to the game as a Player</param>
         public void Add(IGuildUser player)
         {
             this.players.Add(new Player(player,this));
         }
 
-        // <summary> removes a User from the game</summary>
-        // <param name ="Player">the instance of Player to remove from the list</param>
+        /// <summary> removes a User from the game</summary>
+        /// <param name ="Player">the instance of Player to remove from the list</param>
         public void Remove(Player player)
         {
             this.players.Remove(player);
         }
-        // <summary> removes a User from the game with an instance of User</summary>
-        // <param name ="Player">the instance of User to remove from the list</param>
+        /// <summary> removes a User from the game with an instance of User</summary>
+        /// <param name ="Player">the instance of User to remove from the list</param>
         public void Remove(IGuildUser player)
         {
             foreach (Player item in players)
@@ -139,8 +141,8 @@ namespace DiscordBot.Game
             }
         }
 
-        // <summary>Finds and returns a player by name</summary>
-        // <param name ="userName">the discord user name of a player</param>
+        /// <summary>Finds and returns a player by name</summary>
+        /// <param name ="userName">the discord user name of a player</param>
         public Player Find(string userName)
         {
             foreach (Player player in players)
@@ -150,8 +152,8 @@ namespace DiscordBot.Game
 
             return null;
         }
-        // <summary>Finds and returns a player by user instance</summary>
-        // <param name ="user">the discord user</param>
+        /// <summary>Finds and returns a player by user instance</summary>
+        /// <param name ="user">the discord user</param>
         public Player Find(IGuildUser user)
         {
             foreach (Player player in players)
@@ -163,8 +165,8 @@ namespace DiscordBot.Game
         }
 
 
-        // <summary>Checks if a player is in the game</summary>
-        // <param name ="Player">the instance of Player to check</param>
+        /// <summary>Checks if a player is in the game</summary>
+        /// <param name ="Player">the instance of Player to check</param>
         public bool inGame(Player player)
         {
             foreach (Player item in players)
@@ -184,8 +186,8 @@ namespace DiscordBot.Game
 
             return false;
         }
-        // <summary>Checks if a player is in the game</summary>
-        // <param name ="Player">the instance of User to check</param>
+        /// <summary>Checks if a player is in the game</summary>
+        /// <param name ="Player">the instance of User to check</param>
         public bool inGame(IGuildUser player)
         {
             foreach (Player item in players)

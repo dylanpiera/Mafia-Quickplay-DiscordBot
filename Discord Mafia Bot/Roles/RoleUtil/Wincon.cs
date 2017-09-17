@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Roles.RoleUtil
 {
-    enum Wincon
+    public enum Wincon
     {
         OutnumberTown = 0,
         DefeatMafia = 1,

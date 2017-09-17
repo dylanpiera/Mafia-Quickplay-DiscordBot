@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Roles
 {
-    class MafiaRole
+    public class MafiaRole
     {
         protected Allignment allignment;
         protected Wincon wincon;
@@ -131,7 +131,8 @@ namespace DiscordBot.Roles
 
         public virtual async void sendRolePM(IGuildUser user)
         {
-            await user.SendMessageAsync(rolePM);
+            IDMChannel channel = await user.GetOrCreateDMChannelAsync();
+            await channel.SendMessageAsync(rolePM);
         }
     }
 }

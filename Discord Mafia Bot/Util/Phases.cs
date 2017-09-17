@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Util
 {
-    enum Phases
+    public enum Phases
     {
         Day,
         Night,

@@ -22,7 +22,7 @@ namespace Discord_Mafia_Bot
         private DiscordSocketClient _client;
         private CommandService commands;
         private IServiceProvider services;
-
+        
         internal static Dictionary<IGuild, GamePlayerList> Servers
         {
             get

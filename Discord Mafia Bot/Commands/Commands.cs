@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord_Mafia_Bot.Core;
 using Discord_Mafia_Bot.Util;
 using DiscordBot.Game;
 using DiscordBot.Util;
@@ -15,6 +16,9 @@ namespace Discord_Mafia_Bot.Commands
 
     public class Commands : ModuleBase
     {
+        /// <summary>
+        /// TODO: change up the mention system so it accepts non-mentions.
+        /// </summary>
         #region MiscCommands
         public class MiscCommands : ModuleBase
         {
@@ -328,9 +332,9 @@ namespace Discord_Mafia_Bot.Commands
                             if(everyoneReady && game.Objects.Count > 4)
                             {
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..."});
-                                game.gameRunning = true; //Should be moved to startGame()
+                                //game.gameRunning = true; //Should be moved to startGame()
                                 await Task.Delay(TimeConverter.SecToMS(2));
-                                //TODO: Start game
+                                StartGame.startGame(Context, game);
                             }
                             else if (everyoneReady)
                             {
@@ -351,20 +355,20 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator)]
-            public async Task StartGame()
+            public async Task startGame()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
 
                 if (!game.gameRunning && game.Objects.Count > 4)
                 {
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
-                    game.gameRunning = true; //Should be moved to startGame()
+                    //game.gameRunning = true; //Should be moved to startGame()
                     await Task.Delay(TimeConverter.SecToMS(2));
-                    //TODO: Start game
+                    StartGame.startGame(Context, game);
                 }
                 else if (!game.gameRunning && game.Objects.Count <= 4)
                 {
-                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Failed to start!", Color = Color.DarkOrange, Description = $"{Context.User.Mention} you can not force launch the game, it has less then 5 players. :no_entry_sign:", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required."}});
+                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Failed to start!", Color = Color.DarkOrange, Description = $"{Context.User.Mention} you can not force launch the game, it has less than 5 players. :no_entry_sign:", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required."}});
                 }
             }
         }

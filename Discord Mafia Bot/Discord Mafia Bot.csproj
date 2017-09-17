@@ -191,6 +191,7 @@
     <Compile Include="Commands\Commands.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Core\Program.cs" />
+    <Compile Include="Core\StartGame.cs" />
     <Compile Include="Game\GamePlayerList.cs" />
     <Compile Include="Game\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Roles\Vanilla.cs" />
     <Compile Include="Util\DiscordbotAdminPrecon.cs" />
     <Compile Include="Util\HiddenAttribute.cs" />
+    <Compile Include="Util\ListHelper.cs" />
     <Compile Include="Util\Phases.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Util\TimeConverter.cs" />

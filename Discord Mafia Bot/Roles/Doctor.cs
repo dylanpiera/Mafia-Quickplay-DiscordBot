@@ -4,7 +4,7 @@ using DiscordBot.Game;
 using DiscordBot.Roles;
 using DiscordBot.Roles.RoleUtil;
 
-namespace DiscordBot.Core
+namespace DiscordBot.Roles
 {
     class Doctor : MafiaRole
     {

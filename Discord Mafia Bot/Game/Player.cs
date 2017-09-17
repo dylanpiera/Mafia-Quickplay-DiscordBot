@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Game
 {
-    class Player
+    public class Player
     {
         private IGuildUser user;
         private Player lynchTarget;
