@@ -80,13 +80,6 @@ namespace DiscordBot.Game
         }
 
         private List<Player> players;
-        public int PlayerAmount
-        {
-            get
-            {
-                return players.Count;
-            }
-        }
 
         private IGuildChannel gameChat, mafiaChat;
 
