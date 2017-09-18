@@ -14,7 +14,7 @@ namespace DiscordBot.Game
     public class GamePlayerList
     {
         private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
-        EventHandler<SocketMessage> nightkillHandler;
+        Func<SocketMessage,Task> nightkillHandler;
 
         public int PhaseCounter
         {
@@ -96,6 +96,7 @@ namespace DiscordBot.Game
 
         internal void Reset()
         {
+            this.token.Cancel();
             this.gameRunning = false;
             this.Objects.Clear();
             this.GameChat.DeleteAsync();
@@ -291,7 +292,7 @@ namespace DiscordBot.Game
             }
         }
 
-        public EventHandler<SocketMessage> NightkillHandler
+        public Func<SocketMessage, Task> NightkillHandler
         {
             get
             {

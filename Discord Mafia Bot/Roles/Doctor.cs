@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using DiscordBot.Game;
 using DiscordBot.Roles;
 using DiscordBot.Roles.RoleUtil;
+using System.Threading.Tasks;
 
 namespace DiscordBot.Roles
 {
@@ -15,7 +16,7 @@ namespace DiscordBot.Roles
             PowerRole = true;
         }
 
-        protected override async void powerHandler(object s, SocketMessage e, GamePlayerList g)
+        protected override async Task powerHandler(SocketMessage e, GamePlayerList g)
         {
             if (e.Content.StartsWith("PROTECT: ") && e.Channel.Id == (await e.Author.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {

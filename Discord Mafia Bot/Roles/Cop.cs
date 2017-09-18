@@ -18,7 +18,7 @@ namespace DiscordBot.Roles
             PowerRole = true;
         }
 
-        protected override async void powerHandler(object s, SocketMessage e, GamePlayerList g)
+        protected override async Task powerHandler(SocketMessage e, GamePlayerList g)
         {
             if (e.Content.StartsWith("SCAN: ") && e.Channel.Id == (await e.Author.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {

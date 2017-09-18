@@ -20,7 +20,7 @@ namespace DiscordBot.Roles
         protected String power = "";
         private bool powerRole = false;
         private Player target;
-        private EventHandler<SocketMessage> eventHandler;
+        private Func<SocketMessage,Task> eventHandler;
 
         private bool canVote, canVoteNow;
 
@@ -105,10 +105,10 @@ namespace DiscordBot.Roles
             }
         }
 
-        public EventHandler<SocketMessage> PowerHandler(GamePlayerList g)
+        public Func<SocketMessage,Task> PowerHandler(GamePlayerList g)
         {
             if (this.eventHandler == null)
-                this.eventHandler = new EventHandler<SocketMessage>((s, e) => powerHandler(s, e, g));
+                this.eventHandler = new Func<SocketMessage, Task>((s) => powerHandler(s, g));
             return this.eventHandler;
         }
 
@@ -125,7 +125,7 @@ namespace DiscordBot.Roles
 
         
         #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async void powerHandler(object s, SocketMessage e, GamePlayerList g) { }
+        protected virtual async Task powerHandler(SocketMessage e, GamePlayerList g) { }
         public virtual async Task<bool> powerResult(IGuildUser user, Player target) { return true; }
         #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 

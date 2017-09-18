@@ -58,6 +58,23 @@ namespace Discord_Mafia_Bot.Commands
             {
                 await ReplyAsync("Pong!");
             }
+
+            [Command("endgame"), Summary("(admin only) ends the current game."), DiscordbotAdminPrecon()]
+            public async Task EndGame()
+            {
+                if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
+                {
+                    await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Game ended by Developer", Color = Color.DarkRed, Description = "The game has been ended by a developer." });
+
+                    Program.Servers[Context.Guild].Reset();
+                }
+            }
+
+            /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
+            public async Task deleteChannel(ulong id)
+            {
+                await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
+            }*/
         }
         #endregion
 
@@ -87,7 +104,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("join"), Summary("(optional) argument: User | (make user) join the game."), RequireUserPermission(GuildPermission.Administrator)]
+            [Command("join"), Summary("(optional) argument: User | (make user) join the game."), RequireUserPermission(GuildPermission.ManageGuild)]
             public async Task Join(params IGuildUser[] user)
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -120,7 +137,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
 
             }
-            [Command("join"), Hidden(), Priority(-1), RequireUserPermission(GuildPermission.Administrator)]
+            [Command("join"), Hidden(), Priority(-1), RequireUserPermission(GuildPermission.ManageGuild)]
             public async Task Join(params string[] s)
             {
                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Missing Mention!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
@@ -152,7 +169,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("leave"), Summary("Force (mentioned) to leave the game."), RequireUserPermission(GuildPermission.Administrator), Alias("kick")]
+            [Command("leave"), Summary("Force (mentioned) to leave the game."), RequireUserPermission(GuildPermission.ManageGuild), Alias("kick")]
             public async Task Leave(params IGuildUser[] users)
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -192,7 +209,7 @@ namespace Discord_Mafia_Bot.Commands
                     #endregion
                 }
             }
-            [Command("leave"), Hidden(), Priority(-1), RequireUserPermission(GuildPermission.Administrator), Alias("kick")]
+            [Command("leave"), Hidden(), Priority(-1), RequireUserPermission(GuildPermission.ManageGuild), Alias("kick")]
             public async Task Leave(params string[] s)
             {
                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Missing Mention!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
@@ -204,7 +221,7 @@ namespace Discord_Mafia_Bot.Commands
         #region ListCommand
         public class ListCommand : ModuleBase
         {
-            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server.")]
+            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."),Alias("players")]
             public async Task List()
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -249,9 +266,9 @@ namespace Discord_Mafia_Bot.Commands
                         {
                             builder.Description += $"{i}. {player.User.Mention} + votes: -\n";
                         }
-                        await ReplyAsync("", false, builder.Build());
-                        return;
                     }
+                    await ReplyAsync("", false, builder.Build());
+                    return;
                 }
             }
 
@@ -273,7 +290,7 @@ namespace Discord_Mafia_Bot.Commands
                             i++;
                             try
                             {
-                                builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}";
+                                builder.Description += $"{player.User.Mention} \t{player.VotesOn}: {votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
                             }
                             catch (Exception) { }
                         }
@@ -361,7 +378,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator)]
+            [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator | GuildPermission.BanMembers)]
             public async Task startGame()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
