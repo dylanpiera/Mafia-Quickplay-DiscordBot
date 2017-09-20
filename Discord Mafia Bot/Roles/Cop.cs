@@ -27,9 +27,9 @@ namespace DiscordBot.Roles
                 {
                     Target = g.Find(target);
                     if(Target.User.Nickname != null)
-                        await e.Author.SendMessageAsync($"You will be scanning: {Target.User.Nickname} tonight. Use `SCAN: [playername]` to change your target.");
+                        await e.Author.SendMessageAsync($"You will be scanning: {Target.User.Mention} tonight. Use `SCAN: [playername]` to change your target.");
                     else
-                        await e.Author.SendMessageAsync($"You will be scanning: {Target.User.Username} tonight. Use `SCAN: [playername]` to change your target.");
+                        await e.Author.SendMessageAsync($"You will be scanning: {Target.User.Mention} tonight. Use `SCAN: [playername]` to change your target.");
                 } else
                 {
                     await e.Author.SendMessageAsync($"Your input was invalid. You inputted: {target}");
@@ -42,11 +42,11 @@ namespace DiscordBot.Roles
             try
             {
                 if (target.Role.Title == "Godfather")
-                    await user.SendMessageAsync($"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Town.ToString()}");
+                    await user.SendMessageAsync($"You checked {target.User.Mention}, they are: {RoleUtil.Allignment.Town.ToString()}");
                 else if (target.Role.Title == "Miller")
-                    await user.SendMessageAsync($"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Mafia.ToString()}");
+                    await user.SendMessageAsync($"You checked {target.User.Mention}, they are: {RoleUtil.Allignment.Mafia.ToString()}");
                 else
-                    await user.SendMessageAsync($"You checked {target.User.Username}, they are: {target.Role.Allignment}");
+                    await user.SendMessageAsync($"You checked {target.User.Mention}, they are: {target.Role.Allignment}");
             } catch(NullReferenceException)
             {
                 await user.SendMessageAsync("You didn't target anyone last night.");

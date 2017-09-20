@@ -148,7 +148,7 @@ namespace DiscordBot.Game
         {
             foreach (Player player in players)
             {
-                if (player.User.Username == userName || player.User.Nickname == userName) return player;
+                if (player.User.Username.ToLower() == userName.ToLower() || player.User.Nickname.ToLower() == userName.ToLower()) return player;
             }
 
             return null;
