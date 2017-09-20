@@ -237,7 +237,7 @@ namespace Discord_Mafia_Bot.Commands
                         foreach (Player player in Program.Servers[Context.Guild].Objects)
                         {
                             i++;
-                            builder.Description += $"{i}. {player.User.Username}\n";
+                            builder.Description += $"{i}. {player.User.Username} - Ready: {player.Ready}\n";
                         }
                         await ReplyAsync("", false, builder.Build());
                         return;
