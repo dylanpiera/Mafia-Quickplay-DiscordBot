@@ -20,5 +20,10 @@ namespace Discord_Mafia_Bot.Util
             else
                 return PreconditionResult.FromError($"{context.User.Username} tried to use {command.Name} but isn't an admin of this bot.");
         }
+
+        public override string ToString()
+        {
+            return "Bot Admin Only.";
+        }
     }
 }

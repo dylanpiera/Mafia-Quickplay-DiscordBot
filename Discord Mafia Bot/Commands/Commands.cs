@@ -20,6 +20,7 @@ namespace Discord_Mafia_Bot.Commands
         /// TODO: change up the mention system so it accepts non-mentions.
         /// </summary>
         #region MiscCommands
+        [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
         {
             [Command("howtoplay"), Summary("Explains how to use the Mafia Bot and play a game!")]
@@ -50,7 +51,7 @@ namespace Discord_Mafia_Bot.Commands
         #endregion
 
         #region DebugCommands
-        [Group("debug")]
+        [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
         public class DebugCommands : ModuleBase
         {
             [Command("ping"), Summary("Returns with Pong!")]
@@ -59,7 +60,7 @@ namespace Discord_Mafia_Bot.Commands
                 await ReplyAsync("Pong!");
             }
 
-            [Command("endgame"), Summary("(admin only) ends the current game."), DiscordbotAdminPrecon()]
+            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon()]
             public async Task EndGame()
             {
                 if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -78,10 +79,13 @@ namespace Discord_Mafia_Bot.Commands
         }
         #endregion
 
-        #region JoinCommand
-        public class JoinCommand : ModuleBase
+        #region Game Commands
+        [Name("Game Commands"), Summary("")]
+        public class Game_Commands : ModuleBase
         {
-            [Command("join"), Summary("")]
+            #region JoinCommand
+
+            [Command("join"), Summary("Join the current game signups.")]
             public async Task Join()
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -104,7 +108,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("join"), Summary("(optional) argument: User | (make user) join the game."), RequireUserPermission(GuildPermission.ManageGuild)]
+            [Command("join"), Summary("force [user] to join the current game signups."), RequireUserPermission(GuildPermission.ManageGuild), Name("!join [user]")]
             public async Task Join(params IGuildUser[] user)
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -142,12 +146,8 @@ namespace Discord_Mafia_Bot.Commands
             {
                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Missing Mention!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
             }
-        }
-        #endregion
-
-        #region LeaveCommand
-        public class LeaveCommand : ModuleBase
-        {
+            #endregion
+            #region LeaveCommand
             [Command("leave"), Summary("Leave the current game signups.")]
             public async Task Leave()
             {
@@ -214,14 +214,68 @@ namespace Discord_Mafia_Bot.Commands
             {
                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Missing Mention!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
             }
+            #endregion
+            #region ReadyCommand
+            [Command("ready", RunMode = RunMode.Async), Summary("Ready up for the game to start!")]
+            public async Task Ready()
+            {
+                GamePlayerList game = Program.Servers[Context.Guild];
 
-        }
-        #endregion
+                if (!game.gameRunning)
+                {
+                    if (game.inGame(Context.User as IGuildUser))
+                    {
+                        Player player = game.Find(Context.User as IGuildUser);
+                        if (!player.Ready)
+                        {
+                            bool everyoneReady = player.readyUp(game);
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Ready!", Color = Color.Green, Description = $"{Context.User.Mention} is ready! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Ready players: {game.Objects.Where(x => x.Ready).Count()}/{game.Objects.Count}" } });
 
-        #region ListCommand
-        public class ListCommand : ModuleBase
-        {
-            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."),Alias("players")]
+                            if (everyoneReady && game.Objects.Count > 4)
+                            {
+                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..." });
+                                //game.gameRunning = true; //Should be moved to startGame()
+                                await Task.Delay(TimeConverter.SecToMS(2));
+                                GameManager.startGame(Context, game);
+                            }
+                            else if (everyoneReady)
+                            {
+                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Too little players!", Color = Color.Orange, Description = $"@everyone is ready, but we don't have enough players. ", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required." } });
+                            }
+                        }
+                        else
+                        {
+                            player.Ready = false;
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Player no longer ready!", Color = Color.Red, Description = $"{Context.User.Mention} is no longer ready! :x:", Footer = new EmbedFooterBuilder() { Text = $"Ready players: {game.Objects.Where(x => x.Ready).Count()}/{game.Objects.Count}" } });
+                        }
+                    }
+                    else
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Not in game!", Color = Color.Red, Description = $"{Context.User.Mention} you're not in the game! Please join first by typing !join :no_entry_sign:" });
+                    }
+                }
+            }
+
+            [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator | GuildPermission.BanMembers)]
+            public async Task startGame()
+            {
+                GamePlayerList game = Program.Servers[Context.Guild];
+
+                if (!game.gameRunning && game.Objects.Count > 4)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
+                    //game.gameRunning = true; //Should be moved to startGame()
+                    await Task.Delay(TimeConverter.SecToMS(2));
+                    GameManager.startGame(Context, game);
+                }
+                else if (!game.gameRunning && game.Objects.Count <= 4)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Failed to start!", Color = Color.DarkOrange, Description = $"{Context.User.Mention} you can not force launch the game, it has less than 5 players. :no_entry_sign:", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required." } });
+                }
+            }
+            #endregion
+            #region ListCommand
+            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players")]
             public async Task List()
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -272,7 +326,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("votecount"),Alias("tally"),Summary("Shows the total votes on all players.")]
+            [Command("votecount"), Alias("tally"), Summary("Shows the total votes on all players.")]
             public async Task VoteCount()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
@@ -280,7 +334,7 @@ namespace Discord_Mafia_Bot.Commands
                 {
                     countVotes(game);
                     int i = 0;
-                    EmbedBuilder builder = new EmbedBuilder() {Color = Color.LightGrey,Title = $"{game.Phase.ToString()} {game.PhaseCounter} vote tally:" };
+                    EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = $"{game.Phase.ToString()} {game.PhaseCounter} vote tally:" };
 
                     List<Player> SortedList = game.Objects.Where(x => x.Alive && x.VotesOn > 0).OrderByDescending(o => o.VotesOn).ToList();
                     if (SortedList.Count != 0)
@@ -332,70 +386,10 @@ namespace Discord_Mafia_Bot.Commands
                     catch (Exception) { }
                 }
             }
+
+            #endregion
         }
         #endregion
 
-        #region ReadyCommand
-        public class ReadyCommand : ModuleBase
-        {
-            [Command("ready",RunMode = RunMode.Async), Summary("Ready up for the game to start!") ]
-            public async Task Ready()
-            {
-                GamePlayerList game = Program.Servers[Context.Guild];
-
-                if (!game.gameRunning)
-                {
-                    if(game.inGame(Context.User as IGuildUser))
-                    {
-                        Player player = game.Find(Context.User as IGuildUser);
-                        if (!player.Ready)
-                        {
-                            bool everyoneReady = player.readyUp(game);
-                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Ready!", Color = Color.Green, Description = $"{Context.User.Mention} is ready! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Ready players: {game.Objects.Where(x => x.Ready).Count()}/{game.Objects.Count}" } });
-
-                            if(everyoneReady && game.Objects.Count > 4)
-                            {
-                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..."});
-                                //game.gameRunning = true; //Should be moved to startGame()
-                                await Task.Delay(TimeConverter.SecToMS(2));
-                                GameManager.startGame(Context, game);
-                            }
-                            else if (everyoneReady)
-                            {
-                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Too little players!", Color = Color.Orange, Description = $"@everyone is ready, but we don't have enough players. ", Footer = new EmbedFooterBuilder() {Text = $"[{game.Objects.Count}/5] required." } });
-                            }
-                        }
-                        else
-                        {
-                            player.Ready = false;
-                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Player no longer ready!", Color = Color.Red, Description = $"{Context.User.Mention} is no longer ready! :x:", Footer = new EmbedFooterBuilder() { Text = $"Ready players: {game.Objects.Where(x => x.Ready).Count()}/{game.Objects.Count}" } });
-                        }
-                    }
-                    else
-                    {
-                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Not in game!", Color = Color.Red, Description = $"{Context.User.Mention} you're not in the game! Please join first by typing !join :no_entry_sign:" });
-                    }
-                }
-            }
-
-            [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator | GuildPermission.BanMembers)]
-            public async Task startGame()
-            {
-                GamePlayerList game = Program.Servers[Context.Guild];
-
-                if (!game.gameRunning && game.Objects.Count > 4)
-                {
-                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
-                    //game.gameRunning = true; //Should be moved to startGame()
-                    await Task.Delay(TimeConverter.SecToMS(2));
-                    GameManager.startGame(Context, game);
-                }
-                else if (!game.gameRunning && game.Objects.Count <= 4)
-                {
-                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Failed to start!", Color = Color.DarkOrange, Description = $"{Context.User.Mention} you can not force launch the game, it has less than 5 players. :no_entry_sign:", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required."}});
-                }
-            }
-        }
-        #endregion
     }
 }

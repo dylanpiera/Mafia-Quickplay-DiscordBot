@@ -377,7 +377,7 @@ namespace Discord_Mafia_Bot.Core
 
             await Task.Delay(TimeConverter.MinToMS(game.PhaseLengthInMin/2),game.Token.Token);
 
-            Commands.Commands.ListCommand.countVotes(game);
+            Commands.Commands.Game_Commands.countVotes(game);
             int i = 0;
             EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = $"{game.Phase.ToString()} {game.PhaseCounter} midday vote tally:" };
 
@@ -389,7 +389,7 @@ namespace Discord_Mafia_Bot.Core
                     i++;
                     try
                     {
-                        builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {Commands.Commands.ListCommand.votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
+                        builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {Commands.Commands.Game_Commands.votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
                     }
                     catch (Exception) { }
                 }
@@ -419,7 +419,7 @@ namespace Discord_Mafia_Bot.Core
             EmbedBuilder builder = new EmbedBuilder() { Title = $"Day {game.PhaseCounter} Recap", Color = Color.DarkOrange, Description = $":city_sunset: @everyone the Day phase has ended! Recapping now... :city_sunset:\n\n"};
             IUserMessage msg = await (game.GameChat as IMessageChannel).SendMessageAsync("",false,builder.Build());
 
-            Commands.Commands.ListCommand.countVotes(game);
+            Commands.Commands.Game_Commands.countVotes(game);
 
             List<Player> list = game.Objects.Where(x => x.Alive).OrderByDescending(x => x.VotesOn).ToList();
             Player lynchee = list.FirstOrDefault();
