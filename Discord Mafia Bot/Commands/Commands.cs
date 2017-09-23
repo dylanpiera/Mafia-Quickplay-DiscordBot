@@ -275,7 +275,7 @@ namespace Discord_Mafia_Bot.Commands
             }
             #endregion
             #region ListCommand
-            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players")]
+            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players"), Ratelimit(1,0.1, Measure.Minutes)]
             public async Task List()
             {
                 if (!Program.Servers[Context.Guild].gameRunning)

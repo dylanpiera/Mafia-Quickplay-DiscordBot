@@ -206,10 +206,11 @@
     <Compile Include="Roles\RoleUtil\Allignment.cs" />
     <Compile Include="Roles\RoleUtil\Wincon.cs" />
     <Compile Include="Roles\Vanilla.cs" />
-    <Compile Include="Util\DiscordbotAdminPrecon.cs" />
+    <Compile Include="Util\Precon\DiscordbotAdminPrecon.cs" />
     <Compile Include="Util\HiddenAttribute.cs" />
     <Compile Include="Util\ListHelper.cs" />
     <Compile Include="Util\Phases.cs" />
+    <Compile Include="Util\Precon\RateLimitPrecon.cs" />
     <Compile Include="Util\Sneaky.cs" />
     <Compile Include="Util\TimeConverter.cs" />
   </ItemGroup>
