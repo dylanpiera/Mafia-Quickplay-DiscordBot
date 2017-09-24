@@ -60,7 +60,7 @@ namespace Discord_Mafia_Bot
             {
                 servers[guild] = new GamePlayerList();
             }
-            _client.SetGameAsync("plan to start an uprising.");
+            _client.SetGameAsync("planning to start an uprising.");
             return Task.CompletedTask;
         }
 

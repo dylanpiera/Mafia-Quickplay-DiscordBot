@@ -291,7 +291,7 @@ namespace Discord_Mafia_Bot.Commands
                         foreach (Player player in Program.Servers[Context.Guild].Objects)
                         {
                             i++;
-                            builder.Description += $"{i}. {player.User.Username} - Ready: {player.Ready}\n";
+                            builder.Description += $"{i}. {player.User.Username}\t-\tReady: {player.Ready}\n";
                         }
                         await ReplyAsync("", false, builder.Build());
                         return;
@@ -308,19 +308,49 @@ namespace Discord_Mafia_Bot.Commands
                         Color = Color.LighterGrey,
                         Title = "Player list with votes:"
                     };
-                    int i = 0;
+
+                    EmbedFieldBuilder alive = new EmbedFieldBuilder() { Name = "Alive", IsInline = false }, dead = new EmbedFieldBuilder() { Name = "The Dead", IsInline = false};
+
                     foreach (Player player in Program.Servers[Context.Guild].Objects)
                     {
-                        i++;
+                        Console.WriteLine($"{player.User.Username} is:");
+                        if (player.Alive)
+                        {
+                            Console.WriteLine("Alive.");
+                            try
+                            {
+                                alive.Value += $"{player.User.Mention}\tvotes: **{player.LynchTarget.User.Mention}**\n";
+                            }
+                            catch (Exception)
+                            {
+                                alive.Value += $"{player.User.Mention}\tvotes: -\n";
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                dead.Value += $"{player.User.Mention}\twas: {player.Role.Allignment.ToString()} {player.Role.Title}";
+                            }
+                            catch (Exception) { }
+                        }
+                    }
+
+                    builder.AddField(alive);
+                    builder.AddField(x =>
+                    {
+                        x.Name = dead.Name;
+                        x.IsInline = dead.IsInline;
                         try
                         {
-                            builder.Description += $"{i}. {player.User.Mention} + votes: **{player.LynchTarget.User.Mention}**\n";
+                            x.Value = dead.Value;
                         }
                         catch (Exception)
                         {
-                            builder.Description += $"{i}. {player.User.Mention} + votes: -\n";
+                            x.Value = "No dead players.";
                         }
-                    }
+                    });
+
                     await ReplyAsync("", false, builder.Build());
                     return;
                 }
