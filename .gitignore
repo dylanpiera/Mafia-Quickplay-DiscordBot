@@ -241,6 +241,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-Discord Mafia Bot/Util/Sneaky\.cs
+Discord Mafia Bot .Net/util/Sneaky\.cs
 
 Discord Mafia Bot/Util/ScheduleMessage1\.0\.cs
