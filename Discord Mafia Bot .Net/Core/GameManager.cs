@@ -477,7 +477,7 @@ namespace Discord_Mafia_Bot.Core
                 if(e.Content.StartsWith("VOTE: ") && e.MentionedUsers.Count == 1)
                 {
                     IGuildUser target;
-                    if(game.inGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)))
+                    if(game.inGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)) && game.Find(e.Author as IGuildUser).Alive)
                     {
                         if (game.Find(target).Alive)
                         {
