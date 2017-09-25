@@ -273,15 +273,19 @@ namespace Discord_Mafia_Bot.Core
             if (e.Channel.Id == game.MafiaChat.Id && e.Content.StartsWith("KILL: "))
             {
                 string target = e.Content.Replace("KILL: ", "");
+                Console.WriteLine("Night kill target: " + target);
                 if (game.inGame(game.Find(target)))
                 {
                     game.MafiaKillTarget = game.Find(target);
+                    Console.WriteLine("Target set.");
                     await (game.MafiaChat as IMessageChannel).SendMessageAsync("",false,new EmbedBuilder() {Color = Color.DarkerGrey,Title = "Nightkill Target",Description = $"The current kill target is: {game.MafiaKillTarget.User.Mention}. Use `KILL: [playername]` to change your target." });
                 }
                 else
                 {
+                    Console.WriteLine("Couldn't find target.");
                     await (game.MafiaChat as IMessageChannel).SendMessageAsync("",false,new EmbedBuilder() {Color = Color.DarkRed, Title = "Invalid Input", Description = $"Your input was invalid. You inputted: {target}" });
                 }
+                Console.WriteLine("End of nightkill handler.");
             }
 
         }
@@ -442,10 +446,12 @@ namespace Discord_Mafia_Bot.Core
 
             await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Color = Color.DarkBlue, Title = $"Night {game.PhaseCounter} start", Description =$":full_moon: It is now Night {game.PhaseCounter}. The phase will end in {game.PhaseLengthInMin / 2} minutes. :full_moon:" });
 
-            foreach (Player player in game.Objects.Where(x => x.Alive))
+            foreach (Player player in game.Objects)
             {
-                await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow , sendMessages: PermValue.Allow));
                 player.LynchTarget = null;
+                if(player.Alive)
+                    await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow , sendMessages: PermValue.Allow));
+                
             }
         }
 

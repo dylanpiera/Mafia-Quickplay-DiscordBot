@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Discord_Mafia_Bot.Commands
 {
-
     public class Commands : ModuleBase
     {
         /// <summary>
@@ -54,6 +53,8 @@ namespace Discord_Mafia_Bot.Commands
         [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
         public class DebugCommands : ModuleBase
         {
+            Func<SocketMessage, Task> T;
+
             [Command("ping"), Summary("Returns with Pong!")]
             public async Task Ping()
             {
@@ -70,12 +71,39 @@ namespace Discord_Mafia_Bot.Commands
                     Program.Servers[Context.Guild].Reset();
                 }
             }
+            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon()]
+            public async Task EndPhase()
+            {
+                if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
+                {
+                    await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Phase skipped by Developer", Color = Color.DarkRed, Description = "This phase has been skipped by a developer." });
+
+                    Program.Servers[Context.Guild].Token.Cancel();
+                }
+            }
 
             /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
             public async Task deleteChannel(ulong id)
             {
                 await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
             }*/
+
+            [Command("echo"), Hidden(), DiscordbotAdminPrecon()]
+            public Task echo()
+            {
+                T = new Func<SocketMessage, Task>(async (e) => {
+                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id) {
+                        await e.Channel.SendMessageAsync(e.Content);
+                    }
+                    else if (e.Content.StartsWith("End Echo"))
+                    {
+                        (Context.Client as DiscordSocketClient).MessageReceived -= this.T;
+                    }
+                });
+
+                (Context.Client as DiscordSocketClient).MessageReceived += T;
+                return Task.CompletedTask;
+            }
         }
         #endregion
 

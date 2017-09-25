@@ -96,7 +96,9 @@ namespace DiscordBot.Game
 
         internal void Reset()
         {
+            this.Phase = Phases.EndPhase;
             this.token.Cancel();
+            
             this.gameRunning = false;
             this.Objects.Clear();
             this.GameChat.DeleteAsync();
@@ -148,7 +150,7 @@ namespace DiscordBot.Game
         {
             foreach (Player player in players)
             {
-                if (player.User.Username.ToLower() == userName.ToLower() || player.User.Nickname.ToLower() == userName.ToLower()) return player;
+                if ((player.User.Nickname ?? player.User.Username).ToLower() == userName.ToLower()) return player;
             }
 
             return null;
