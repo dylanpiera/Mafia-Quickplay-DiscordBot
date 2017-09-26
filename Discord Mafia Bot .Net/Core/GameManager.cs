@@ -200,6 +200,7 @@ namespace Discord_Mafia_Bot.Core
             for (int i = 0; i < g.Godfathers; i++)
             {
                 setup.Add(new Vanilla("Godfather", "You are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.", $"Dear Player,\n\nYou are the most basic of roles in existence,\nYou are the **Godfather**.\n\nYou are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.\n\nYou win with the **Mafia** whose goal is to outnumber all members of the Town"));
+                g.MafiaAlive++;
             }
             for (int i = 0; i < g.MafiaPlayers; i++)
             {
