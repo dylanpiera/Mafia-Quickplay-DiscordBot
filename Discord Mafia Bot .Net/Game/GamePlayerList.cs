@@ -108,6 +108,8 @@ namespace DiscordBot.Game
             this.Doctors = 0;
             this.MafiaPlayers = 0;
             this.TownPlayers = 0;
+            this.MafiaAlive = 0;
+            this.TownAlive = 0;
         }
 
         public GamePlayerList()
