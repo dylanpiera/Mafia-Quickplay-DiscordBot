@@ -16,7 +16,7 @@ In the game chat you can vote by typing `VOTE: @playername`
 For a list of commands type `!help`.
 
 ## How to add to your own server
-This bot is still being tested. It is not yet publicallty available.  
+This bot is still being tested. It is not yet publicly available.  
 If you would like to add this bot to your server, contact me.
 
 ## Testers
