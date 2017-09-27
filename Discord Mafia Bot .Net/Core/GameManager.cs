@@ -84,7 +84,7 @@ namespace Discord_Mafia_Bot.Core
             await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "Welcome Scummy friends :smiling_imp:", Description = "You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target." });
             await Task.Delay(500);
 
-            builder.Description += "Game preperation, completed. :white_check_mark:";
+            builder.Description += "Game preparation, completed. :white_check_mark:";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
             game.Phase = Phases.Day;
