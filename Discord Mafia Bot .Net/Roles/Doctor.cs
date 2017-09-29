@@ -27,7 +27,7 @@ namespace DiscordBot.Roles
                     if (Target.User.Nickname != null)
                         await e.Author.SendMessageAsync("", false, new EmbedBuilder() {
 						Title = "Target Chosen",
-						Color = Color.Blue, Description = $"You will be protecting: {Target.User.Nickname} tonight. Use `PROTECT: [playername]` to change your target."};
+						Color = Color.Blue, Description = $"You will be protecting: {Target.User.Nickname} tonight. Use `PROTECT: [playername]` to change your target."});
                     else
                     	await e.Author.SendMessageAsync("", false, new EmbedBuilder() {
 						Title = "Night Start Doc",

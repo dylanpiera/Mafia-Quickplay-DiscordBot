@@ -10,14 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Discord_Mafia_Bot.Commands
 {
     public class Commands : ModuleBase
     {
-        /// <summary>
-        /// TODO: change up the mention system so it accepts non-mentions.
-        /// </summary>
         #region MiscCommands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
@@ -61,7 +59,7 @@ namespace Discord_Mafia_Bot.Commands
                 await ReplyAsync("Pong!");
             }
 
-            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon()]
+            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndGame()
             {
                 if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -71,7 +69,7 @@ namespace Discord_Mafia_Bot.Commands
                     Program.Servers[Context.Guild].Reset();
                 }
             }
-            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon()]
+            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndPhase()
             {
                 if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -79,6 +77,20 @@ namespace Discord_Mafia_Bot.Commands
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Phase skipped by Developer", Color = Color.DarkRed, Description = "This phase has been skipped by a developer." });
 
                     Program.Servers[Context.Guild].Token.Cancel();
+                }
+            }
+
+            [Command("DataTest"), DiscordbotAdminPrecon(), Hidden()]
+            public async Task DataTest()
+            {
+                XmlReader xmlReader = XmlReader.Create("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
+                while(await xmlReader.ReadAsync())
+                {
+                    if((xmlReader.NodeType == XmlNodeType.Element ) && (xmlReader.Name == "Cube"))
+                    {
+                        if (xmlReader.HasAttributes)
+                            Console.WriteLine(xmlReader.GetAttribute("currency") + ": " + xmlReader.GetAttribute("rate"));
+                    }
                 }
             }
 
