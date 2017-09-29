@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <!--Never make a command called "clear" it won't work.-->
+  <Ahh command="bug" value="Found a bug? Or wanna recommend something be added/removed/changed?\\nSend SoaringDylan a PM about it,\\nPost it on our github https://github.com/dylanpiera/Mafia-Quickplay-DiscordBot \\nor join our development server https://discord.gg/Tu82eWU"/>
+  <Ahh command="htp" value="**How to play quickplay mafia games, with ME**\\n\\nYou can join a game by typing `!join` in the chat, once you're ready you'll have to type `!ready`.\\nThe game won't start before __5__ people have joined!\\nEveryone must be ready before the game starts.\\n\\nOnce the game starts you get your role PM. Any actions will be explained to you in your role PM.\\nIn the game chat you can vote by typing `VOTE: @playername`\\nFor a list of commands type `!help`."/>
+  <Ahh command="howtoplay" value ="**How to play quickplay mafia games, with ME**\\n\\nYou can join a game by typing `!join` in the chat, once you're ready you'll have to type `!ready`.\\nThe game won't start before __5__ people have joined!\\nEveryone must be ready before the game starts.\\n\\nOnce the game starts you get your role PM. Any actions will be explained to you in your role PM.\\nIn the game chat you can vote by typing `VOTE: @playername`\\nFor a list of commands type `!help`."/>
+  <Ahh command="colab" value ="Want to help make this project a better place? Feel free to fork our repo. All help, from fixing typos to actually implementing new code is welcomed!"/>
+  <Ahh command="invite" value ="The invitelink to this server is: https://discord.gg/Tu82eWU"/>
+</root>

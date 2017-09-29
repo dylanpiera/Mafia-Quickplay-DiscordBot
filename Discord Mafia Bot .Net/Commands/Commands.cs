@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Discord_Mafia_Bot.Commands
 {
@@ -20,18 +21,6 @@ namespace Discord_Mafia_Bot.Commands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
         {
-            [Command("howtoplay"), Summary("Explains how to use the Mafia Bot and play a game!")]
-            public async Task Ping()
-            {
-                await ReplyAsync("**How to play quickplay mafia games, with ME**\n\nYou can join a game by typing `!join` in the chat, once you're ready you'll have to type `!ready`.\nThe game won't start before __5__ people have joined!\nEveryone must be ready before the game starts.\n\nOnce the game starts you get your role PM. Any actions will be explained to you in your role PM.\nIn the game chat you can vote by typing `VOTE: @playername`\nFor a list of commands type `!help`.");
-            }
-
-            [Command("bug"), Summary("What to do when you find a bug.")]
-            public async Task Bug()
-            {
-                await ReplyAsync("Found a bug? Or wanna recommend something be added/removed/changed?\nSend SoaringDylan a PM about it,\nPost it on our github https://github.com/dylanpiera/Mafia-Quickplay-DiscordBot \nor join our development server https://discord.gg/Tu82eWU");
-            }
-
             [Command("cookie"), Summary("Gives you a cookie!")]
             public async Task Cookie()
             {
@@ -41,14 +30,13 @@ namespace Discord_Mafia_Bot.Commands
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
             public async Task inviteLink()
             {
-
                 await ReplyAsync(Sneaky.botInvite);
             }
         }
         #endregion
 
         #region DebugCommands
-        [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
+        [Group("debug"), Name("Debug Commands"), Summary("Only for test builds.")]
         public class DebugCommands : ModuleBase
         {
             Func<SocketMessage, Task> T;
@@ -62,7 +50,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndGame()
             {
-                if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
+                if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
                 {
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Game ended by Developer", Color = Color.DarkRed, Description = "The game has been ended by a developer." });
 
@@ -80,20 +68,6 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("DataTest"), DiscordbotAdminPrecon(), Hidden()]
-            public async Task DataTest()
-            {
-                XmlReader xmlReader = XmlReader.Create("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
-                while(await xmlReader.ReadAsync())
-                {
-                    if((xmlReader.NodeType == XmlNodeType.Element ) && (xmlReader.Name == "Cube"))
-                    {
-                        if (xmlReader.HasAttributes)
-                            Console.WriteLine(xmlReader.GetAttribute("currency") + ": " + xmlReader.GetAttribute("rate"));
-                    }
-                }
-            }
-
             /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
             public async Task deleteChannel(ulong id)
             {
@@ -103,8 +77,10 @@ namespace Discord_Mafia_Bot.Commands
             [Command("echo"), Hidden(), DiscordbotAdminPrecon()]
             public Task echo()
             {
-                T = new Func<SocketMessage, Task>(async (e) => {
-                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id) {
+                T = new Func<SocketMessage, Task>(async (e) =>
+                {
+                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id)
+                    {
                         await e.Channel.SendMessageAsync(e.Content);
                     }
                     else if (e.Content.StartsWith("End Echo"))
@@ -115,6 +91,74 @@ namespace Discord_Mafia_Bot.Commands
 
                 (Context.Client as DiscordSocketClient).MessageReceived += T;
                 return Task.CompletedTask;
+            }
+        }
+        #endregion
+
+        #region ahh
+        [Group("ahh")]
+        public class TagCommand : ModuleBase
+        {
+
+            public static Stack<IMessage> AhhMessages = new Stack<IMessage>();
+
+            [Command(), Hidden()]
+            public async Task Ahh(string ahh)
+            {
+                XmlReader xmlReader = XmlReader.Create("./Util/XML/hmm.xml", new XmlReaderSettings() { Async = true});
+
+                while (await xmlReader.ReadAsync())
+                {
+                    if (xmlReader.NodeType == XmlNodeType.Element)
+                    {
+                        if (xmlReader.GetAttribute("command") == ahh)
+                        {
+                            AhhMessages.Push(Context.Message);
+                            AhhMessages.Push(await Context.Channel.SendMessageAsync(xmlReader.GetAttribute("value").ToString().Replace("\\\\n","\n")));
+                            return;
+                        }
+                    }
+                }
+                await Context.Channel.SendMessageAsync("No tag found called: " + ahh);
+            }
+            [Command(), Hidden()]
+            public async Task Ahh()
+            {
+                XmlReader xmlReader = XmlReader.Create("./Util/XML/hmm.xml", new XmlReaderSettings() { Async = true });
+                
+                List<String> msgs = new List<string>();
+                try
+                {
+                    while (await xmlReader.ReadAsync())
+                    {
+                        if (xmlReader.NodeType == XmlNodeType.Element)
+                        {
+                            msgs.Add(xmlReader.GetAttribute("command"));
+                        }
+                    }
+                } finally
+                {
+                    msgs.RemoveAt(0);
+                    await Context.Channel.SendMessageAsync("Available tags: " + string.Join(", ", msgs));
+                }
+
+            }
+            [Command("clear"), Priority(1), Hidden(),Ratelimit(1, 0.5, Measure.Minutes)]
+            public async Task ClearAhh()
+            {
+                foreach (IMessage msg in AhhMessages)
+                {
+                    try
+                    {
+                        await msg.DeleteAsync();
+                    }
+                    catch { }
+                    finally
+                    {
+                        await Task.Delay(250);
+                    }
+                }
+                AhhMessages.Clear();
             }
         }
         #endregion
@@ -315,7 +359,7 @@ namespace Discord_Mafia_Bot.Commands
             }
             #endregion
             #region ListCommand
-            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players"), Ratelimit(1,0.1, Measure.Minutes)]
+            [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players"), Ratelimit(1, 0.1, Measure.Minutes)]
             public async Task List()
             {
                 if (!Program.Servers[Context.Guild].gameRunning)
@@ -349,7 +393,7 @@ namespace Discord_Mafia_Bot.Commands
                         Title = "Player list with votes:"
                     };
 
-                    EmbedFieldBuilder alive = new EmbedFieldBuilder() { Name = "Alive", IsInline = false }, dead = new EmbedFieldBuilder() { Name = "The Dead", IsInline = false};
+                    EmbedFieldBuilder alive = new EmbedFieldBuilder() { Name = "Alive", IsInline = false }, dead = new EmbedFieldBuilder() { Name = "The Dead", IsInline = false };
 
                     foreach (Player player in Program.Servers[Context.Guild].Objects)
                     {
