@@ -25,18 +25,18 @@ namespace DiscordBot.Roles
                 {
                     Target = g.Find(target);
                     if (Target.User.Nickname != null)
-                        await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-						title = "Target Chosen"
+                        await e.Author.SendMessageAsync("", false, new EmbedBuilder() {
+						Title = "Target Chosen",
 						Color = Color.Blue, Description = $"You will be protecting: {Target.User.Nickname} tonight. Use `PROTECT: [playername]` to change your target."};
                     else
-                    	await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-						title = "Night Start Doc",
+                    	await e.Author.SendMessageAsync("", false, new EmbedBuilder() {
+						Title = "Night Start Doc",
 						Color = Color.Blue, Description = $"You will be protecting: {Target.User.Username} tonight. Use `PROTECT: [playername]` to change your target."});
                 }
                 else
                 {
-                    await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-					title = "Invalid",
+                    await e.Author.SendMessageAsync("", false, new EmbedBuilder() {
+					Title = "Invalid",
 					Color = Color.Blue, Description = $"Your input was invalid. You inputted: {target}"});
                 }
             }

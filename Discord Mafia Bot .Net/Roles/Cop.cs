@@ -11,7 +11,7 @@ namespace DiscordBot.Roles
 {
     class Cop : MafiaRole
     {
-        public Cop(string username) :base("Cop","Every night you can target someone, you will learn their alignment.\n\nEach night you can target someone by saying: `SCAN: [playername]` in your PM!")
+        public Cop(string username) : base("Cop", "Every night you can target someone, you will learn their alignment.\n\nEach night you can target someone by saying: `SCAN: [playername]` in your PM!")
         {
             this.rolePM = $"Dear **{username}**,\nYou are the **{Title}**.\n\n{description}\n\nYou win with the **Town** whose goal is to defeat all members of the Mafia.";
             power = "You can now select your cop target. Please do so in the following format: `SCAN: [playername]`";
@@ -23,22 +23,32 @@ namespace DiscordBot.Roles
             if (e.Content.StartsWith("SCAN: ") && e.Channel.Id == (await e.Author.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {
                 string target = e.Content.Replace("SCAN: ", "");
-                if(g.inGame(g.Find(target)))
+                if (g.inGame(g.Find(target)))
                 {
                     Target = g.Find(target);
-                    if(Target.User.Nickname != null)
-                        await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-						Title = "Cop Night Start"
-						Color = Color.Blue, Description = $"You will be scanning: {Target.User.Username} tonight. Use `SCAN: [playername]` to change your target."});
+                    if (Target.User.Nickname != null)
+                        await e.Author.SendMessageAsync("", false, new EmbedBuilder()
+                        {
+                            Title = "Cop Night Start",
+                            Color = Color.Blue,
+                            Description = $"You will be scanning: {Target.User.Username} tonight. Use `SCAN: [playername]` to change your target."
+                        });
                     else
-                        await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-						Title = "Cop Chosen"
-						Color = Color.Blue, Description = $"You will be scanning: {Target.User.Username} tonight. Use `SCAN: [playername]` to change your target."});
-                } else
+                        await e.Author.SendMessageAsync("", false, new EmbedBuilder()
+                        {
+                            Title = "Cop Chosen",
+                            Color = Color.Blue,
+                            Description = $"You will be scanning: {Target.User.Username} tonight. Use `SCAN: [playername]` to change your target."
+                        });
+                }
+                else
                 {
-                    await e.Author.SendMessageAsync("", false new EmbedBuilder() {
-					Title = "Invalid"
-					Color = Color.Blue, Description = $"Your input was invalid. You inputted: {target}"});
+                    await e.Author.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "Invalid",
+                        Color = Color.Blue,
+                        Description = $"Your input was invalid. You inputted: {target}"
+                    });
                 }
             }
         }
@@ -48,22 +58,35 @@ namespace DiscordBot.Roles
             try
             {
                 if (target.Role.Title == "Godfather")
-                    await user.SendMessageAsync("", false, new EmbedBuilder() {
-                    Title = "Godfather",
-                    Color = Color.Blue, Description = $"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Town.ToString()}"});
+                    await user.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "Godfather",
+                        Color = Color.Blue,
+                        Description = $"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Town.ToString()}"
+                    });
                 else if (target.Role.Title == "Miller")
-                    await user.SendMessageAsync("", false, new EmbedBuilder() {
-                    Title = "Miller",
-                    Color = Color.Blue, Description = $"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Mafia.ToString()}"});
+                    await user.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "Miller",
+                        Color = Color.Blue,
+                        Description = $"You checked {target.User.Username}, they are: {RoleUtil.Allignment.Mafia.ToString()}"
+                    });
                 else
-                    await user.SendMessageAsync("", false, new EmbedBuilder() {
-                    Title = "Cop Check Result",
-                    Color = Color.Blue, Description = $"You checked {target.User.Username}, they are:{target.Role.Allignment}"}); 
-            } catch(NullReferenceException)
+                    await user.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "Cop Check Result",
+                        Color = Color.Blue,
+                        Description = $"You checked {target.User.Username}, they are:{target.Role.Allignment}"
+                    });
+            }
+            catch (NullReferenceException)
             {
-                await user.SendMessageAsync("", false new EmbedBuilder() {
-				Title = "Did Not Target"
-				Color.Color.Blue, Description = "You didn't target anyone last night."});
+                await user.SendMessageAsync("", false, new EmbedBuilder()
+                {
+                    Title = "Did Not Target",
+                    Color = Color.Blue,
+                    Description = "You didn't target anyone last night."
+                });
             }
             return await base.powerResult(user, target);
         }
