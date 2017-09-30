@@ -82,7 +82,7 @@ namespace Discord_Mafia_Bot.Core
 
             foreach (Player player in game.Objects.Where(x => x.Role.Allignment == Allignment.Mafia))
             {
-                mafiaField.Value += $"{player.User.Nickname ?? player.User.Username} as: {player.Role.Title}";
+                mafiaField.Value += $"{player.User.Nickname ?? player.User.Username} as: {player.Role.Title}\n";
                 await game.MafiaChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                 await Task.Delay(500);
             }
@@ -473,7 +473,7 @@ namespace Discord_Mafia_Bot.Core
             {
                 game.Phase = Phases.EndPhase;
                 await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "End of game!", Color = Color.Gold, Description = "**__Congratulations Town! All Mafia Players are dead. You win the game!__**" });
-                //TODO: Show all players and what roles they are.
+                ShowAllPlayers(game, Allignment.Town);
                 return true;
             }
             else if (game.MafiaAlive >= game.TownAlive)
@@ -481,11 +481,34 @@ namespace Discord_Mafia_Bot.Core
 
                 game.Phase = Phases.EndPhase;
                 await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "End of game!", Color = Color.Gold, Description = "**__Congratulations Mafia! You have outnumbered the town. You win the game!__**" });
+                ShowAllPlayers(game, Allignment.Mafia);
                 return true;
             }
             return false;
         }
 
+        private static async void ShowAllPlayers(GamePlayerList game, Allignment winningAllignment)
+        {
+
+            EmbedBuilder builder = new EmbedBuilder() {Title = "Everyone their Roles", Color = Color.Gold};
+            EmbedFieldBuilder winField = new EmbedFieldBuilder() {Name = "The Winners", IsInline = true};
+            EmbedFieldBuilder loseField = new EmbedFieldBuilder() {Name = "The Losers", IsInline = true};
+
+            foreach (Player player in game.Objects)
+            {
+                if(player.Role.Allignment == winningAllignment)
+                {
+                    winField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                }
+                else
+                {
+                    loseField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                }
+            }
+            builder.AddField(winField);
+            builder.AddField(loseField);
+            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
+        }
         private static async Task VoteHandler(SocketMessage e, GamePlayerList game, ICommandContext context)
         {
             if (e.Channel.Id == game.GameChat.Id)
