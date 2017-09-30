@@ -10,14 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Discord_Mafia_Bot.Commands
 {
     public class Commands : ModuleBase
     {
-        /// <summary>
-        /// TODO: change up the mention system so it accepts non-mentions.
-        /// </summary>
         #region MiscCommands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
@@ -61,7 +59,7 @@ namespace Discord_Mafia_Bot.Commands
                 await ReplyAsync("Pong!");
             }
 
-            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon()]
+            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndGame()
             {
                 if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -71,7 +69,7 @@ namespace Discord_Mafia_Bot.Commands
                     Program.Servers[Context.Guild].Reset();
                 }
             }
-            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon()]
+            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndPhase()
             {
                 if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -82,27 +80,10 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
+            [Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
             public async Task deleteChannel(ulong id)
             {
                 await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
-            }*/
-
-            [Command("echo"), Hidden(), DiscordbotAdminPrecon()]
-            public Task echo()
-            {
-                T = new Func<SocketMessage, Task>(async (e) => {
-                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id) {
-                        await e.Channel.SendMessageAsync(e.Content);
-                    }
-                    else if (e.Content.StartsWith("End Echo"))
-                    {
-                        (Context.Client as DiscordSocketClient).MessageReceived -= this.T;
-                    }
-                });
-
-                (Context.Client as DiscordSocketClient).MessageReceived += T;
-                return Task.CompletedTask;
             }
         }
         #endregion
