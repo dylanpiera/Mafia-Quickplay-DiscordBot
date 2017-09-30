@@ -20,6 +20,8 @@ namespace Discord_Mafia_Bot.Commands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
         {
+            //TODO: add version command
+
             [Command("howtoplay"), Summary("Explains how to use the Mafia Bot and play a game!")]
             public async Task Ping()
             {
@@ -39,7 +41,7 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
-            public async Task inviteLink()
+            public async Task InviteLink()
             {
 
                 await ReplyAsync(Sneaky.botInvite);
@@ -51,8 +53,6 @@ namespace Discord_Mafia_Bot.Commands
         [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
         public class DebugCommands : ModuleBase
         {
-            Func<SocketMessage, Task> T;
-
             [Command("ping"), Summary("Returns with Pong!")]
             public async Task Ping()
             {
@@ -81,7 +81,7 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
-            public async Task deleteChannel(ulong id)
+            public async Task DeleteChannel(ulong id)
             {
                 await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
             }
@@ -245,7 +245,7 @@ namespace Discord_Mafia_Bot.Commands
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..." });
                                 //game.gameRunning = true; //Should be moved to startGame()
                                 await Task.Delay(TimeConverter.SecToMS(2));
-                                GameManager.startGame(Context, game);
+                                GameManager.StartGame(Context, game);
                             }
                             else if (everyoneReady)
                             {
@@ -266,7 +266,7 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator | GuildPermission.BanMembers)]
-            public async Task startGame()
+            public async Task StartGame()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
 
@@ -275,7 +275,7 @@ namespace Discord_Mafia_Bot.Commands
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
                     //game.gameRunning = true; //Should be moved to startGame()
                     await Task.Delay(TimeConverter.SecToMS(2));
-                    GameManager.startGame(Context, game);
+                    GameManager.StartGame(Context, game);
                 }
                 else if (!game.gameRunning && game.Objects.Count <= 4)
                 {
@@ -373,7 +373,7 @@ namespace Discord_Mafia_Bot.Commands
                 GamePlayerList game = Program.Servers[Context.Guild];
                 if (game.Phase == Phases.Day)
                 {
-                    countVotes(game);
+                    CountVotes(game);
                     int i = 0;
                     EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = $"{game.Phase.ToString()} {game.PhaseCounter} vote tally:" };
 
@@ -385,7 +385,7 @@ namespace Discord_Mafia_Bot.Commands
                             i++;
                             try
                             {
-                                builder.Description += $"{player.User.Mention} \t{player.VotesOn}: {votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
+                                builder.Description += $"{player.User.Mention} \t{player.VotesOn}: {VotedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
                             }
                             catch (Exception) { }
                         }
@@ -399,7 +399,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            public static string votedFor(List<Player> sortedList, Player lynchee)
+            public static string VotedFor(List<Player> sortedList, Player lynchee)
             {
                 string s = "";
 
@@ -412,7 +412,7 @@ namespace Discord_Mafia_Bot.Commands
                 return s;
             }
 
-            public static void countVotes(GamePlayerList game)
+            public static void CountVotes(GamePlayerList game)
             {
                 foreach (Player player in game.Objects)
                 {
