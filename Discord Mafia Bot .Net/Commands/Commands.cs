@@ -80,41 +80,10 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            [Command("DataTest"), DiscordbotAdminPrecon(), Hidden()]
-            public async Task DataTest()
-            {
-                XmlReader xmlReader = XmlReader.Create("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
-                while(await xmlReader.ReadAsync())
-                {
-                    if((xmlReader.NodeType == XmlNodeType.Element ) && (xmlReader.Name == "Cube"))
-                    {
-                        if (xmlReader.HasAttributes)
-                            Console.WriteLine(xmlReader.GetAttribute("currency") + ": " + xmlReader.GetAttribute("rate"));
-                    }
-                }
-            }
-
-            /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
+            [Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
             public async Task deleteChannel(ulong id)
             {
                 await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
-            }*/
-
-            [Command("echo"), Hidden(), DiscordbotAdminPrecon()]
-            public Task echo()
-            {
-                T = new Func<SocketMessage, Task>(async (e) => {
-                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id) {
-                        await e.Channel.SendMessageAsync(e.Content);
-                    }
-                    else if (e.Content.StartsWith("End Echo"))
-                    {
-                        (Context.Client as DiscordSocketClient).MessageReceived -= this.T;
-                    }
-                });
-
-                (Context.Client as DiscordSocketClient).MessageReceived += T;
-                return Task.CompletedTask;
             }
         }
         #endregion
