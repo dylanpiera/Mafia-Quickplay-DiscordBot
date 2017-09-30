@@ -300,14 +300,17 @@ namespace Discord_Mafia_Bot.Commands
                         foreach (Player player in Program.Servers[Context.Guild].Objects)
                         {
                             i++;
-                            builder.Description += $"{i}. {player.User.Username}\t-\tReady: {player.Ready}\n";
+
+                            string ready = player.Ready ? ":thumbsup::skin-tone-1:" : ":thumbsdown::skin-tone-1:";
+
+                            builder.Description += $"{i}. {player.User.Nickname ?? player.User.Username}\t-\tReady: {ready}\n";
                         }
                         await ReplyAsync("", false, builder.Build());
                         return;
                     }
                     else
                     {
-                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Empty Game!", Color = Color.DarkRed, Description = $"{Context.User.Mention} the game is empty! :x:" });
+                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Empty Game!", Color = Color.DarkRed, Description = $"{Context.User.Username} the game is empty! :x:" });
                     }
                 }
                 else
@@ -322,24 +325,23 @@ namespace Discord_Mafia_Bot.Commands
 
                     foreach (Player player in Program.Servers[Context.Guild].Objects)
                     {
-                        Console.WriteLine($"{player.User.Username} is:");
                         if (player.Alive)
                         {
                             Console.WriteLine("Alive.");
                             try
                             {
-                                alive.Value += $"{player.User.Mention}\tvotes: **{player.LynchTarget.User.Mention}**\n";
+                                alive.Value += $"{player.User.Nickname ?? player.User.Username}\tvotes: **{player.LynchTarget.User.Nickname ?? player.LynchTarget.User.Username}**\n";
                             }
                             catch (Exception)
                             {
-                                alive.Value += $"{player.User.Mention}\tvotes: -\n";
+                                alive.Value += $"{player.User.Nickname ?? player.User.Username}\tvotes: -\n";
                             }
                         }
                         else
                         {
                             try
                             {
-                                dead.Value += $"{player.User.Mention}\twas: {player.Role.Allignment.ToString()} {player.Role.Title}";
+                                dead.Value += $"{player.User.Nickname ?? player.User.Username}\twas: {player.Role.Allignment.ToString()} {player.Role.Title}\n";
                             }
                             catch (Exception) { }
                         }
