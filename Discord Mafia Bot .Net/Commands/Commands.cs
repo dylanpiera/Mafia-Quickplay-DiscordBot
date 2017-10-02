@@ -233,7 +233,6 @@ namespace Discord_Mafia_Bot.Commands
                             if (everyoneReady && game.Objects.Count > 4)
                             {
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..." });
-                                //game.gameRunning = true; //Should be moved to startGame()
                                 await Task.Delay(TimeConverter.SecToMS(2));
                                 GameManager.StartGame(Context, game);
                             }
