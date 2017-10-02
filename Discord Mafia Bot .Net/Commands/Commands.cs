@@ -437,7 +437,7 @@ namespace Discord_Mafia_Bot.Commands
             	}
 		
 		[Command("moo"), Summary("Moooooo!")]
-            	public async Task Cookie()
+            	public async Task Moo()
             	{
 			await Context.Message.AddReactionAsync(new Emoji("🐮"));
             	}
