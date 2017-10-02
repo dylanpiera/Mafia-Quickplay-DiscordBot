@@ -34,18 +34,6 @@ namespace Discord_Mafia_Bot.Commands
                 await ReplyAsync("Found a bug? Or wanna recommend something be added/removed/changed?\nSend SoaringDylan a PM about it,\nPost it on our github https://github.com/dylanpiera/Mafia-Quickplay-DiscordBot \nor join our development server https://discord.gg/Tu82eWU");
             }
 
-            [Command("cookie"), Summary("Gives you a cookie!")]
-            public async Task Cookie()
-            {
-                await Context.Message.AddReactionAsync(new Emoji("🍪"));
-            }
-			
-			[Command("moo"), Summary("Moooooo!")]
-            public async Task Cookie()
-            {
-                await Context.Message.AddReactionAsync(new Emoji("🐮"));
-            }
-
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
             public async Task InviteLink()
             {
@@ -54,6 +42,24 @@ namespace Discord_Mafia_Bot.Commands
             }
         }
         #endregion
+		
+		#region FunCommands
+		[Group("fun"), Name("Fun Commands"), Summary("For fun!")]
+		public class FunCommands : ModuleBase
+		{
+			[Command("cookie"), Summary("Gives you a cookie!")]
+            public async Task Cookie()
+            {
+                await Context.Message.AddReactionAsync(new Emoji("🍪"));
+            }
+			
+			[Command("moo"), Summary("Moooooo!")]
+            public async Task Cookie()
+            {
+			     await Context.Message.AddReactionAsync(new Emoji("🐮"));
+            }
+		}
+		#endregion
 
         #region DebugCommands
         [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
