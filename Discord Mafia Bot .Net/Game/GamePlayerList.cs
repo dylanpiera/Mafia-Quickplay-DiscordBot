@@ -81,14 +81,14 @@ namespace DiscordBot.Game
 
         private List<Player> players;
 
-        private IGuildChannel gameChat, mafiaChat;
-        private IGuildChannel graveyardChat;
+        private IGuildChannel gameChat, mafiaChat, signupChannel, graveyardChat;
 
-        public void SetChats(IGuildChannel gameChat, IGuildChannel mafiaChat, IGuildChannel graveyard)
+        public void SetChats(IGuildChannel gameChat, IGuildChannel mafiaChat, IGuildChannel graveyard, IGuildChannel signupChannel)
         {
             this.gameChat = gameChat;
             this.mafiaChat = mafiaChat;
             this.graveyardChat = graveyard;
+            this.signupChannel = signupChannel;
         }
 
         /// <summary>
@@ -220,6 +220,13 @@ namespace DiscordBot.Game
                 return mafiaChat;
             }
         }
+        public IGuildChannel SignupChannel
+        {
+            get
+            {
+                return signupChannel;
+            }
+        }
         public IGuildChannel GraveyardChat
         {
             get
@@ -227,7 +234,6 @@ namespace DiscordBot.Game
                 return graveyardChat;
             }
         }
-
         public Player MafiaKillTarget
         {
             get

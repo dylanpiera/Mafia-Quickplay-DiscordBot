@@ -91,13 +91,13 @@ namespace Discord_Mafia_Bot.Core
             await (mafiaChannel as IMessageChannel).SendMessageAsync("", false, mafiaBuilder.Build());
             await Task.Delay(500);
 
-            builder.Description += "Rnning Finishing Touches...\n\n";
+            builder.Description += "Running Finishing Touches...\n\n";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
             IGuildChannel graveyardChannel = await Context.Guild.CreateTextChannelAsync("Graveyard-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game"});
             await graveyardChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             await graveyardChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
-            game.SetChats(gameChannel, mafiaChannel, graveyardChannel);
+            game.SetChats(gameChannel, mafiaChannel, graveyardChannel, Context.Channel as IGuildChannel);
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
@@ -507,18 +507,27 @@ namespace Discord_Mafia_Bot.Core
 
             foreach (Player player in game.Objects)
             {
+                //TODO: Make this actually look good, instead of just a spacing with a single tab.
                 if(player.Role.Allignment == winningAllignment)
                 {
-                    winField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                    winField.Value += $"{player.User.Nickname ?? player.User.Username}\tas\t{player.Role.Allignment.ToString()} {player.Role.Title}\n";
                 }
                 else
                 {
-                    loseField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                    loseField.Value += $"{player.User.Nickname ?? player.User.Username}\tas\t{player.Role.Allignment.ToString()} {player.Role.Title}\n";
                 }
             }
             builder.AddField(winField);
             builder.AddField(loseField);
             await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
+            try
+            {
+                await (game.SignupChannel as IMessageChannel).SendMessageAsync("", false, builder.Build());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
         private static async Task VoteHandler(SocketMessage e, GamePlayerList game, ICommandContext context)
         {
