@@ -39,6 +39,12 @@ namespace Discord_Mafia_Bot.Commands
             {
                 await Context.Message.AddReactionAsync(new Emoji("🍪"));
             }
+			
+			[Command("moo"), Summary("Moooooo!")]
+            public async Task Cookie()
+            {
+                await Context.Message.AddReactionAsync(new Emoji("🐮"));
+            }
 
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
             public async Task InviteLink()
