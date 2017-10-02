@@ -490,7 +490,7 @@ namespace Discord_Mafia_Bot.Core
         private static async void ShowAllPlayers(GamePlayerList game, Allignment winningAllignment)
         {
 
-            EmbedBuilder builder = new EmbedBuilder() {Title = "Everyone their Roles", Color = Color.Gold};
+            EmbedBuilder builder = new EmbedBuilder() {Title = "Everyone & Their Roles", Color = Color.Gold};
             EmbedFieldBuilder winField = new EmbedFieldBuilder() {Name = "The Winners", IsInline = true};
             EmbedFieldBuilder loseField = new EmbedFieldBuilder() {Name = "The Losers", IsInline = true};
 
