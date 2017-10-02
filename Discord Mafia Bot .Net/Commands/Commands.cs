@@ -422,7 +422,7 @@ namespace Discord_Mafia_Bot.Commands
         }
         #endregion
 
-	#region FunCommands
+	    #region FunCommands
 	[Group("fun"), Name("Fun Commands"), Summary("For fun!")]
 	public class FunCommands : ModuleBase
 		{

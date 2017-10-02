@@ -83,20 +83,20 @@ namespace Discord_Mafia_Bot.Core
             foreach (Player player in game.Objects.Where(x => x.Role.Allignment == Allignment.Mafia))
             {
                 mafiaField.Value += $"{player.User.Nickname ?? player.User.Username} as: {player.Role.Title}\n";
-                await game.MafiaChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                await mafiaChannel.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                 await Task.Delay(500);
             }
 
             mafiaBuilder.AddField(mafiaField);
-            await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, mafiaBuilder.Build());
+            await (mafiaChannel as IMessageChannel).SendMessageAsync("", false, mafiaBuilder.Build());
             await Task.Delay(500);
 
             builder.Description += "Rnning Finishing Touches...\n\n";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
             IGuildChannel graveyardChannel = await Context.Guild.CreateTextChannelAsync("Graveyard-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game"});
-            await mafiaChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
-            await mafiaChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
+            await graveyardChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
+            await graveyardChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             game.SetChats(gameChannel, mafiaChannel, graveyardChannel);
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
@@ -362,6 +362,7 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += $"When everyone woke up in the morning, they found out someone was missing: {game.MafiaKillTarget.User.Mention}\nOnce they arived at their home, they were found death on the ground.\n\n**{game.MafiaKillTarget.User.Mention} was killed by the Mafia. They were:**\n**Role PM:**\n```{game.MafiaKillTarget.Role.RolePM}```\n";
                     Player target;
                     (target = game.MafiaKillTarget).Alive = false;
+                    await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                     if (target.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny)); }
                     else if (target.Role.Allignment == Allignment.Town) game.TownAlive--;
                     game.MafiaKillTarget = null;
@@ -456,6 +457,7 @@ namespace Discord_Mafia_Bot.Core
                 if (lynchee.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(lynchee.User, new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow)); }
                 if (lynchee.Role.Allignment == Allignment.Town) game.TownAlive--;
 
+                await game.GraveyardChat.AddPermissionOverwriteAsync(lynchee.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                 builder.Description += $"It seems like all of you have decided on your lynch target, **{lynchee.User.Username}**, so let's see what they are!\n";
                 builder.Description += $" **Role PM: **\n```{ lynchee.Role.RolePM}```\n";
             }
@@ -500,8 +502,8 @@ namespace Discord_Mafia_Bot.Core
         {
 
             EmbedBuilder builder = new EmbedBuilder() {Title = "Everyone & Their Roles", Color = Color.Gold};
-            EmbedFieldBuilder winField = new EmbedFieldBuilder() {Name = "The Winners", IsInline = true};
-            EmbedFieldBuilder loseField = new EmbedFieldBuilder() {Name = "The Losers", IsInline = true};
+            EmbedFieldBuilder winField = new EmbedFieldBuilder() {Name = "The Winners", IsInline = false};
+            EmbedFieldBuilder loseField = new EmbedFieldBuilder() {Name = "The Losers", IsInline = false};
 
             foreach (Player player in game.Objects)
             {

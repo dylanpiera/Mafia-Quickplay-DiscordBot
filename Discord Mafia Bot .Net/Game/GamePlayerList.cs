@@ -96,15 +96,16 @@ namespace DiscordBot.Game
         /// </summary>
         public bool GameRunning { get; set; }
 
-        internal void Reset()
+        internal async void Reset()
         {
             this.Phase = Phases.EndPhase;
             this.token.Cancel();
             
             this.GameRunning = false;
             this.Objects.Clear();
-            this.GameChat.DeleteAsync();
-            this.MafiaChat.DeleteAsync();
+            await this.GameChat.DeleteAsync();
+            await this.MafiaChat.DeleteAsync();
+            await this.GraveyardChat.DeleteAsync();
             this.Cops = 0;
             this.Godfathers = 0;
             this.Doctors = 0;
