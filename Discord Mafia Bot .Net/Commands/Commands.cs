@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using Discord_Mafia_Bot.Core;
 using Discord_Mafia_Bot.Util;
 using DiscordBot.Game;
@@ -8,9 +7,7 @@ using DiscordBot.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace Discord_Mafia_Bot.Commands
 {
@@ -37,7 +34,6 @@ namespace Discord_Mafia_Bot.Commands
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
             public async Task InviteLink()
             {
-
                 await ReplyAsync(Sneaky.botInvite);
             }
         }
@@ -56,7 +52,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndGame()
             {
-                if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
+                if(Program.Servers[Context.Guild].GameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
                 {
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Game ended by Developer", Color = Color.DarkRed, Description = "The game has been ended by a developer." });
 
@@ -66,7 +62,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndPhase()
             {
-                if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
+                if (Program.Servers[Context.Guild].GameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
                 {
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder() { Title = "Phase skipped by Developer", Color = Color.DarkRed, Description = "This phase has been skipped by a developer." });
 
@@ -91,9 +87,9 @@ namespace Discord_Mafia_Bot.Commands
             [Command("join"), Summary("Join the current game signups.")]
             public async Task Join()
             {
-                if (!Program.Servers[Context.Guild].gameRunning)
+                if (!Program.Servers[Context.Guild].GameRunning)
                 {
-                    if (!Program.Servers[Context.Guild].inGame(Context.User as IGuildUser))
+                    if (!Program.Servers[Context.Guild].InGame(Context.User as IGuildUser))
                     {
                         Program.Servers[Context.Guild].Add(Context.User as IGuildUser);
                         await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Joined!", Color = Color.Blue, Description = $"{Context.User.Mention} has joined the game! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
@@ -114,7 +110,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("join"), Summary("force [user] to join the current game signups."), RequireUserPermission(GuildPermission.ManageGuild), Name("!join [user]")]
             public async Task Join(params IGuildUser[] user)
             {
-                if (!Program.Servers[Context.Guild].gameRunning)
+                if (!Program.Servers[Context.Guild].GameRunning)
                 {
                     if (Context.Message.MentionedUserIds.Count == 0) await ReplyAsync("", false, new EmbedBuilder() { Title = "Ongoing Game!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
                     foreach (ulong id in Context.Message.MentionedUserIds)
@@ -122,7 +118,7 @@ namespace Discord_Mafia_Bot.Commands
                         IGuildUser mentionedUser = await Context.Guild.GetUserAsync(id);
                         if (!mentionedUser.IsBot || Context.Message.Content.Contains("--force") && mentionedUser != Context.Client.CurrentUser)
                         {
-                            if (!Program.Servers[Context.Guild].inGame(mentionedUser as IGuildUser))
+                            if (!Program.Servers[Context.Guild].InGame(mentionedUser as IGuildUser))
                             {
                                 Program.Servers[Context.Guild].Add(mentionedUser as IGuildUser);
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Added!", Color = Color.Blue, Description = $"{mentionedUser.Mention} was added to the game by {Context.User.Mention}! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
@@ -154,9 +150,9 @@ namespace Discord_Mafia_Bot.Commands
             [Command("leave"), Summary("Leave the current game signups.")]
             public async Task Leave()
             {
-                if (!Program.Servers[Context.Guild].gameRunning)
+                if (!Program.Servers[Context.Guild].GameRunning)
                 {
-                    if (Program.Servers[Context.Guild].inGame(Context.User as IGuildUser))
+                    if (Program.Servers[Context.Guild].InGame(Context.User as IGuildUser))
                     {
                         Program.Servers[Context.Guild].Remove(Context.User as IGuildUser);
                         await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Left!", Color = Color.DarkGrey, Description = $"{Context.User.Mention} has left the game! :heavy_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
@@ -175,13 +171,13 @@ namespace Discord_Mafia_Bot.Commands
             [Command("leave"), Summary("Force (mentioned) to leave the game."), RequireUserPermission(GuildPermission.ManageGuild), Alias("kick")]
             public async Task Leave(params IGuildUser[] users)
             {
-                if (!Program.Servers[Context.Guild].gameRunning)
+                if (!Program.Servers[Context.Guild].GameRunning)
                 {
                     if (Context.Message.MentionedUserIds.Count == 0) await ReplyAsync("", false, new EmbedBuilder() { Title = "Ongoing Game!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
                     foreach (ulong id in Context.Message.MentionedUserIds)
                     {
                         IGuildUser mentionedUser = await Context.Guild.GetUserAsync(id);
-                        if (Program.Servers[Context.Guild].inGame(mentionedUser as IGuildUser))
+                        if (Program.Servers[Context.Guild].InGame(mentionedUser as IGuildUser))
                         {
                             Program.Servers[Context.Guild].Remove(mentionedUser as IGuildUser);
                             if (!Context.Message.Content.Contains("--silent"))
@@ -224,9 +220,9 @@ namespace Discord_Mafia_Bot.Commands
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
 
-                if (!game.gameRunning)
+                if (!game.GameRunning)
                 {
-                    if (game.inGame(Context.User as IGuildUser))
+                    if (game.InGame(Context.User as IGuildUser))
                     {
                         Player player = game.Find(Context.User as IGuildUser);
                         if (!player.Ready)
@@ -264,14 +260,14 @@ namespace Discord_Mafia_Bot.Commands
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
 
-                if (!game.gameRunning && game.Objects.Count > 4)
+                if (!game.GameRunning && game.Objects.Count > 4)
                 {
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
                     //game.gameRunning = true; //Should be moved to startGame()
                     await Task.Delay(TimeConverter.SecToMS(2));
                     GameManager.StartGame(Context, game);
                 }
-                else if (!game.gameRunning && game.Objects.Count <= 4)
+                else if (!game.GameRunning && game.Objects.Count <= 4)
                 {
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Failed to start!", Color = Color.DarkOrange, Description = $"{Context.User.Mention} you can not force launch the game, it has less than 5 players. :no_entry_sign:", Footer = new EmbedFooterBuilder() { Text = $"[{game.Objects.Count}/5] required." } });
                 }
@@ -281,7 +277,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("list"), Summary("Get a list of people currently in the mafia game on the current server."), Alias("players"), Ratelimit(1,0.1, Measure.Minutes)]
             public async Task List()
             {
-                if (!Program.Servers[Context.Guild].gameRunning)
+                if (!Program.Servers[Context.Guild].GameRunning)
                 {
                     if (Program.Servers[Context.Guild].Objects.Count > 0)
                     {

@@ -28,7 +28,7 @@ namespace DiscordBot.Roles
             if (e.Content.StartsWith("SCAN: ") && e.Channel.Id == (await this.Player.User.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {
                 string target = e.Content.Replace("SCAN: ", "");
-                if (g.inGame(g.Find(target)))
+                if (g.InGame(g.Find(target)))
                 {
                     Target = g.Find(target);
 

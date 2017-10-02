@@ -24,7 +24,7 @@ namespace DiscordBot.Roles
             if (e.Content.StartsWith("PROTECT: ") && e.Channel.Id == (await this.Player.User.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {
                 string target = e.Content.Replace("PROTECT: ", "");
-                if (g.inGame(g.Find(target)))
+                if (g.InGame(g.Find(target)))
                 {
                     Target = g.Find(target);
                     await e.Author.SendMessageAsync("", false, new EmbedBuilder()

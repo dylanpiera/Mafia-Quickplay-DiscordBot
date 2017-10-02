@@ -26,7 +26,7 @@ namespace Discord_Mafia_Bot.Core
         /// <param name="game">The game</param>
         public static async void StartGame(ICommandContext Context, GamePlayerList game)
         {
-            game.gameRunning = true;
+            game.GameRunning = true;
 
             IGuildChannel gameChannel = await Context.Guild.CreateTextChannelAsync("Mafia-Game-Room", new RequestOptions() { AuditLogReason = "Start of Mafia Game" });
             await gameChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
@@ -74,7 +74,7 @@ namespace Discord_Mafia_Bot.Core
             IGuildChannel mafiaChannel = await Context.Guild.CreateTextChannelAsync("Mafia-Night-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game" });
             await mafiaChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             await mafiaChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
-            game.setChats(gameChannel, mafiaChannel);
+            
             
 
             EmbedBuilder mafiaBuilder = new EmbedBuilder() { Title = "Welcome Scummy friends :smiling_imp:", Description = "You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target.\n" };
@@ -90,6 +90,14 @@ namespace Discord_Mafia_Bot.Core
             mafiaBuilder.AddField(mafiaField);
             await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, mafiaBuilder.Build());
             await Task.Delay(500);
+
+            builder.Description += "Rnning Finishing Touches...\n\n";
+            await msg.ModifyAsync(x => x.Embed = builder.Build());
+
+            IGuildChannel graveyardChannel = await Context.Guild.CreateTextChannelAsync("Graveyard-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game"});
+            await mafiaChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
+            await mafiaChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
+            game.SetChats(gameChannel, mafiaChannel, graveyardChannel);
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
@@ -258,7 +266,7 @@ namespace Discord_Mafia_Bot.Core
                     await Task.Delay(TimeConverter.MinToMS(1));
                     game.Reset();
                 }
-            } while (game.gameRunning);
+            } while (game.GameRunning);
         }
 
         #region NightPhase
@@ -282,7 +290,7 @@ namespace Discord_Mafia_Bot.Core
             {
                 string target = e.Content.Replace("KILL: ", "");
                 Console.WriteLine("Night kill target: " + target);
-                if (game.inGame(game.Find(target)))
+                if (game.InGame(game.Find(target)))
                 {
                     game.MafiaKillTarget = game.Find(target);
                     Console.WriteLine("Target set.");
@@ -333,6 +341,7 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += $"When everyone woke up in the morning, they found out someone was missing: {game.MafiaKillTarget.User.Mention}\nOnce they arived at their home, they were found death on the ground.\n\n**{game.MafiaKillTarget.User.Mention} was killed by the Mafia. They were:**\n**Role PM:**\n```{game.MafiaKillTarget.Role.RolePM}```\n";
                     Player target;
                     (target = game.MafiaKillTarget).Alive = false;
+                    await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                     if (target.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny)); }
                     else if (target.Role.Allignment == Allignment.Town) game.TownAlive--;
                     game.MafiaKillTarget = null;
@@ -516,7 +525,7 @@ namespace Discord_Mafia_Bot.Core
                 if (e.Content.StartsWith("VOTE: ") && e.MentionedUsers.Count == 1)
                 {
                     IGuildUser target;
-                    if (game.inGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)) && game.Find(e.Author as IGuildUser).Alive)
+                    if (game.InGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)) && game.Find(e.Author as IGuildUser).Alive)
                     {
                         if (game.Find(target).Alive)
                         {
