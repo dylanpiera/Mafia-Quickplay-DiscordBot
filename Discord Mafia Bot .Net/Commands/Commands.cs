@@ -10,18 +10,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Discord_Mafia_Bot.Commands
 {
     public class Commands : ModuleBase
     {
-        /// <summary>
-        /// TODO: change up the mention system so it accepts non-mentions.
-        /// </summary>
         #region MiscCommands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
         {
+            //TODO: add version command
+
             [Command("howtoplay"), Summary("Explains how to use the Mafia Bot and play a game!")]
             public async Task Ping()
             {
@@ -41,7 +41,7 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
-            public async Task inviteLink()
+            public async Task InviteLink()
             {
 
                 await ReplyAsync(Sneaky.botInvite);
@@ -53,15 +53,13 @@ namespace Discord_Mafia_Bot.Commands
         [Group("debug"), Name("Debug Commands"),Summary("Only for test builds.")]
         public class DebugCommands : ModuleBase
         {
-            Func<SocketMessage, Task> T;
-
             [Command("ping"), Summary("Returns with Pong!")]
             public async Task Ping()
             {
                 await ReplyAsync("Pong!");
             }
 
-            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon()]
+            [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndGame()
             {
                 if(Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -71,7 +69,7 @@ namespace Discord_Mafia_Bot.Commands
                     Program.Servers[Context.Guild].Reset();
                 }
             }
-            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon()]
+            [Command("endphase"), Summary("(Bot Admin Only) ends the current phase."), DiscordbotAdminPrecon(), Hidden()]
             public async Task EndPhase()
             {
                 if (Program.Servers[Context.Guild].gameRunning && Program.Servers[Context.Guild].Phase != Phases.EndPhase)
@@ -82,27 +80,10 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            /*[Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
-            public async Task deleteChannel(ulong id)
+            [Command("deleteChannel"), Hidden(), DiscordbotAdminPrecon()]
+            public async Task DeleteChannel(ulong id)
             {
                 await(await Context.Guild.GetChannelAsync(id)).DeleteAsync();
-            }*/
-
-            [Command("echo"), Hidden(), DiscordbotAdminPrecon()]
-            public Task echo()
-            {
-                T = new Func<SocketMessage, Task>(async (e) => {
-                    if (!e.Content.StartsWith("End Echo") && e.Channel.Id == Context.Channel.Id && e.Author.Id != Context.Client.CurrentUser.Id) {
-                        await e.Channel.SendMessageAsync(e.Content);
-                    }
-                    else if (e.Content.StartsWith("End Echo"))
-                    {
-                        (Context.Client as DiscordSocketClient).MessageReceived -= this.T;
-                    }
-                });
-
-                (Context.Client as DiscordSocketClient).MessageReceived += T;
-                return Task.CompletedTask;
             }
         }
         #endregion
@@ -264,7 +245,7 @@ namespace Discord_Mafia_Bot.Commands
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Start!", Color = Color.Green, Description = $"@everyone is ready! Starting up the game..." });
                                 //game.gameRunning = true; //Should be moved to startGame()
                                 await Task.Delay(TimeConverter.SecToMS(2));
-                                GameManager.startGame(Context, game);
+                                GameManager.StartGame(Context, game);
                             }
                             else if (everyoneReady)
                             {
@@ -285,7 +266,7 @@ namespace Discord_Mafia_Bot.Commands
             }
 
             [Command("startgame"), Summary("Admin only: Force game to start"), RequireUserPermission(GuildPermission.Administrator | GuildPermission.BanMembers)]
-            public async Task startGame()
+            public async Task StartGame()
             {
                 GamePlayerList game = Program.Servers[Context.Guild];
 
@@ -294,7 +275,7 @@ namespace Discord_Mafia_Bot.Commands
                     await ReplyAsync("", false, new EmbedBuilder() { Title = "Game Forced Start!", Color = Color.DarkGreen, Description = $"The game has been started by a Moderator @everyone, Starting up the game..." });
                     //game.gameRunning = true; //Should be moved to startGame()
                     await Task.Delay(TimeConverter.SecToMS(2));
-                    GameManager.startGame(Context, game);
+                    GameManager.StartGame(Context, game);
                 }
                 else if (!game.gameRunning && game.Objects.Count <= 4)
                 {
@@ -319,14 +300,17 @@ namespace Discord_Mafia_Bot.Commands
                         foreach (Player player in Program.Servers[Context.Guild].Objects)
                         {
                             i++;
-                            builder.Description += $"{i}. {player.User.Username}\t-\tReady: {player.Ready}\n";
+
+                            string ready = player.Ready ? ":thumbsup::skin-tone-1:" : ":thumbsdown::skin-tone-1:";
+
+                            builder.Description += $"{i}. {player.User.Nickname ?? player.User.Username}\t-\tReady: {ready}\n";
                         }
                         await ReplyAsync("", false, builder.Build());
                         return;
                     }
                     else
                     {
-                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Empty Game!", Color = Color.DarkRed, Description = $"{Context.User.Mention} the game is empty! :x:" });
+                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Empty Game!", Color = Color.DarkRed, Description = $"{Context.User.Username} the game is empty! :x:" });
                     }
                 }
                 else
@@ -341,24 +325,23 @@ namespace Discord_Mafia_Bot.Commands
 
                     foreach (Player player in Program.Servers[Context.Guild].Objects)
                     {
-                        Console.WriteLine($"{player.User.Username} is:");
                         if (player.Alive)
                         {
                             Console.WriteLine("Alive.");
                             try
                             {
-                                alive.Value += $"{player.User.Mention}\tvotes: **{player.LynchTarget.User.Mention}**\n";
+                                alive.Value += $"{player.User.Nickname ?? player.User.Username}\tvotes: **{player.LynchTarget.User.Nickname ?? player.LynchTarget.User.Username}**\n";
                             }
                             catch (Exception)
                             {
-                                alive.Value += $"{player.User.Mention}\tvotes: -\n";
+                                alive.Value += $"{player.User.Nickname ?? player.User.Username}\tvotes: -\n";
                             }
                         }
                         else
                         {
                             try
                             {
-                                dead.Value += $"{player.User.Mention}\twas: {player.Role.Allignment.ToString()} {player.Role.Title}";
+                                dead.Value += $"{player.User.Nickname ?? player.User.Username}\twas: {player.Role.Allignment.ToString()} {player.Role.Title}\n";
                             }
                             catch (Exception) { }
                         }
@@ -390,7 +373,7 @@ namespace Discord_Mafia_Bot.Commands
                 GamePlayerList game = Program.Servers[Context.Guild];
                 if (game.Phase == Phases.Day)
                 {
-                    countVotes(game);
+                    CountVotes(game);
                     int i = 0;
                     EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = $"{game.Phase.ToString()} {game.PhaseCounter} vote tally:" };
 
@@ -402,7 +385,7 @@ namespace Discord_Mafia_Bot.Commands
                             i++;
                             try
                             {
-                                builder.Description += $"{player.User.Mention} \t{player.VotesOn}: {votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
+                                builder.Description += $"{player.User.Mention} \t{player.VotesOn}: {VotedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
                             }
                             catch (Exception) { }
                         }
@@ -416,7 +399,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            public static string votedFor(List<Player> sortedList, Player lynchee)
+            public static string VotedFor(List<Player> sortedList, Player lynchee)
             {
                 string s = "";
 
@@ -429,7 +412,7 @@ namespace Discord_Mafia_Bot.Commands
                 return s;
             }
 
-            public static void countVotes(GamePlayerList game)
+            public static void CountVotes(GamePlayerList game)
             {
                 foreach (Player player in game.Objects)
                 {

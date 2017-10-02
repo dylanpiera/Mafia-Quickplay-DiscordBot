@@ -32,8 +32,7 @@ namespace Discord_Mafia_Bot.Util
             _invokeLimit = times;
             _noLimitInDMs = noLimitInDMs;
             _noLimitForAdmins = noLimitForAdmins;
-
-            //TODO: C# 7 candidate switch expression
+            
             switch (measure)
             {
                 case Measure.Days:

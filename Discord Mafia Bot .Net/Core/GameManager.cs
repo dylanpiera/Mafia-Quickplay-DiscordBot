@@ -24,7 +24,7 @@ namespace Discord_Mafia_Bot.Core
         /// </summary>
         /// <param name="Context">Command Context</param>
         /// <param name="game">The game</param>
-        public static async void startGame(ICommandContext Context, GamePlayerList game)
+        public static async void StartGame(ICommandContext Context, GamePlayerList game)
         {
             game.gameRunning = true;
 
@@ -49,7 +49,7 @@ namespace Discord_Mafia_Bot.Core
             try
             {
                 List<MafiaRole> setup = HandleSetup(game);
-                distributeRoles(game, setup);
+                DistributeRoles(game, setup);
             }
             catch
             {
@@ -64,6 +64,7 @@ namespace Discord_Mafia_Bot.Core
             foreach (var player in game.Objects)
             {
                 player.Role.sendRolePM(player.User);
+                await Task.Delay(500);
             }
             await Task.Delay(500);
 
@@ -74,14 +75,20 @@ namespace Discord_Mafia_Bot.Core
             await mafiaChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             await mafiaChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             game.setChats(gameChannel, mafiaChannel);
+            
 
-            foreach (Player player in game.Objects)
+            EmbedBuilder mafiaBuilder = new EmbedBuilder() { Title = "Welcome Scummy friends :smiling_imp:", Description = "You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target.\n" };
+            EmbedFieldBuilder mafiaField = new EmbedFieldBuilder {Name = "The Team", IsInline = true };
+
+            foreach (Player player in game.Objects.Where(x => x.Role.Allignment == Allignment.Mafia))
             {
-                if (player.Role.Allignment == Allignment.Mafia)
-                    await game.MafiaChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                mafiaField.Value += $"{player.User.Nickname ?? player.User.Username} as: {player.Role.Title}\n";
+                await game.MafiaChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                await Task.Delay(500);
             }
 
-            await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "Welcome Scummy friends :smiling_imp:", Description = "You can freely discuss in this chat during both day & night phases.\nOnce night hits I will make an announcement for you to post your Night Kill Target." });
+            mafiaBuilder.AddField(mafiaField);
+            await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, mafiaBuilder.Build());
             await Task.Delay(500);
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
@@ -105,7 +112,7 @@ namespace Discord_Mafia_Bot.Core
             }
 
             //run the game manager
-            runGame(game, Context);
+            RunGame(game, Context);
 
         }
 
@@ -114,7 +121,7 @@ namespace Discord_Mafia_Bot.Core
         /// </summary>
         /// <param name="game">The game where to pull the players from.</param>
         /// <param name="setup">The setup where to pull the roles from.</param>
-        private static void distributeRoles(GamePlayerList game, List<MafiaRole> setup)
+        private static void DistributeRoles(GamePlayerList game, List<MafiaRole> setup)
         {
             List<Player> players = game.Objects;
             List<MafiaRole> roles = ListHelper.ShuffleList<MafiaRole>(setup);
@@ -124,7 +131,7 @@ namespace Discord_Mafia_Bot.Core
             {
                 foreach (Player player in players)
                 {
-                    player.AssignRole(role = roles.FirstOrDefault());
+                    player.AssignRole(role = roles.FirstOrDefault().SetupRole(player));
                     roles.Remove(role);
                 }
             }
@@ -163,7 +170,7 @@ namespace Discord_Mafia_Bot.Core
                     g.TownPlayers++;
                     g.MafiaPlayers--;
                 }
-                if(g.MafiaPlayers > 1)
+                if (g.MafiaPlayers > 1)
                 {
                     g.MafiaPlayers--;
                     g.Godfathers++;
@@ -184,27 +191,27 @@ namespace Discord_Mafia_Bot.Core
             }
             for (int i = 0; i < g.Doctors; i++)
             {
-                setup.Add(new Doctor("Player"));
+                setup.Add(new Doctor());
                 g.TownAlive++;
             }
             for (int i = 0; i < g.Cops; i++)
             {
-                setup.Add(new Cop("Player"));
+                setup.Add(new Cop());
                 g.TownAlive++;
             }
             for (int i = 0; i < g.TownPlayers; i++)
             {
-                setup.Add(new Vanilla(Allignment.Town, "Player"));
+                setup.Add(new Vanilla(Allignment.Town));
                 g.TownAlive++;
             }
             for (int i = 0; i < g.Godfathers; i++)
             {
-                setup.Add(new Vanilla("Godfather", "You are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.", $"Dear Player,\n\nYou are the most basic of roles in existence,\nYou are the **Godfather**.\n\nYou are the leader of the mafia, and will show up as town when scanned by an investigative role like Cop.\nYou also have the power to vote in the Mafia Chat every night on whom to kill.\n\nYou win with the **Mafia** whose goal is to outnumber all members of the Town"));
+                setup.Add(new Vanilla(VanillaTypes.Godfather));
                 g.MafiaAlive++;
             }
             for (int i = 0; i < g.MafiaPlayers; i++)
             {
-                setup.Add(new Vanilla(Allignment.Mafia, "Player"));
+                setup.Add(new Vanilla(Allignment.Mafia));
                 g.MafiaAlive++;
             }
 
@@ -213,7 +220,7 @@ namespace Discord_Mafia_Bot.Core
         #endregion
 
         #region RunGame
-        public async static void runGame(GamePlayerList game, ICommandContext context)
+        public async static void RunGame(GamePlayerList game, ICommandContext context)
         {
             do
             {
@@ -223,12 +230,12 @@ namespace Discord_Mafia_Bot.Core
 
                     try
                     {
-                        await runDayPhase(game, context);
+                        await RunDayPhase(game, context);
                     }
                     catch (Exception) { }
                     finally
                     {
-                        await runDayRecap(game);
+                        await RunDayRecap(game);
                     }
                 }
                 else if (game.Phase == Phases.Night)
@@ -237,17 +244,17 @@ namespace Discord_Mafia_Bot.Core
 
                     try
                     {
-                        await runNightPhase(game, context);
+                        await RunNightPhase(game, context);
                     }
                     catch (Exception) { }
                     finally
                     {
-                        await runNightRecap(game, context);
+                        await RunNightRecap(game, context);
                     }
                 }
                 else
                 {
-                    await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Title = "End of Game", Description = "Stopping game in 1 minute...\nFeel free to discuss the game in the signup channel :slight_smile:",Color = Color.LightGrey});
+                    await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "End of Game", Description = "Stopping game in 1 minute...\nFeel free to discuss the game in the signup channel :slight_smile:", Color = Color.LightGrey });
                     await Task.Delay(TimeConverter.MinToMS(1));
                     game.Reset();
                 }
@@ -255,17 +262,17 @@ namespace Discord_Mafia_Bot.Core
         }
 
         #region NightPhase
-        private static async Task runNightPhase(GamePlayerList game, ICommandContext context)
+        private static async Task RunNightPhase(GamePlayerList game, ICommandContext context)
         {
-            handlePowerRoles(game, context);
+            HandlePowerRoles(game, context);
 
             game.NightkillHandler = new Func<SocketMessage, Task>((e) => NightKillHandler(e, game, context));
             (context.Client as DiscordSocketClient).MessageReceived += game.NightkillHandler;
 
-            await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Title = "Night actions available.", Color = Color.DarkerGrey, Description = $"Dear Scum, It is now Night {game.PhaseCounter}. Please select your Night Kill target by typing `KILL: playername`. "});
+            await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "Night actions available.", Color = Color.DarkerGrey, Description = $"Dear Scum, It is now Night {game.PhaseCounter}. Please select your Night Kill target by typing `KILL: playername`. " });
 
             await Task.Delay(TimeConverter.MinToMS((game.PhaseLengthInMin / 4)), game.Token.Token);
-            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Title = $"Night {game.PhaseCounter} midway point", Color=Color.DarkBlue, Description = $":warning: There are only {game.PhaseLengthInMin / 4} minutes left in the night phase. :warning:" });
+            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = $"Night {game.PhaseCounter} midway point", Color = Color.DarkBlue, Description = $":warning: There are only {game.PhaseLengthInMin / 4} minutes left in the night phase. :warning:" });
             await Task.Delay(TimeConverter.MinToMS((game.PhaseLengthInMin / 4)), game.Token.Token);
         }
 
@@ -279,19 +286,19 @@ namespace Discord_Mafia_Bot.Core
                 {
                     game.MafiaKillTarget = game.Find(target);
                     Console.WriteLine("Target set.");
-                    await (game.MafiaChat as IMessageChannel).SendMessageAsync("",false,new EmbedBuilder() {Color = Color.DarkerGrey,Title = "Nightkill Target",Description = $"The current kill target is: {game.MafiaKillTarget.User.Mention}. Use `KILL: [playername]` to change your target." });
+                    await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Color = Color.DarkerGrey, Title = "Nightkill Target", Description = $"The current kill target is: {game.MafiaKillTarget.User.Mention}. Use `KILL: [playername]` to change your target." });
                 }
                 else
                 {
                     Console.WriteLine("Couldn't find target.");
-                    await (game.MafiaChat as IMessageChannel).SendMessageAsync("",false,new EmbedBuilder() {Color = Color.DarkRed, Title = "Invalid Input", Description = $"Your input was invalid. You inputted: {target}" });
+                    await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Color = Color.DarkRed, Title = "Invalid Input", Description = $"Your input was invalid. You inputted: {target}" });
                 }
                 Console.WriteLine("End of nightkill handler.");
             }
 
         }
 
-        private static async void handlePowerRoles(GamePlayerList game, ICommandContext context)
+        private static async void HandlePowerRoles(GamePlayerList game, ICommandContext context)
         {
             foreach (Player player in game.Objects.Where(x => x.Alive && x.Role.PowerRole))
             {
@@ -300,7 +307,7 @@ namespace Discord_Mafia_Bot.Core
             }
         }
 
-        private static async Task runNightRecap(GamePlayerList game, ICommandContext context)
+        private static async Task RunNightRecap(GamePlayerList game, ICommandContext context)
         {
             game.Phase = Phases.Day;
 
@@ -316,7 +323,7 @@ namespace Discord_Mafia_Bot.Core
                     await player.Role.powerResult(player.User, player.Role.Target);
                 }
             }
-            
+
             (context.Client as DiscordSocketClient).MessageReceived -= game.NightkillHandler;
 
             try //inpractical fix. But fix none-the-less
@@ -338,7 +345,8 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += "Tonight has been a quiet night... Nothing happened...";
                 }
                 await msg.ModifyAsync(x => x.Embed = builder.Build());
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 if (game.MafiaKillTarget != null)
                 {
@@ -357,14 +365,15 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += "Tonight has been a quiet night... Nothing happened...";
                 }
             }
-            if (await checkWinConditions(game)) return;
+            builder.Description += $"";
+            await msg.ModifyAsync(x => x.Embed = builder.Build());
+
+            if (await CheckWinConditions(game)) return;
             foreach (Player player in game.Objects.Where(x => x.Alive))
             {
                 await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(sendMessages: PermValue.Allow, readMessages: PermValue.Allow));
             }
-            builder.Description += $"";
-            await msg.ModifyAsync(x => x.Embed = builder.Build());
-            game.PhaseCounter++;   
+            game.PhaseCounter++;
         }
         #endregion
 
@@ -374,15 +383,15 @@ namespace Discord_Mafia_Bot.Core
         /// </summary>
         /// <param name="game">The game to run.</param>
         /// <param name="context">The client context.</param>
-        private static async Task runDayPhase(GamePlayerList game, ICommandContext context)
+        private static async Task RunDayPhase(GamePlayerList game, ICommandContext context)
         {
 
             Func<SocketMessage, Task> voteHandler = (e) => VoteHandler(e, game, context);
             (context.Client as DiscordSocketClient).MessageReceived += voteHandler;
 
-            await Task.Delay(TimeConverter.MinToMS(game.PhaseLengthInMin/2),game.Token.Token);
+            await Task.Delay(TimeConverter.MinToMS(game.PhaseLengthInMin / 2), game.Token.Token);
 
-            Commands.Commands.Game_Commands.countVotes(game);
+            Commands.Commands.Game_Commands.CountVotes(game);
             int i = 0;
             EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = $"{game.Phase.ToString()} {game.PhaseCounter} midday vote tally:" };
 
@@ -394,7 +403,7 @@ namespace Discord_Mafia_Bot.Core
                     i++;
                     try
                     {
-                        builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {Commands.Commands.Game_Commands.votedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
+                        builder.Description += $"{i}. {player.User.Mention} {player.VotesOn}: {Commands.Commands.Game_Commands.VotedFor(game.Objects.Where(x => x.Alive).ToList(), player)}\n";
                     }
                     catch (Exception) { }
                 }
@@ -404,7 +413,7 @@ namespace Discord_Mafia_Bot.Core
                 builder.Description += "There are no votes.";
             }
             builder.Description += "\n";
-            builder.AddField(x => { x.Name = $"Time Left"; x.Value = $":warning: There are only {game.PhaseLengthInMin/2} minutes left in the day phase. :warning:"; });
+            builder.AddField(x => { x.Name = $"Time Left"; x.Value = $":warning: There are only {game.PhaseLengthInMin / 2} minutes left in the day phase. :warning:"; });
 
             await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
 
@@ -412,7 +421,7 @@ namespace Discord_Mafia_Bot.Core
             (context.Client as DiscordSocketClient).MessageReceived -= voteHandler;
         }
 
-        private static async Task runDayRecap(GamePlayerList game)
+        private static async Task RunDayRecap(GamePlayerList game)
         {
             game.Phase = Phases.Night;
 
@@ -421,10 +430,10 @@ namespace Discord_Mafia_Bot.Core
                 await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow));
             }
 
-            EmbedBuilder builder = new EmbedBuilder() { Title = $"Day {game.PhaseCounter} Recap", Color = Color.DarkOrange, Description = $":city_sunset: @everyone the Day phase has ended! Recapping now... :city_sunset:\n\n"};
-            IUserMessage msg = await (game.GameChat as IMessageChannel).SendMessageAsync("",false,builder.Build());
+            EmbedBuilder builder = new EmbedBuilder() { Title = $"Day {game.PhaseCounter} Recap", Color = Color.DarkOrange, Description = $":city_sunset: @everyone the Day phase has ended! Recapping now... :city_sunset:\n\n" };
+            IUserMessage msg = await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
 
-            Commands.Commands.Game_Commands.countVotes(game);
+            Commands.Commands.Game_Commands.CountVotes(game);
 
             List<Player> list = game.Objects.Where(x => x.Alive).OrderByDescending(x => x.VotesOn).ToList();
             Player lynchee = list.FirstOrDefault();
@@ -443,57 +452,82 @@ namespace Discord_Mafia_Bot.Core
             }
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
-            if (await checkWinConditions(game)) return;
+            if (await CheckWinConditions(game)) return;
 
-            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Color = Color.DarkBlue, Title = $"Night {game.PhaseCounter} start", Description =$":full_moon: It is now Night {game.PhaseCounter}. The phase will end in {game.PhaseLengthInMin / 2} minutes. :full_moon:" });
+            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Color = Color.DarkBlue, Title = $"Night {game.PhaseCounter} start", Description = $":full_moon: It is now Night {game.PhaseCounter}. The phase will end in {game.PhaseLengthInMin / 2} minutes. :full_moon:" });
 
             foreach (Player player in game.Objects)
             {
                 player.LynchTarget = null;
-                if(player.Alive)
-                    await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow , sendMessages: PermValue.Allow));
-                
+                if (player.Alive)
+                    await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+
             }
         }
 
         #endregion
 
-        private static async Task<bool> checkWinConditions(GamePlayerList game)
+        private static async Task<bool> CheckWinConditions(GamePlayerList game)
         {
-            if(game.MafiaAlive <= 0)
+            if (game.MafiaAlive <= 0)
             {
                 game.Phase = Phases.EndPhase;
-                await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() {Title = "End of game!", Color = Color.Gold, Description = "**__Congratulations Town! All Mafia Players are dead. You win the game!__**" });
-                //TODO: Show all players and what roles they are.
+                await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "End of game!", Color = Color.Gold, Description = "**__Congratulations Town! All Mafia Players are dead. You win the game!__**" });
+                ShowAllPlayers(game, Allignment.Town);
                 return true;
             }
             else if (game.MafiaAlive >= game.TownAlive)
             {
-                
+
                 game.Phase = Phases.EndPhase;
                 await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "End of game!", Color = Color.Gold, Description = "**__Congratulations Mafia! You have outnumbered the town. You win the game!__**" });
+                ShowAllPlayers(game, Allignment.Mafia);
                 return true;
             }
             return false;
         }
 
+        private static async void ShowAllPlayers(GamePlayerList game, Allignment winningAllignment)
+        {
+
+            EmbedBuilder builder = new EmbedBuilder() {Title = "Everyone their Roles", Color = Color.Gold};
+            EmbedFieldBuilder winField = new EmbedFieldBuilder() {Name = "The Winners", IsInline = true};
+            EmbedFieldBuilder loseField = new EmbedFieldBuilder() {Name = "The Losers", IsInline = true};
+
+            foreach (Player player in game.Objects)
+            {
+                if(player.Role.Allignment == winningAllignment)
+                {
+                    winField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                }
+                else
+                {
+                    loseField.Value += $"{player.User.Nickname ?? player.User.Username} as {player.Role.Allignment.ToString()} {player.Role.Title}\n";
+                }
+            }
+            builder.AddField(winField);
+            builder.AddField(loseField);
+            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
+        }
         private static async Task VoteHandler(SocketMessage e, GamePlayerList game, ICommandContext context)
         {
-            if(e.Channel.Id == game.GameChat.Id)
+            if (e.Channel.Id == game.GameChat.Id)
             {
-                if(e.Content.StartsWith("VOTE: ") && e.MentionedUsers.Count == 1)
+                if (e.Content.StartsWith("VOTE: ") && e.MentionedUsers.Count == 1)
                 {
                     IGuildUser target;
-                    if(game.inGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)) && game.Find(e.Author as IGuildUser).Alive)
+                    if (game.inGame(target = (e.MentionedUsers.FirstOrDefault() as IGuildUser)) && game.Find(e.Author as IGuildUser).Alive)
                     {
                         if (game.Find(target).Alive)
                         {
                             game.Find(e.Author as IGuildUser).LynchTarget = game.Find(target);
                             await (e as IUserMessage).AddReactionAsync(new Emoji("✅"));
+                            return;
                         }
                         else
                         {
                             await (e as IUserMessage).AddReactionAsync(new Emoji("❌"));
+                            return;
                         }
                     }
                 }
@@ -506,22 +540,24 @@ namespace Discord_Mafia_Bot.Core
                         {
                             user.LynchTarget = null;
                             await (e as IUserMessage).AddReactionAsync(new Emoji("✅"));
+                            return;
                         }
                         else
                         {
                             await (e as IUserMessage).AddReactionAsync(new Emoji("❌"));
+                            return;
                         }
                     }
                     catch (Exception) { }
                 }
-                else if(e.Content.StartsWith("VOTE: "))
+                else if (e.Content.StartsWith("VOTE: "))
                 {
                     await e.Author.SendMessageAsync("Please mention only 1 user who you're voting for.");
                     await (e as IUserMessage).AddReactionAsync(new Emoji("❌"));
+                    return;
                 }
             }
         }
-
         #endregion
     }
 }
