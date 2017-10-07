@@ -34,7 +34,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("inviteLink"), DiscordbotAdminPrecon(), Hidden()]
             public async Task InviteLink()
             {
-                await ReplyAsync(Sneaky.botInvite);
+                await ReplyAsync(Sneaky.BotInvite);
             }
         }
         #endregion
@@ -91,6 +91,11 @@ namespace Discord_Mafia_Bot.Commands
                 {
                     if (!Program.Servers[Context.Guild].InGame(Context.User as IGuildUser))
                     {
+                        if(Program.Servers[Context.Guild].Spectators.Contains(Context.User as IGuildUser))
+                        {
+                            Program.Servers[Context.Guild].Spectators.Remove(Context.User as IGuildUser);
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is no longer a spectator due to joining a game. :white_check_mark: " });
+                        }
                         Program.Servers[Context.Guild].Add(Context.User as IGuildUser);
                         await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Joined!", Color = Color.Blue, Description = $"{Context.User.Mention} has joined the game! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
 
@@ -107,6 +112,7 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
+            //TODO: Make it so it posts who joined all in one go instead of timing out if 5+ users are force joined.
             [Command("join"), Summary("force [user] to join the current game signups."), RequireUserPermission(GuildPermission.ManageGuild), Name("!join [user]")]
             public async Task Join(params IGuildUser[] user)
             {
@@ -120,6 +126,11 @@ namespace Discord_Mafia_Bot.Commands
                         {
                             if (!Program.Servers[Context.Guild].InGame(mentionedUser as IGuildUser))
                             {
+                                if (Program.Servers[Context.Guild].Spectators.Contains(mentionedUser as IGuildUser))
+                                {
+                                    Program.Servers[Context.Guild].Spectators.Remove(mentionedUser as IGuildUser);
+                                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = $"{(mentionedUser as IGuildUser).Nickname ?? mentionedUser.Username} Is no longer a spectator due to joining a game. :white_check_mark: " });
+                                }
                                 Program.Servers[Context.Guild].Add(mentionedUser as IGuildUser);
                                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Added!", Color = Color.Blue, Description = $"{mentionedUser.Mention} was added to the game by {Context.User.Mention}! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
                             }
@@ -145,6 +156,42 @@ namespace Discord_Mafia_Bot.Commands
             {
                 await ReplyAsync("", false, new EmbedBuilder() { Title = "Missing Mention!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
             }
+            #endregion
+            #region Spectate
+
+            [Command("spectate"), Summary("Join the spectators.")]
+            public async Task Spectate()
+            {
+                if (!Program.Servers[Context.Guild].GameRunning)
+                {
+                    if (!Program.Servers[Context.Guild].InGame(Context.User as IGuildUser))
+                    {
+                        if (!Program.Servers[Context.Guild].Spectators.Contains(Context.User as IGuildUser))
+                        {
+                            Program.Servers[Context.Guild].Spectators.Add(Context.User as IGuildUser);
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Joined!", Color = Color.LightGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is now a spectator. :white_check_mark: " });
+
+                            return;
+                        }
+                        else
+                        {
+                            Program.Servers[Context.Guild].Spectators.Remove(Context.User as IGuildUser);
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is no longer a spectator. :white_check_mark: " });
+
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Already in Game!", Color = Color.DarkRed, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} you can't spectate if you're in the game. :x:"});
+                    }
+                }
+                else
+                {
+                    await ReplyAsync(new NotImplementedException().ToString());
+                }
+            }
+
             #endregion
             #region LeaveCommand
             [Command("leave"), Summary("Leave the current game signups.")]

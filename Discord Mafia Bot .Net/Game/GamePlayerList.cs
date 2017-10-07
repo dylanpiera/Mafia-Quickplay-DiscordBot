@@ -52,6 +52,8 @@ namespace DiscordBot.Game
             }
         }
 
+        public List<IGuildUser> Spectators { get; set; }
+
         private CancellationTokenSource token;
         private Player mafiaKillTarget;
         private Phases phase;
@@ -118,6 +120,7 @@ namespace DiscordBot.Game
         public GamePlayerList()
         {
             players = new List<Player>();
+            Spectators = new List<IGuildUser>();
             GameRunning = false;
             PhaseLengthInMin = 4;
         }

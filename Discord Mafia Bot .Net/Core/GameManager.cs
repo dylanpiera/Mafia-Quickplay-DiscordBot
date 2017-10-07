@@ -36,6 +36,11 @@ namespace Discord_Mafia_Bot.Core
             {
                 await gameChannel.AddPermissionOverwriteAsync(players.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
             }
+            await Task.Delay(500);
+            foreach (IGuildUser spectator in game.Spectators)
+            {
+                await gameChannel.AddPermissionOverwriteAsync(spectator, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+            }
 
             EmbedBuilder builder = new EmbedBuilder() { Color = Color.LightGrey, Title = "Starting game..." };
             builder.Description += "@everyone the game is starting up...\n\n";
@@ -94,10 +99,16 @@ namespace Discord_Mafia_Bot.Core
             builder.Description += "Running Finishing Touches...\n\n";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
-            IGuildChannel graveyardChannel = await Context.Guild.CreateTextChannelAsync("Graveyard-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game"});
+            IGuildChannel graveyardChannel = await Context.Guild.CreateTextChannelAsync("Graveyard-and-Spectator-Chat", new RequestOptions() { AuditLogReason = "Start of Mafia Game"});
             await graveyardChannel.AddPermissionOverwriteAsync(Context.Client.CurrentUser, new OverwritePermissions(manageChannel: PermValue.Allow, addReactions: PermValue.Allow, readMessages: PermValue.Allow, sendMessages: PermValue.Allow, mentionEveryone: PermValue.Allow, managePermissions: PermValue.Allow), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             await graveyardChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(readMessages: PermValue.Deny, sendMessages: PermValue.Deny, addReactions: PermValue.Deny), new RequestOptions { AuditLogReason = "Start of Mafia Game" });
             game.SetChats(gameChannel, mafiaChannel, graveyardChannel, Context.Channel as IGuildChannel);
+
+            await Task.Delay(500);
+            foreach (IGuildUser spectator in game.Spectators)
+            {
+                await game.GraveyardChat.AddPermissionOverwriteAsync(spectator, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+            }
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
