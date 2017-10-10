@@ -15,6 +15,7 @@ namespace DiscordBot.Game
     {
         private int PhaseLength, phaseCounter, townPlayers, mafiaPlayers, townAlive, mafiaAlive, cops;
         Func<SocketMessage,Task> nightkillHandler;
+        public GameLogger Log { get; set; }
 
         public int PhaseCounter
         {
@@ -91,6 +92,7 @@ namespace DiscordBot.Game
             this.mafiaChat = mafiaChat;
             this.graveyardChat = graveyard;
             this.signupChannel = signupChannel;
+            this.Log = new GameLogger(graveyard as IMessageChannel);
         }
 
         /// <summary>
@@ -115,6 +117,7 @@ namespace DiscordBot.Game
             this.TownPlayers = 0;
             this.MafiaAlive = 0;
             this.TownAlive = 0;
+            this.Log = null;
         }
 
         public GamePlayerList()

@@ -31,6 +31,7 @@ namespace DiscordBot.Roles
                 if (g.InGame(g.Find(target)))
                 {
                     Target = g.Find(target);
+                    g.Log.Log($"{Player.User.Nickname ?? Player.User.Username} (COP) is targeting: {Target.User.Nickname ?? Target.User.Username}", this.Player.User);
 
                     await e.Author.SendMessageAsync("", false, new EmbedBuilder()
                     {

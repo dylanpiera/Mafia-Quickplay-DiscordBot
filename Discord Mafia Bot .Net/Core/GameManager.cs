@@ -108,7 +108,17 @@ namespace Discord_Mafia_Bot.Core
             foreach (IGuildUser spectator in game.Spectators)
             {
                 await game.GraveyardChat.AddPermissionOverwriteAsync(spectator, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                await game.MafiaChat.AddPermissionOverwriteAsync(spectator, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                await Task.Delay(100);
             }
+
+            await Task.Delay(500);
+            string logMsg = "";
+            foreach (Player Player in game.Objects)
+            {
+                logMsg += $"{Player.User.Nickname ?? Player.User.Username} => {Player.Role.Allignment.ToString()} {Player.Role.Title}\n";
+            }
+            game.Log.Log(logMsg);
 
             builder.Description += "Game preparation, completed. :white_check_mark:";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
@@ -300,19 +310,16 @@ namespace Discord_Mafia_Bot.Core
             if (e.Channel.Id == game.MafiaChat.Id && e.Content.StartsWith("KILL: "))
             {
                 string target = e.Content.Replace("KILL: ", "");
-                Console.WriteLine("Night kill target: " + target);
                 if (game.InGame(game.Find(target)))
                 {
                     game.MafiaKillTarget = game.Find(target);
-                    Console.WriteLine("Target set.");
+                    game.Log.Log($"The mafia has set a night kill target: {game.MafiaKillTarget.User.Nickname ?? game.MafiaKillTarget.User.Username}", "http://www.freevectors.net/files/large/DetectiveAvatar.jpg");
                     await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Color = Color.DarkerGrey, Title = "Nightkill Target", Description = $"The current kill target is: {game.MafiaKillTarget.User.Mention}. Use `KILL: [playername]` to change your target." });
                 }
                 else
                 {
-                    Console.WriteLine("Couldn't find target.");
                     await (game.MafiaChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Color = Color.DarkRed, Title = "Invalid Input", Description = $"Your input was invalid. You inputted: {target}" });
                 }
-                Console.WriteLine("End of nightkill handler.");
             }
 
         }

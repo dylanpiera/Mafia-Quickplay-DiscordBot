@@ -17,8 +17,6 @@ namespace Discord_Mafia_Bot.Commands
         [Name("Misc. Commands")]
         public class MiscCommands : ModuleBase
         {
-            //TODO: add version command
-
             [Command("howtoplay"), Summary("Explains how to use the Mafia Bot and play a game!")]
             public async Task Ping()
             {
@@ -47,6 +45,12 @@ namespace Discord_Mafia_Bot.Commands
             public async Task Ping()
             {
                 await ReplyAsync("Pong!");
+            }
+
+            [Command("version"), Summary("Output current bot version."), Ratelimit(1, 0.5, Measure.Minutes)]
+            public async Task Version()
+            {
+                await Context.Channel.SendMessageAsync("Currently running version: PRE-1.2.0.1 ");
             }
 
             [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
@@ -112,13 +116,13 @@ namespace Discord_Mafia_Bot.Commands
                 }
             }
 
-            //TODO: Make it so it posts who joined all in one go instead of timing out if 5+ users are force joined.
             [Command("join"), Summary("force [user] to join the current game signups."), RequireUserPermission(GuildPermission.ManageGuild), Name("!join [user]")]
             public async Task Join(params IGuildUser[] user)
             {
                 if (!Program.Servers[Context.Guild].GameRunning)
                 {
                     if (Context.Message.MentionedUserIds.Count == 0) await ReplyAsync("", false, new EmbedBuilder() { Title = "Ongoing Game!", Color = Color.Orange, Description = $"{Context.User.Mention} You need to mention a user. :x:" });
+                    string remFromSpec = "", toAdd = "";
                     foreach (ulong id in Context.Message.MentionedUserIds)
                     {
                         IGuildUser mentionedUser = await Context.Guild.GetUserAsync(id);
@@ -129,21 +133,24 @@ namespace Discord_Mafia_Bot.Commands
                                 if (Program.Servers[Context.Guild].Spectators.Contains(mentionedUser as IGuildUser))
                                 {
                                     Program.Servers[Context.Guild].Spectators.Remove(mentionedUser as IGuildUser);
-                                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = $"{(mentionedUser as IGuildUser).Nickname ?? mentionedUser.Username} Is no longer a spectator due to joining a game. :white_check_mark: " });
+                                    remFromSpec += $"{mentionedUser.Nickname ?? mentionedUser.Username} Is no longer a spectator due to joining a game. :white_check_mark:\n";
                                 }
                                 Program.Servers[Context.Guild].Add(mentionedUser as IGuildUser);
-                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Added!", Color = Color.Blue, Description = $"{mentionedUser.Mention} was added to the game by {Context.User.Mention}! :white_check_mark:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
+                                toAdd += $"{mentionedUser.Nickname ?? mentionedUser.Username} was added to the game by {(Context.User as IGuildUser).Nickname ?? Context.User.Username}! :white_check_mark:\n";
                             }
                             else
                             {
-                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Already in Game!", Color = Color.DarkRed, Description = $"{Context.User.Mention}, {mentionedUser.Mention} already is in the game! :x:", Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
+                                toAdd += $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username}, {mentionedUser.Nickname ?? mentionedUser.Username} already is in the game! :x:\n";
                             }
                         }
                         else
                         {
-                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Bots can't join!", Color = Color.DarkRed, Description = $"{Context.User.Mention} Bots aren't allowed to play, in particular ME. :no_entry_sign:" });
+                            toAdd += $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Bots aren't allowed to play, in particular ME. :no_entry_sign:\n";
                         }
                     }
+                    if (!string.IsNullOrWhiteSpace(remFromSpec))
+                        await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = remFromSpec });
+                    await ReplyAsync("", false, new EmbedBuilder() { Title = "Player Added!", Color = Color.Blue, Description = toAdd, Footer = new EmbedFooterBuilder() { Text = $"Current amount of players : {Program.Servers[Context.Guild].Objects.Count}" } });
                 }
                 else
                 {
