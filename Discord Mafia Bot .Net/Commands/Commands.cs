@@ -503,20 +503,20 @@ namespace Discord_Mafia_Bot.Commands
         #endregion
 
 	    #region FunCommands
-	[Group("fun"), Name("Fun Commands"), Summary("For fun!")]
-	public class FunCommands : ModuleBase
+	    [Group("fun"), Name("Fun Commands"), Summary("For fun!")]
+	    public class FunCommands : ModuleBase
 		{
-		[Command("cookie"), Summary("Gives you a cookie!")]
+		    [Command("cookie"), Summary("Gives you a cookie!")]
         	public async Task Cookie()
-            	{
-                	await Context.Message.AddReactionAsync(new Emoji("🍪"));
-            	}
+            {
+               	await Context.Message.AddReactionAsync(new Emoji("🍪"));
+            }
 		
-		[Command("moo"), Summary("Moooooo!")]
-            	public async Task Moo()
-            	{
-			await Context.Message.AddReactionAsync(new Emoji("🐮"));
-            	}
+		    [Command("moo"), Summary("Moooooo!")]
+            public async Task Moo()
+            {
+			    await Context.Message.AddReactionAsync(new Emoji("🐮"));
+            }
 	}
 	#endregion
     }

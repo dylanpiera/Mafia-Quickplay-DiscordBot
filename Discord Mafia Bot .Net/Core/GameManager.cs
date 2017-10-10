@@ -188,7 +188,7 @@ namespace Discord_Mafia_Bot.Core
             {
                 int playerCount = g.Objects.Count;
 
-                //int funFactor = ListHelper.r.Next(100);
+                int funFactor = ListHelper.r.Next(100);
 
                 g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
                 g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
@@ -217,6 +217,12 @@ namespace Discord_Mafia_Bot.Core
                     g.Cops++;
                     i -= 3;
                 }
+
+                if(funFactor > 70)
+                {
+                    g.TownPlayers--;
+                    g.RestlessSpirits++;
+                }
             }
             for (int i = 0; i < g.Doctors; i++)
             {
@@ -226,6 +232,11 @@ namespace Discord_Mafia_Bot.Core
             for (int i = 0; i < g.Cops; i++)
             {
                 setup.Add(new Cop());
+                g.TownAlive++;
+            }
+            for (int i = 0; i < g.RestlessSpirits; i++)
+            {
+                setup.Add(new RestlessSpirit());
                 g.TownAlive++;
             }
             for (int i = 0; i < g.TownPlayers; i++)
@@ -340,7 +351,7 @@ namespace Discord_Mafia_Bot.Core
             EmbedBuilder builder = new EmbedBuilder() { Title = $"Night {game.PhaseCounter} Recap", Color = Color.DarkTeal, Description = $":night_with_stars: @everyone the Night phase has ended! Recapping now... :night_with_stars:\n\n" };
             IUserMessage msg = await (game.GameChat as IMessageChannel).SendMessageAsync("", false, builder.Build());
 
-            foreach (Player player in game.Objects.Where(x => x.Alive))
+            foreach (Player player in game.Objects.Where(x => x.Alive || x.Role.Title == "Restless Spirit"))
             {
                 await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
                 if (player.Role.PowerRole)
@@ -359,7 +370,8 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += $"When everyone woke up in the morning, they found out someone was missing: {game.MafiaKillTarget.User.Mention}\nOnce they arived at their home, they were found death on the ground.\n\n**{game.MafiaKillTarget.User.Mention} was killed by the Mafia. They were:**\n**Role PM:**\n```{game.MafiaKillTarget.Role.RolePM}```\n";
                     Player target;
                     (target = game.MafiaKillTarget).Alive = false;
-                    await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                    if (target.Role.Title != "Restless Spirit")
+                        await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                     if (target.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny)); }
                     else if (target.Role.Allignment == Allignment.Town) game.TownAlive--;
                     game.MafiaKillTarget = null;
@@ -380,7 +392,8 @@ namespace Discord_Mafia_Bot.Core
                     builder.Description += $"When everyone woke up in the morning, they found out someone was missing: {game.MafiaKillTarget.User.Mention}\nOnce they arived at their home, they were found death on the ground.\n\n**{game.MafiaKillTarget.User.Mention} was killed by the Mafia. They were:**\n**Role PM:**\n```{game.MafiaKillTarget.Role.RolePM}```\n";
                     Player target;
                     (target = game.MafiaKillTarget).Alive = false;
-                    await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                    if (target.Role.Title != "Restless Spirit")
+                        await game.GraveyardChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                     if (target.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(target.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny)); }
                     else if (target.Role.Allignment == Allignment.Town) game.TownAlive--;
                     game.MafiaKillTarget = null;
@@ -397,7 +410,7 @@ namespace Discord_Mafia_Bot.Core
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
             if (await CheckWinConditions(game)) return;
-            foreach (Player player in game.Objects.Where(x => x.Alive))
+            foreach (Player player in game.Objects.Where(x => x.Alive || x.Role.Title == "Restless Spirit"))
             {
                 await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(sendMessages: PermValue.Allow, readMessages: PermValue.Allow));
             }
@@ -475,7 +488,8 @@ namespace Discord_Mafia_Bot.Core
                 if (lynchee.Role.Allignment == Allignment.Mafia) { game.MafiaAlive--; await game.MafiaChat.AddPermissionOverwriteAsync(lynchee.User, new OverwritePermissions(sendMessages: PermValue.Deny, readMessages: PermValue.Allow)); }
                 if (lynchee.Role.Allignment == Allignment.Town) game.TownAlive--;
 
-                await game.GraveyardChat.AddPermissionOverwriteAsync(lynchee.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
+                if(lynchee.Role.Title != "Restless Spirit")
+                    await game.GraveyardChat.AddPermissionOverwriteAsync(lynchee.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                 builder.Description += $"It seems like all of you have decided on your lynch target, **{lynchee.User.Username}**, so let's see what they are!\n";
                 builder.Description += $" **Role PM: **\n```{ lynchee.Role.RolePM}```\n";
             }
@@ -488,7 +502,7 @@ namespace Discord_Mafia_Bot.Core
             foreach (Player player in game.Objects)
             {
                 player.LynchTarget = null;
-                if (player.Alive)
+                if (player.Alive || player.Role.Title == "Restless Spirit")
                     await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
 
             }
