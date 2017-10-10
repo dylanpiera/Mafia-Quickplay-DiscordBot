@@ -9,7 +9,7 @@ namespace DiscordBot.Resources
 {
     static class ListHelper
     {
-        public static Random r;
+        public static Random r = new Random();
 
         public static List<E> ShuffleList<E>(this IList<E> inputList)
         {

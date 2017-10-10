@@ -23,7 +23,7 @@ namespace DiscordBot.Roles
             return this;
         }
 
-        protected override async Task powerHandler(SocketMessage e, GamePlayerList g)
+        protected override async Task PowerHandler(SocketMessage e, GamePlayerList g)
         {
             if (e.Content.StartsWith("SCAN: ") && e.Channel.Id == (await this.Player.User.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {
@@ -52,7 +52,7 @@ namespace DiscordBot.Roles
             }
         }
 
-        public override async Task<bool> powerResult(IGuildUser user, Player target)
+        public override async Task<bool> PowerResult(IGuildUser user, Player target)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace DiscordBot.Roles
                     Description = "You didn't target anyone last night."
                 });
             }
-            return await base.powerResult(user, target);
+            return await base.PowerResult(user, target);
         }
 
     }

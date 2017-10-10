@@ -19,7 +19,7 @@ namespace DiscordBot.Roles
             return this;
         }
 
-        protected override async Task powerHandler(SocketMessage e, GamePlayerList g)
+        protected override async Task PowerHandler(SocketMessage e, GamePlayerList g)
         {
             if (e.Content.StartsWith("PROTECT: ") && e.Channel.Id == (await this.Player.User.GetOrCreateDMChannelAsync() as IMessageChannel).Id)
             {

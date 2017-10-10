@@ -68,7 +68,7 @@ namespace Discord_Mafia_Bot.Core
 
             foreach (var player in game.Objects)
             {
-                player.Role.sendRolePM(player.User);
+                player.Role.SendRolePM(player.User);
                 await Task.Delay(500);
             }
             await Task.Delay(500);
@@ -189,6 +189,7 @@ namespace Discord_Mafia_Bot.Core
                 int playerCount = g.Objects.Count;
 
                 int funFactor = ListHelper.r.Next(100);
+                GameLogger.LogToConsole("FunFactor: " + funFactor.ToString());
 
                 g.TownPlayers = ((int)Math.Floor(playerCount * 0.75));
                 g.MafiaPlayers = ((int)Math.Ceiling(playerCount * 0.25));
@@ -357,7 +358,7 @@ namespace Discord_Mafia_Bot.Core
                 if (player.Role.PowerRole)
                 {
                     (context.Client as DiscordSocketClient).MessageReceived -= player.Role.PowerHandler(game);
-                    await player.Role.powerResult(player.User, player.Role.Target);
+                    await player.Role.PowerResult(player.User, player.Role.Target);
                 }
             }
 

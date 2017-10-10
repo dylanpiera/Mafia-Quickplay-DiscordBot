@@ -13,15 +13,13 @@ public class GameLogger
         this.Channel = channel;
     }
 
-    public static async void LogError(string error)
+    public static void LogError(string error)
     {
-        await Task.Delay(0);
         Console.WriteLine("-An error occured- " + error);
     }
 
-    public static async void LogToConsole(string log)
+    public static void LogToConsole(string log)
     {
-        await Task.Delay(0);
         Console.WriteLine("-Log- " + log);
     }
 

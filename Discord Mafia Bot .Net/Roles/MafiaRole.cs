@@ -109,7 +109,7 @@ namespace DiscordBot.Roles
         public Func<SocketMessage, Task> PowerHandler(GamePlayerList g)
         {
             if (this.eventHandler == null)
-                this.eventHandler = new Func<SocketMessage, Task>((s) => powerHandler(s, g));
+                this.eventHandler = new Func<SocketMessage, Task>((s) => PowerHandler(s, g));
             return this.eventHandler;
         }
 
@@ -128,11 +128,11 @@ namespace DiscordBot.Roles
 
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async Task powerHandler(SocketMessage e, GamePlayerList g) { }
-        public virtual async Task<bool> powerResult(IGuildUser user, Player target) { return true; }
+        protected virtual async Task PowerHandler(SocketMessage e, GamePlayerList g) { }
+        public virtual async Task<bool> PowerResult(IGuildUser user, Player target) { return true; }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-        public virtual async void sendRolePM(IGuildUser user)
+        public virtual async void SendRolePM(IGuildUser user)
         {
             IDMChannel channel = await user.GetOrCreateDMChannelAsync();
             await channel.SendMessageAsync(rolePM);

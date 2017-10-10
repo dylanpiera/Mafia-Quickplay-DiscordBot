@@ -50,7 +50,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("version"), Summary("Output current bot version."), Ratelimit(1, 0.5, Measure.Minutes)]
             public async Task Version()
             {
-                await Context.Channel.SendMessageAsync("Currently running version: PRE-1.2.0.1 ");
+                await Context.Channel.SendMessageAsync("Currently running version: PRE-1.2.0.3 ");
             }
 
             [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
