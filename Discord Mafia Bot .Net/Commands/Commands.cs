@@ -169,20 +169,21 @@ namespace Discord_Mafia_Bot.Commands
             [Command("spectate"), Summary("Join the spectators.")]
             public async Task Spectate()
             {
-                if (!Program.Servers[Context.Guild].GameRunning)
+                GamePlayerList game = Program.Servers[Context.Guild];
+                if (!game.GameRunning)
                 {
-                    if (!Program.Servers[Context.Guild].InGame(Context.User as IGuildUser))
+                    if (!game.InGame(Context.User as IGuildUser))
                     {
-                        if (!Program.Servers[Context.Guild].Spectators.Contains(Context.User as IGuildUser))
+                        if (!game.Spectators.Contains(Context.User as IGuildUser))
                         {
-                            Program.Servers[Context.Guild].Spectators.Add(Context.User as IGuildUser);
+                            game.Spectators.Add(Context.User as IGuildUser);
                             await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Joined!", Color = Color.LightGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is now a spectator. :white_check_mark: " });
 
                             return;
                         }
                         else
                         {
-                            Program.Servers[Context.Guild].Spectators.Remove(Context.User as IGuildUser);
+                            game.Spectators.Remove(Context.User as IGuildUser);
                             await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Left!", Color = Color.DarkerGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is no longer a spectator. :white_check_mark: " });
 
                             return;
@@ -195,7 +196,33 @@ namespace Discord_Mafia_Bot.Commands
                 }
                 else
                 {
-                    await ReplyAsync(new NotImplementedException().ToString());
+                    if (!game.InGame(Context.User as IGuildUser))
+                    {
+                        if (!game.Spectators.Contains(Context.User as IGuildUser))
+                        {
+                            game.Spectators.Add(Context.User as IGuildUser);
+                            await ReplyAsync("", false, new EmbedBuilder() { Title = "Spectator Joined!", Color = Color.LightGrey, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} Is now a spectator. :white_check_mark:\nAdding you to the game. Please wait." });
+
+                            try
+                            {
+                                await game.GameChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                                await Task.Delay(250);
+                                await game.MafiaChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                                await Task.Delay(250);
+                                await game.GraveyardChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                            } catch
+                            {
+                                game.Spectators.Remove(Context.User as IGuildUser);
+                                await ReplyAsync("", false, new EmbedBuilder() { Title = "Error. Game Booting.", Color = Color.DarkRed, Description = $"{(Context.User as IGuildUser).Nickname ?? Context.User.Username} An error occured. The game is still booting up. Please wait and try again in a moment." });
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            await Context.Message.AddReactionAsync(new Emoji("❌"));
+                            return;
+                        }
+                    }
                 }
             }
 
