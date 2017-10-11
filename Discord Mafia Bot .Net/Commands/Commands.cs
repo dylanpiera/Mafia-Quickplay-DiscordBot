@@ -50,7 +50,7 @@ namespace Discord_Mafia_Bot.Commands
             [Command("version"), Summary("Output current bot version."), Ratelimit(1, 0.5, Measure.Minutes)]
             public async Task Version()
             {
-                await Context.Channel.SendMessageAsync("Currently running version: PRE-1.2.0.3 ");
+                await Context.Channel.SendMessageAsync("Currently running version: PRE-1.2.0.4 ");
             }
 
             [Command("endgame"), Summary("(Bot Admin Only) ends the current game."), DiscordbotAdminPrecon(), Hidden()]
@@ -209,7 +209,7 @@ namespace Discord_Mafia_Bot.Commands
                                 await Task.Delay(250);
                                 await game.MafiaChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
                                 await Task.Delay(250);
-                                await game.GraveyardChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Deny));
+                                await game.GraveyardChat.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(readMessages: PermValue.Allow, sendMessages: PermValue.Allow));
                             } catch
                             {
                                 game.Spectators.Remove(Context.User as IGuildUser);
@@ -222,6 +222,11 @@ namespace Discord_Mafia_Bot.Commands
                             await Context.Message.AddReactionAsync(new Emoji("❌"));
                             return;
                         }
+                    }
+                    else
+                    {
+                        await Context.Message.AddReactionAsync(new Emoji("❌"));
+                        return;
                     }
                 }
             }
@@ -466,6 +471,11 @@ namespace Discord_Mafia_Bot.Commands
                     }
 
                     await ReplyAsync("", false, builder.Build());
+                }
+                else
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("❌"));
+                    return;
                 }
             }
 

@@ -133,6 +133,12 @@ namespace Discord_Mafia_Bot.Core
                 x.Value = "To vote use: `VOTE: (mention)` or `VOTE: (username)`. For more info, use !howtoplay";
                 x.IsInline = false;
             });
+            b.AddField(x =>
+            {
+                x.Name = "Hyper majority";
+                x.Value = $":warning: *With {game.MafiaAlive + game.TownAlive} people left, {Math.Ceiling((game.MafiaAlive + game.TownAlive)*(2f/3f))} votes are required for hyper-majority.* :warning:";
+                x.IsInline = false;
+            });
             await (game.GameChat as IMessageChannel).SendMessageAsync("", false, b.Build());
             await Task.Delay(100);
             foreach (Player player in game.Objects)
@@ -410,12 +416,22 @@ namespace Discord_Mafia_Bot.Core
             builder.Description += $"";
             await msg.ModifyAsync(x => x.Embed = builder.Build());
 
+            game.PhaseCounter++;
+
+            EmbedBuilder b = new EmbedBuilder() { Color = Color.DarkBlue, Title = $"Day {game.PhaseCounter} start", Description = $":sunny: It is now Day {game.PhaseCounter}. The phase will end in {game.PhaseLengthInMin} minutes. :sunny:" };
+            b.AddField(x =>
+            {
+                x.Name = "Hyper majority";
+                x.Value = $":warning: *With {game.MafiaAlive + game.TownAlive} people left, {Math.Ceiling((game.MafiaAlive + game.TownAlive) * (2f / 3f))} votes are required for hyper-majority.* :warning:";
+                x.IsInline = false;
+            });
+            await (game.GameChat as IMessageChannel).SendMessageAsync("", false, b.Build());
+
             if (await CheckWinConditions(game)) return;
             foreach (Player player in game.Objects.Where(x => x.Alive || x.Role.Title == "Restless Spirit"))
             {
                 await game.GameChat.AddPermissionOverwriteAsync(player.User, new OverwritePermissions(sendMessages: PermValue.Allow, readMessages: PermValue.Allow));
             }
-            game.PhaseCounter++;
         }
         #endregion
 
@@ -562,6 +578,7 @@ namespace Discord_Mafia_Bot.Core
                 Console.WriteLine(e.ToString());
             }
         }
+
         private static async Task VoteHandler(SocketMessage e, GamePlayerList game, ICommandContext context)
         {
             if (e.Channel.Id == game.GameChat.Id)
@@ -575,6 +592,7 @@ namespace Discord_Mafia_Bot.Core
                         {
                             game.Find(e.Author as IGuildUser).LynchTarget = game.Find(target);
                             await (e as IUserMessage).AddReactionAsync(new Emoji("✅"));
+                            CheckForHyperMajority(game, game.Find(target));
                             return;
                         }
                         else
@@ -609,6 +627,20 @@ namespace Discord_Mafia_Bot.Core
                     await (e as IUserMessage).AddReactionAsync(new Emoji("❌"));
                     return;
                 }
+            }
+        }
+
+        private static async void CheckForHyperMajority(GamePlayerList game, Player player)
+        {
+            int hyperRequirement = (int) Math.Ceiling((game.MafiaAlive+game.TownAlive)*(2f/3f));
+            //TODO: Remove this line
+            GameLogger.LogToConsole(hyperRequirement.ToString());
+
+            Commands.Commands.Game_Commands.CountVotes(game);
+            if(player.VotesOn >= hyperRequirement)
+            {
+                await (game.GameChat as IMessageChannel).SendMessageAsync("", false, new EmbedBuilder() { Title = "Hyper Majority Achieved", Color = Color.DarkRed, Description = "Hyper Majority has been achieved. Ending phase." });
+                game.Token.Cancel();
             }
         }
         #endregion
